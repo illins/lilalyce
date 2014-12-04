@@ -1,0 +1,34 @@
+{% extends "apps/wp/templates/download/form.twig" %}
+
+{% block main %}
+
+  {% for field in form.visible %}
+    {{ field.field|raw }}
+  {% endfor %}
+
+  {% for field in form.hidden %}
+    {{ field.field|raw }}
+  {% endfor %}
+
+  <hr />
+  <div id="twitter_user">
+    <i class="fa fa-spinner fa-spin"></i> Loading
+  </div>
+
+  <script id="template_twitter_user" type="text/template">
+    <h4>You are logged in as</h4>
+    <div class="media">
+    <a class="pull-left" href="#">
+    <img class="media-object" src="<%= photo_url %>" alt="<%= name %>">
+    </a>
+    <div class="media-body">
+    <h4 class="media-heading"><%= name %> [<%= screen_name %>]</h4></div>
+    </div>
+  </script>
+
+  <script>
+    $(function() {
+      twitter_download_loggedin();
+    });
+  </script>
+{% endblock main %}

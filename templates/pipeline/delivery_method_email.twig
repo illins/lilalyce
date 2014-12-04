@@ -1,0 +1,63 @@
+{% extends "apps/wp/templates/pipeline/base.twig" %}
+
+{% block main %}
+
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <form role="form" class="form" method="post">
+        {% for email in email_form %}
+          <div class="row">
+            <div class="col-md-6">
+              {{ email.name.field|raw }}
+            </div>
+            <div class="col-md-6">
+              {{ email.email.field|raw }}
+            </div>
+          </div>
+        {% endfor %}
+
+        {#<div class="row">
+          <div class="col-md-6">
+            {{ email_form.visible.email_name1.field|raw }}
+          </div>
+          <div class="col-md-6">
+            {{ email_form.visible.email_email1.field|raw }}
+          </div>
+        </div>#}
+
+        {#           <div class="row">
+                      <div class="col-md-6">
+                        {{ email_form.visible.email_name2.field|raw }}
+                      </div>
+                      <div class="col-md-6">
+                        {{ email_form.visible.email_email2.field|raw }}
+                      </div>
+                    </div>
+        
+                    <div class="row">
+                      <div class="col-md-6">
+                        {{ email_form.visible.email_name3.field|raw }}
+                      </div>
+                      <div class="col-md-6">
+                        {{ email_form.visible.email_email3.field|raw }}
+                      </div>
+                    </div>#}
+
+        <input type="hidden" name="delivery_method" value="email" />
+        <div class="row">
+          <div class="col-md-4">
+            <a href="/wapo/startover/" class="btn btn-warning btn-lg btn-block">Start Over</a>
+          </div>
+          <div class="col-md-8">
+            <button class="btn btn-default btn-lg btn-block">Continue</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    $(document).ready(function() {
+      sidebar_init();
+    });
+  </script>
+{% endblock %}

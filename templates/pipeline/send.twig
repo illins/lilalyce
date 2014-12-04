@@ -1,0 +1,19 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div id="error" class="alert alert-danger hidden"></div>
+      
+      <div id="loading">
+        <h4><i class="fa fa-3x fa-spinner fa-spin"></i> Please wait while your wapo is sent.</h4>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      facebook_ready(send_promotion);
+    });
+  </script>
+{% endblock main %}

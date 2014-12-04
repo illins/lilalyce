@@ -1,0 +1,42 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  <input type="hidden" id="profile_id" name="profile_id" value="{{ profile.id }}" />
+
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <table class="table">
+        <tbody>
+          {% for myprofile in profile_list %}
+            <tr id="{{ myprofile.id }}" class="profile" style="cursor: pointer; {% if profile.id == myprofile.id %}background-color: #cccccc;{% endif %}" >
+              <td>
+                <div class="media">
+                  {% if myprofile.image.name %}
+                    <img class="media-object img-thumbnail" style="max-height: 70px;" src="{{ myprofile.image.url }}" alt="...">
+                  {% else %}
+                    <img class="media-object img-thumbnail" style="max-height: 70px;" src="/wapo/templates/images/profile.jpg" alt="...">
+                  {% endif %}
+                  <div class="media-body">
+                    <h4 class="media-heading">{{ myprofile }}</h4>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+        
+  <script>
+    $(document).ready(function() {
+      $(".profile").click(function() {
+        $(".profile").css('background-color', 'white');
+        $(this).css('background-color', '#cccccc');
+        $("#profile_id").val(parseInt($(this).attr("id")));
+      });
+      
+      //sidebar_init();
+    });
+  </script>
+{% endblock main %}

@@ -1,0 +1,99 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+
+    <div class="list-group">
+      <div class="list-group-item">
+        <h4 class="list-group-item-heading">Account</h4>
+        <p class="list-group-item-text">
+          {% if blink.request.user %}
+            {% if blink.request.user.account == "local" %}
+              {{ blink.request.user }}
+            {% elseif blink.request.user.account == "Facebook" %}
+              <img src="" alt="facebook img" />
+            {% elseif blink.request.user.account == "Twitter" %}
+              Twitter info.
+            {% endif %}
+          {% else %}
+            Guest
+          {% endif %}
+        </p>
+      </div>
+    </div>
+
+    {% if promotion %}
+      <div class="list-group">
+        <div class="list-group-item">
+          <h4 class="list-group-item-heading">Promotion <a href="/wp/marketplace/" class="btn btn-link">[edit]</a></h4>
+          <div class="list-group-item-text">
+            <div class="media">
+              <a class="pull-left" href="#">
+                <img class="media-object" src="{{ promotion.icon.url }}" style="max-width: 50px; max-height: 50px;" alt="...">
+              </a>
+              <div class="media-body">
+                <h4 class="media-heading">{{ promotion.name }}</h4>
+                <p>${{ promotion.price }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% if expiring_date %}
+        <div class="list-group">
+          <div class="list-group-item">
+            <h4 class="list-group-item-heading">Expiring Date<a href="/wp/{{ delivery }}/" class="btn btn-link">[edit]</a></h4>
+            <div class="list-group-item-text">
+              {{ expiring_date }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if delivery_message %}
+        <div class="list-group">
+          <div class="list-group-item">
+            <h4 class="list-group-item-heading">Delivery Message <a href="/wp/{{ delivery }}/" class="btn btn-link">[edit]</a></h4>
+            <div class="list-group-item-text">
+              {{ delivery_message }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+
+
+
+    {% if delivery %}
+      <div class="list-group">
+        <div class="list-group-item">
+          <h4 class="list-group-item-heading">Delivery Method <a href="/wp/{{ delivery }}/" class="btn btn-link">[edit]</a><a href="/wp/delivery-method/" class="btn btn-link">[change]</a></h4>
+          <div class="list-group-item-text">
+            {{ delivery_name }}
+          </div>
+        </div>
+      </div>
+
+      <div class="list-group">
+        <div class="list-group-item">
+          <h4 class="list-group-item-heading">Quantity <a href="/wp/{{ delivery }}/" class="btn btn-link">[edit]</a></h4>
+          <div class="list-group-item-text">
+            {{ quantity }}
+          </div>
+        </div>
+      </div>
+
+      {% if quantity and promotion %}
+        <div class="list-group">
+          <div class="list-group-item">
+            <h4 class="list-group-item-heading">Total <a href="/wp/{{ delivery }}/" class="btn btn-link">[edit]</a></h4>
+            <div class="list-group-item-text">
+              $ {{ quantity * promotion.price }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      
+    {% endif %}
+    <hr />
+  </div>
+</div>

@@ -1,0 +1,20 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  
+  
+
+  <div class="row">
+    <div class="col-xs-12">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+      
+      {% include '/apps/wp/templates/pipeline/sidebar.twig' %}
+      </div>
+  </div>
+{% endblock main %}

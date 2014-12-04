@@ -1,0 +1,67 @@
+{% extends "templates/bootstrap/base.twig" %}
+
+{% block extra_javascript %}
+  {% include 'apps/blink-user/templates/facebook/app.twig' %}
+  <script src="/apps/blink-user/static/blink/js/facebook.js"></script>
+  <script src="/apps/wp/static/wp/js/facebook.js"></script>
+  <script src="/apps/wp/static/wp/js/twitter.js"></script>
+  <script src="/apps/wp/static/wp/js/instagram.js"></script>
+  <script src="/apps/wp/static/wp/js/pipeline.js"></script>
+{% endblock extra_javascript %}
+
+{% block extra_css %}
+  <link href="/apps/wp/static/progress/css/progress.css" rel="stylesheet" media="screen">
+{% endblock extra_css %}
+
+{% block content %}
+  <div class="row">
+    <div class="row bs-wizard" style="border-bottom:0;">
+      <div class="col-xs-4 bs-wizard-step {% if main_step in ["delivery", "profile", "checkout", "confirmation"] %}complete{% elseif main_step == "marketplace" %}active{% else %}disabled{% endif %}">
+        <div class="text-center bs-wizard-stepnum">1. Wapo Code</div>
+        <div class="progress"><div class="progress-bar"></div></div>
+        <a href="/wp/marketplace/" class="bs-wizard-dot"></a>
+        {#<div class="bs-wizard-info text-center">Marketplace</div>#}
+      </div>
+      <div class="col-xs-4 bs-wizard-step {% if main_step in ["confirmation"] %}complete{% elseif main_step == "checkout" %}active{% else %}disabled{% endif %}"><!-- active -->
+        <div class="text-center bs-wizard-stepnum">2. Confirm</div>
+        <div class="progress"><div class="progress-bar"></div></div>
+        <a href="#" class="bs-wizard-dot"></a>
+        {#        <div class="bs-wizard-info text-center">Checkout</div>#}
+      </div>
+      <div class="col-xs-4 bs-wizard-step {% if main_step == "confirmation" %}active{% else %}disabled{% endif %}"><!-- active -->
+        <div class="text-center bs-wizard-stepnum">3. Download</div>
+        <div class="progress"><div class="progress-bar"></div></div>
+        <a href="#" class="bs-wizard-dot"></a>
+        {#        <div class="bs-wizard-info text-center">Confirmation</div>#}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-2">
+      {#{% if form.cancel_url and current_step != "done" %}
+        <a id="previous_button" href="{{ form.cancel_url }}" class="btn btn-warning btn-block {% if not form.cancel_url %}disabled{% endif %}" style="font-size: xx-large;">Back</a>
+      {% endif %}#}
+      <button class="btn btn-warning btn-block" style="font-size: large;">Start Over</button>
+    </div>
+    <div class="col-xs-7"></div>
+    <div class="col-xs-3">
+      {% if form.post_url and current_step != "done" %}
+        <button id="next_button" class="btn btn-primary btn-block {% if not form.post_url %}disabled{% endif %}" style="font-size: large;">Continue</button>
+      {% endif %}
+    </div>
+  </div>
+
+  <form class="form" role="form" method="post" action="{{ form.post_url }}">
+    <div class="row">
+      <div class="col-xs-12" style="min-height: 500px;">
+        <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+      {% block main %}{% endblock main %}
+    </div>
+  </div>
+</form>
+      
+      <script>
+        $(".form-control").addClass("input-lg");
+      </script>
+{% endblock content %}

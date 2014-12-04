@@ -1,0 +1,34 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div id="error" class="alert alert-danger hidden"></div>
+      
+      <div id="loading">
+        <h4><i class="fa fa-3x fa-spinner fa-spin"></i> Please wait while we create your Wapo.</h4>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      //$("#error").hide();
+      
+      $.ajax({
+        url: '/wp/createwapo/',
+        type: 'GET',
+        dataType: 'json'
+      }).done(function(data) {
+        console.log(data);
+        if(data.error) {
+          $("#error").show().html(data.message);
+          $("#loading").hide();
+        } else {
+          $("#next_button").click();
+        }
+      });
+    });
+  </script>
+{% endblock main %}

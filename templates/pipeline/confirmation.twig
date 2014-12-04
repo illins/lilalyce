@@ -1,0 +1,48 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  <div class="alert alert-success">
+    <i class="fa fa-2x fa-check-circle"></i> Congratulations!.
+    
+    {% if wapo.delivery_method_abbr == "ffa" %}
+      Wapo is ready for distribution. 
+    {% else %}
+      Wapo has been sent.
+    {% endif %}
+  </div>
+
+  <ul class="list-group">
+    <li class="list-group-item"><h3>Delivery Method <small>{{ wapo.delivery_method }}</small></h3></li>
+    <li class="list-group-item"><h3>Expiring Date <small>{{ wapo.expiring_date }}</small></h3></li>
+    <li class="list-group-item"><h3>Total Cost <small>{{ wapo.quantity * wapo.promotion.price }}</small></h3></li>
+    <li class="list-group-item"><h3>Total/Downloaded <small>{{ wapo.quantity }} / {{ wapo.downloaded }}</small></h3></li>
+  </ul>
+
+  {% if wapo.delivery_method_abbr == "ffa" %}
+    <strong>Use the following links for your free for all Wapo.</strong><br /><br />
+    <table class="table">
+      {% for turl in targeturl_list %}
+        <tr>
+          <td>
+            {% if turl.platform == "g" %}
+              <strong>General URL</strong>
+            {% elseif turl.platform == "f" %}
+              <strong>Facebook URL</strong>
+            {% elseif turl.platform == "t" %}
+              <strong>Twitter URL</strong>
+            {% elseif turl.platform == "i" %}
+              <strong>Instagram URL</strong>
+            {% elseif turl.platform == "gp" %}
+              <strong>Google+ URL</strong>
+            {% elseif turl.platform == "t" %}
+              <strong>Twitter URL</strong>
+            {% elseif turl.platform == "p" %}
+              <strong>Pintrest URL</strong>
+            {% endif %}
+          </td>
+          <td>{{ blink.Site }}/{{ turl.code }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+{% endblock main %}

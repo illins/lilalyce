@@ -1,0 +1,43 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      &nbsp;
+    </div>
+
+    <div class="panel-body">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      <hr />
+      <h3>Select Followers</h3>
+      <div id="twitter-follower-list">
+        <i class="fa fa-spinner fa-spin"></i> Loading
+      </div>
+    </div>
+  </div>
+
+  <script id="template_twitter_follower" type="text/template">
+    <div class="media">
+    <input type="checkbox" class="twitter_follower" data-sn="<%= screen_name %>" <%= checked %> />
+    <a class="pull-left" href="#">
+    <img class="media-object" src="<%= photo_url %>" alt="<%= name %>">
+    </a>
+    <div class="media-body">
+    <h4 class="media-heading"><%= name %> [<%= screen_name %>]</h4></div>
+    </div>
+  </script>
+
+  <script>
+    $(function() {
+      twitter_followers();
+      sidebar_init();
+    });
+  </script>
+{% endblock main %}

@@ -1,0 +1,101 @@
+{% extends "apps/wp/templates/pipeline/base.twig" %}
+
+{% block main %}
+  {# If we have profiles (i.e. logged in), then display the appropriate message/block. #}
+    <div class="well well-sm">{% if profile_list %}Select profile to continue.{% else %}Login to retrieve saved profiles.{% endif %}</div>
+    <div id="profile_list" style="height: 200px; overflow-y: scroll; display: none;">
+      {% for profile in profile_list %}
+        <div class="radio">
+          <label>
+            <input type="radio" name="profile_id" id="profile_{{ profile.id }}" value="{{ profile.id }}" />
+            {{ profile.name }}
+          </label>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <div id="login_options" class="row" style="display: none;">
+      <div class="col-xs-4">
+        <button id="profile-email-login-button" class="btn btn-default btn-block">Email Login</button>
+      </div>
+      <div class="col-xs-4">
+        <a href="#" class="btn btn-primary btn-block">Facebook Login</a>
+      </div>
+      <div class="col-xs-4">
+        <a href="#" class="btn btn-success btn-block">Twitter Login</a>
+      </div>
+    </div>
+
+  <form class="form" role="form" method="post" action="{{ form.post_url }}">
+    {# Display the profile info form. #}
+    <h4>Profile info</h4>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        {% for field in form_profile_info.visible %}
+          {{ field.field|raw }}
+        {% endfor %}
+
+        {% for field in form.hidden %}
+          {{ field.field|raw }}
+        {% endfor %}
+      </div>
+    </div>
+    
+    {# Display the rest of the forms depending on the delivery method. #}
+    <h4>Recipients</h4>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        {% if delivery_method == "ffa" %}
+          {% for field in form.visible %}
+            {{ field.field|raw }}
+          {% endfor %}
+
+          {% for field in form.hidden %}
+            {{ field.field|raw }}
+          {% endfor %}
+
+          <input type="submit" class="btn btn-primary btn-block btn-lg" value="Continue" />
+        {% else %}
+          {% for email in form.visible %}
+            <div class="row">
+              <div class="col-md-6">
+                {{ email.name.field|raw }}
+              </div>
+              <div class="col-md-6">
+                {{ email.email.field|raw }}
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-4">
+        <a href="/wapo/startover/" class="btn btn-warning btn-lg btn-block">Start Over</a>
+      </div>
+      <div class="col-md-8">
+        <button class="btn btn-default btn-lg btn-block">Continue</button>
+      </div>
+    </div>
+  </form>
+      
+      <div id="profile-email-login-dialog" title="Login to your account." style="display: none;">
+        <div id="profile-email-login-dialog-error" class="alert alert-danger" style="display: none;"></div>
+        <form class="form-signin" method="post" action="{{ post_url }}">
+          <div class="form-group">
+            <input type="text" id="profile-email-login-email" name="profile-email-login-email" class="form-control input-lg" placeholder="Email address" autofocus>
+          </div>
+          <div class="form-group">
+            <input type="password" id="profile-email-login-password" name="profile-email-login-password" class="form-control input-lg" placeholder="Password">
+          </div>
+        </form>
+      </div>
+
+  <script>
+    $(document).ready(function() {
+      user_loggedin(profile_init);
+      sidebar_init();
+    });
+  </script>
+{% endblock main %}

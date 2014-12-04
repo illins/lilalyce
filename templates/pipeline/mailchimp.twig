@@ -1,0 +1,179 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      &nbsp;
+    </div>
+
+    <div class="panel-body">
+      
+      {{ form.visible.delivery_message.field|raw }}
+      
+      {{ form.visible.expiring_date.field|raw }}
+      
+      {{ form.hidden.emails.field|raw }}
+      
+      <hr />
+      <h3><b>Mail Chimp</b></h3>
+      
+      <select class="form-control" id="lists-list" name="list_id" style="display: block;">
+        <option value="" data-url="">Select list to continue.</option>
+      </select>
+      <br />
+      
+      <div id="emails-list" style="display: block;">No list selected.</div>
+      
+      <div id="mailchimp-login" style="display: none;">
+        <a href="/mailchimp/?skip=1&return=/wp/mailchimp/" class="btn btn-primary">MailChimp Login</a>
+      </div>
+
+    </div>
+  </div>
+      
+  <script type="text/template" id="template-lists-list">
+    <% _.each(lists, function(list) { %> 
+          <option data-url="/wp/mailchimp/lists/members/?id=<%= list.id %>" value="<%= list.id %>" <% if (list_id === list.id) { %>selected<% } %>><%= list.name %></option>
+    <% }); %>
+  </script>
+  
+  <script type="text/template" id="template-emails-list">
+    <ul class="list-group">
+      <% _.each(emails, function(email) { %> 
+          <li class="list-group-item">
+            <label>
+              <input type="checkbox" value="<%= email.id %>" <%= email.checked %>/> <%= email.email %> 
+            </label>
+          </li>
+      <% }); %>
+    </ul>
+  </script>
+
+  {#<script src="/apps/wp/static/wp/js/mailchimp-delivery-backbone.js"></script>#}
+  <script>
+    var list_id = '{{ form.hidden.list_id.value }}';
+    var listsView;
+    
+    // Create a list collection instance.
+    var ListsCollection = Backbone.Collection.extend({
+      parse: function (resp, xhr) {
+        return resp.data.data;
+      }
+    });
+
+    var EmailsCollection = Backbone.Collection.extend({
+      parse: function (resp, xhr) {
+        return resp.data.data;
+      }
+    });
+
+    var ListsView = Backbone.View.extend({
+      el: '#lists-list',
+      template: _.template($("#template-lists-list").html()),
+      initialize: function () {
+        // Assign the lists collection.
+        this.collection = new ListsCollection();
+        this.collection.url = '/wp/mailchimp/lists/';
+        this.collection.bind('reset add remove', this.render, this);
+        this.collection.fetch();
+        
+        // Assign a sub view.
+        this.subview = new EmailsView();
+      },
+      render: function() {
+        this.$el.append(this.template({lists: this.collection.toJSON(), 'list_id': list_id}));
+        this.showEmails();// If one was already selected.
+      },
+      events: {
+        'change' : 'showEmails'
+      },
+      showEmails: function() {
+        var selected_url = $('#lists-list').find(":selected").data('url');
+        
+        // If selected url (select list is not the default 'no list').
+        if(selected_url) {
+          this.subview.collection.url = selected_url;
+          this.subview.$el.html('Loading...');
+          this.subview.collection.fetch();
+        } else {
+          this.subview.collection.url = "";
+          this.subview.$el.html('No list selected.');
+        }
+      }
+    });
+    
+    var EmailsView = Backbone.View.extend({
+      el: '#emails-list',
+      template: _.template($("#template-emails-list").html()),
+      initialize: function () {
+        this.collection = new EmailsCollection();
+        this.collection.bind('reset add remove', this.render, this);
+      },
+      render: function() {
+        var emails = [];
+        var email_list = [];
+        if ($('#emails').val()) {
+          email_list = $('#emails').val().split(',');
+        }
+
+        // Iterate through the return emails.
+        _.each(this.collection.toJSON(), function(email) {
+          emails.push({
+            id: email.id,
+            email: (email.merges.FNAME) ? email.merges.FNAME + ' ' + email.merges.LNAME + '[' + email.email + ']' : email.email,
+            checked: (email_list.indexOf(email.id) !== -1) ? 'checked' : ''
+          });
+        });
+        
+        this.$el.html(this.template({emails: emails}));
+      },
+      events: {
+        'click input[type=checkbox]' : 'emailSelected'
+      },
+      emailSelected: function(e) {
+        //e.preventDefault();
+        
+        var email_list = [];
+        if ($('#emails').val()) {
+          email_list = $('#emails').val().split(',');
+        }
+        
+        var email_id = $(e.target).val();
+      
+        if (email_list.indexOf(email_id) === -1) {
+          email_list.push(email_id);
+        } else {
+          email_list.splice(email_list.indexOf(email_id), 1);
+        }
+
+        $("#emails").val(email_list.join(','));
+      }
+    });
+    
+    $(document).ready(function() {
+      $.ajax({
+        type: "GET",
+        url: '/mailchimp/isauthenticated/',
+        dataType: "json",
+        success: function(response) {
+          if(response.data === false || response.data.error) {
+            $("#mailchimp-login").show();
+            $("#emails-list").hide();
+            $("#lists-list").hide();
+          } else {
+            listsView = new ListsView();
+          }
+        },
+        error: function(error) {
+          alert('Unknown error occured.');
+        }
+      });
+    });
+  </script>
+
+  <script>
+    $(function () {
+      sidebar_init();
+    });
+  </script>
+{% endblock main %}

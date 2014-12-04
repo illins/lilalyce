@@ -1,0 +1,25 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  {% if not blink.request.user %}
+    <p>
+      If you have used Wapo before, please <a href="/user/login/">login</a> to get your profiles.
+    </p>
+  {% endif %}
+  
+  {% for field in form.visible %}
+    {{ field.field|raw }}
+  {% endfor %}
+
+  {% for field in form.hidden %}
+    {{ field.field|raw }}
+  {% endfor %}
+
+  <script>
+    $(function() {
+      sidebar_init();
+
+      // Add more stuff here for profile management.
+    });
+  </script>
+{% endblock main %}

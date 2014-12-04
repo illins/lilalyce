@@ -1,0 +1,56 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      &nbsp;
+    </div>
+
+    <div class="panel-body">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+      
+      <hr />
+      <div id="facebook_permissions">
+        <h3>Facebook permissions required<small><a href="/wapo/faq/" target="_blank">more</a></small></h3>
+        <p id="facebook_permissions_required">public_profile, publish_actions</p>
+        <p id="missing_facebook_permissions" class="hidden"></p>
+      </div>
+      <br />
+      
+      <div id="facebook-login">
+        <i class="fa fa-spinner fa-spin"></i> Loading
+      </div>
+    </div>
+  </div>
+      
+  <script id="template_facebook_user" type="text/template">
+    <h3>You are logged in as </h3>
+    <div class="media">
+      <a class="pull-left" href="#">
+        <img class="media-object" src="<%= photo_url %>" alt="<%= name %>">
+      </a>
+      <div class="media-body">
+      <h4 class="media-heading"><%= name %></h4></div>
+    </div>
+  </script>
+
+  <script>
+    $(function() {
+      sidebar_init();
+      facebook_ready(facebook_is_logged_in);
+      
+{#      $("#facebook_permissions_info").popover({
+        html: true,
+        placement: 'top',
+        title: 'Facebook Permissions',
+        content: 'Here are Facebook permissions requested and how we use them. <br /><ul class="list-group"><li class="list-group-item">installed - you have allowed our app on your profile. <em>No extra information is collected</em></li><li class="list-group-item">public_profile - we can view your public profile information (like your name) <em>Only your name and profile id are stored for the purpose of Wapo download</em></li><li class="list-group-item">publish_actions - we can post to your wall on your behalf. <em>We post a custom message on your behalf to your profile.</em></li></ul>'
+      });#}
+    });
+  </script>
+{% endblock main %}

@@ -1,0 +1,35 @@
+{#{% extends "apps/wp/templates/download/form.twig" %}#}
+{% extends "apps/wp/templates/base.twig" %}
+
+{% block extra_css %}
+  <style>
+    .btn-download {
+      height: 100px;
+      font-weight: bold;
+      font-size: xx-large;
+      padding-top: 25px;
+    }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-xs-6">
+      <h1>Name of the Promotion</h1>
+      <img src="/static/unify/assets/img/demo.jpg" class="img-bordered" alt="" style="max-width: 100%; text-align: center;" />
+    </div>
+    <div class="col-xs-6">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          Some text here describing what they are downloading.
+        </div>
+      </div>
+      
+      <a href="" class="btn btn-lg btn-default btn-block btn-download">Download</a>
+      <br />
+      <div class="well well-lg">
+        &nbsp;
+      </div>
+    </div>
+  </div>
+{% endblock content %}

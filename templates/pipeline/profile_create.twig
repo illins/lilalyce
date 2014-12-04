@@ -1,0 +1,24 @@
+{% extends "apps/wp/templates/pipeline/base.twig" %}
+
+{% block main %}
+  <p>
+    Enter your email and company name here. Leave password blank if you wish to create your account later.
+  </p>
+  
+<form class="form" role="form" method="post" action="{{ form.post_url }}" enctype="multipart/form-data">
+  {% for field in form.visible %}
+    {{ field.field|raw }}
+  {% endfor %}
+
+  {% for field in form.hidden %}
+    {{ field.field|raw }}
+  {% endfor %}
+
+  <button class="btn btn-primary btn-lg btn-block">Continue</button>
+</form>
+  <script>
+    $(document).ready(function() {
+      sidebar_init();
+    });
+  </script>
+{% endblock main %}

@@ -1,0 +1,49 @@
+<?php
+/**
+   * Configuration file for global settings for Wapo Pipeline (wp) app.
+   */
+
+namespace Wp {
+  
+
+  require_once("blink/base/config.php");
+
+  /**
+   * Template Configuration sets the path for templates.
+   */
+  class ConfigTemplate extends \Blink\ConfigTemplate {
+    public static $DefaultDirectory = "apps/wp/templates/";
+  }
+  
+  /**
+   * General config stores information for general items.
+   * @todoc Change references to '$LoggedInMaxEmailDeliveryCount' & '$NotLoggedInMaxEmailDeliveryCount' to their 'const' counterparts. 
+   */
+  class Config extends \Blink\BaseConfig {
+
+    // How many emails a logged in user can manually enter in to send a wapo to.
+    public static $LoggedInMaxEmailDeliveryCount = 3;
+    const MAX_EMAIL_DELIVERY_COUNT_USER = 3;
+    
+    // How many emails a guest user can send a wapo to.
+    public static $NotLoggedInMaxEmailDeliveryCount = 1;
+    const MAX_EMAIL_DELIVERY_COUNT_GUEST = 1;
+    
+    /**
+     * - List of delivery methods available. 
+     * @var type 
+     */
+    public static $DeliveryMethod = array(
+        "ffa"=>"Free For All",
+        "fp"=>"Facebook Page",
+        "aff"=>"Any Facebook Friends",
+        "e"=>"Email",
+        "el"=>"Email List",
+        "stf"=>"Select Twitter Followers",
+        "atf"=>"Any Twitter Followers",
+        "mailchimp"=>"MailChimp",
+        "text" => "Text Message"
+    );
+  }
+
+}

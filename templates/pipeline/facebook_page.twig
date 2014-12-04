@@ -1,0 +1,52 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      &nbsp;
+    </div>
+
+    <div class="panel-body">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      <hr />
+      <div id="facebook_permissions">
+        <h3>Facebook permissions required<small><a href="/wapo/faq/" target="_blank">more</a></small></h3>
+        <p id="facebook_permissions_required">public_profile, publish_actions,manage_pages</p>
+        <p id="missing_facebook_permissions" class="hidden"></p>
+      </div>
+      <br />
+      
+      <h3>Select Page</h3>
+      <div id="facebook-page-list">
+        <i class="fa fa-spinner fa-spin"></i> Loading
+      </div>
+    </div>
+  </div>
+
+  <script id="template_facebook_page" type="text/template">
+    <div class="media">
+      <a class="pull-left" href="#">
+        <img class="media-object" src="<%= photo_url %>" alt="<%= name %>">
+      </a>
+      <div class="media-body">
+        <h4 class="media-heading"><%= name %></h4>
+        <p><input type="radio" name="facebook_page_id" value="<%= id %>" <%= checked %> /></p>
+      </div>
+    </div>
+  </script>
+
+  <script>
+    $(function() {
+      sidebar_init();
+      facebook_page_id = "{{ facebook_page_id }}";
+      facebook_ready(facebook_pages);
+    });
+  </script>
+{% endblock main %}

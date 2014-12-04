@@ -1,0 +1,14 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  
+  <div class="row">
+    <div class="col-xs-12">
+      {% if delivery == "ffa" %}
+        {{ ps.name }}
+      {% else %}
+        Waiting...
+      {% endif %}
+    </div>
+  </div>
+{% endblock main %}

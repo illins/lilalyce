@@ -1,0 +1,47 @@
+{% extends "apps/wp/templates/download/form.twig" %}
+
+{% block main %}
+  
+  <div class="row">
+    <div class="col-xs-3"></div>
+    <div class="col-xs-6">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+    </div>
+    <div class="col-xs-3"></div>
+  </div>
+
+  <script>
+    $(function() {
+      var code = '{{ code }}';
+      
+      function check_code() {
+        // If there is a code, set the code and auto-click the next button,
+        // otherwise, allow them to enter the code.
+        if(code) {
+          $("#code").val(code);
+          $("#next_button").click();
+        } else {
+          // If text changes in the code box, trim it and if it has stuff,
+          // enable the next button.
+          $("#code").change(function() {
+            code = $("#code").val().trim();
+            if(code) {
+              $("#next_button").removeClass("disabled");
+            } else {
+              $("#next_button").addClass("disabled");
+            }
+          });
+        }
+      }
+      
+      check_code();
+        
+    });
+  </script>
+{% endblock main %}

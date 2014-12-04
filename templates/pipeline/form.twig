@@ -1,0 +1,116 @@
+{% extends "templates/bootstrap/base.twig" %}
+
+{% block extra_javascript %}
+  {% include 'apps/blink-user/templates/facebook/app.twig' %}
+  <script src="/apps/blink-user/static/blink/js/facebook.js"></script>
+  
+  <script src="/apps/blink-mailchimp/static/js/mailchimp.js"></script>
+  
+  <script src="/apps/wp/static/wp/js/facebook.js"></script>
+  <script src="/apps/wp/static/wp/js/twitter.js"></script>
+  <script src="/apps/wp/static/wp/js/instagram.js"></script>
+  <script src="/apps/wp/static/wp/js/mailchimp.js"></script>
+  <script src="/apps/wp/static/wp/js/pipeline.js"></script>
+  
+  <script src="/static/angular/angular.js"></script>
+  <script src="/static/angular/angular-resource.js"></script>
+  <script src="/static/angular/angular-route.js"></script>
+  
+{% endblock extra_javascript %}
+
+{% block extra_css %}
+{#  <link href="/apps/wp/static/progress/css/progress.css" rel="stylesheet" media="screen">#}
+  <link href="/apps/wp/static/stepwizard/css/stepwizard.css" rel="stylesheet" media="screen">
+  
+<style>
+blockquote {padding: 1px;}
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+  <div class="stepwizard">
+    <div class="stepwizard-row">
+      <div class="stepwizard-step">
+        <button type="button" class="btn {% if main_step == "marketplace" %}btn-primary{% else %}btn-default{% endif %} btn-circle"  disabled="disabled">1</button>
+        <p>Marketplace</p>
+      </div>
+      <div class="stepwizard-step">
+        <button type="button" class="btn {% if main_step == "delivery" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">2</button>
+        <p>Delivery</p>
+      </div>
+      <div class="stepwizard-step">
+        <button type="button" class="btn {% if main_step == "profile" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">3</button>
+        <p>Profile</p>
+      </div>
+      <div class="stepwizard-step">
+        <button type="button" class="btn {% if main_step == "checkout" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">4</button>
+        <p>Checkout</p>
+      </div>
+      <div class="stepwizard-step">
+        <button type="button" class="btn {% if main_step == "confirmation" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">5</button>
+        <p>Confirmation</p>
+      </div>
+    </div>
+  </div>
+  
+  {#<div class="row">
+    <div class="row bs-wizard" style="border-bottom:0;">
+      <div class="col-xs-2 bs-wizard-step">
+        <div class="text-center bs-wizard-stepnum">1. Marketplace</div>
+        <div class="progress"><div class="progress-bar"></div></div>
+        <a href="/wp/marketplace/" class="bs-wizard-dot"></a>
+        <div class="bs-wizard-info text-center">Marketplace</div>
+      </div>
+      <div class="col-xs-3 bs-wizard-step {% if main_step in ["profile", "checkout", "confirmation"] %}complete{% elseif main_step == "delivery" %}active{% else %}disabled{% endif %}"><!-- complete -->
+        <div class="text-center bs-wizard-stepnum">2. Delivery</div>
+        <div class="progress"><div class="progress-bar"></div></div>
+        <a href="#" class="bs-wizard-dot"></a>
+        <div class="bs-wizard-info text-center">Delivery</div>
+      </div>
+      <div class="col-xs-2 bs-wizard-step {% if main_step in ["checkout", "confirmation"] %}complete{% elseif main_step == "profile" %}active{% else %}disabled{% endif %}"><!-- complete -->
+        <div class="text-center bs-wizard-stepnum">3. Profile</div>
+        <div class="progress"><div class="progress-bar"></div></div>
+        <a href="#" class="bs-wizard-dot"></a>
+        <div class="bs-wizard-info text-center">Profile</div>
+      </div>
+      <div class="col-xs-3 bs-wizard-step {% if main_step in ["confirmation"] %}complete{% elseif main_step == "checkout" %}active{% else %}disabled{% endif %}"><!-- active -->
+        <div class="text-center bs-wizard-stepnum">4. Checkout</div>
+        <div class="progress"><div class="progress-bar"></div></div>
+        <a href="#" class="bs-wizard-dot"></a>
+        <div class="bs-wizard-info text-center">Checkout</div>
+      </div>
+      <div class="col-xs-2 bs-wizard-step {% if main_step == "confirmation" %}active{% else %}disabled{% endif %}"><!-- active -->
+        <div class="text-center bs-wizard-stepnum">5. Confirmation</div>
+        <div class="progress"><div class="progress-bar"></div></div>
+        <a href="#" class="bs-wizard-dot"></a>
+        <div class="bs-wizard-info text-center">Confirmation</div>
+      </div>
+    </div>
+  </div>#}
+
+  <form class="form" role="form" method="post" action="{{ form.post_url }}">
+    <div class="row">
+      <div class="col-xs-2">
+        {% if form.cancel_url and current_step != "done" %}
+          <a id="previous_button" href="{{ form.cancel_url }}" class="btn btn-warning btn-block {% if not form.cancel_url %}disabled{% endif %}" style="font-size: large;">Back</a>
+        {% endif %}
+      </div>
+      <div class="col-xs-7"></div>
+      <div class="col-xs-3">
+        {% if form.post_url and current_step != "done" %}
+          <button id="next_button" class="btn btn-primary btn-block {% if not form.post_url %}disabled{% endif %}" style="font-size: large;">{% if next_step == "done" %}Finish{% else %}Continue{% endif %}</button>
+        {% endif %}
+      </div>
+    </div>
+    <br />
+
+    <div class="row">
+      <div class="col-xs-8">
+      {% block main %}{% endblock main %}
+    </div>
+    <div id="sidebar" class="col-xs-4">
+
+    </div>
+  </div>
+</form>
+{% endblock content %}

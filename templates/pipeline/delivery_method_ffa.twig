@@ -1,0 +1,24 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <p>
+        Enter the maximum number of Wapo promotions you would like to buy for the promotion and set the date the promotion expires.
+      </p>
+
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+    </div>
+  </div>
+  <script>
+    $(document).ready(function() {
+      sidebar_init();
+    });
+  </script>
+{% endblock main %}

@@ -1,0 +1,44 @@
+{% extends "apps/wp/templates/pipeline/base.twig" %}
+
+{% block main %}
+
+  <h3>{{ name }} <small>{{ email }}</small></h3>
+  
+    <div class="well">
+      <h4><b>{{ promotion.name }}</b></h4>
+      <div class="marketplace-item-image-container">
+        <img style="max-width: 140px; max-height: 140px;" src="{{ promotion.icon.url }}" alt="..." class="img-rounded">
+      </div>
+    </div>
+  
+    <div class="well"><p><b>Quantity : </b>{{ quantity }}</p></div>
+  
+  
+  <h3>Email</h3>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      
+    </div>
+  </div>
+  
+  <h3>Facebook Post</h3>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      
+    </div>
+  </div>
+  
+  <h3>Javascript</h3>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      Some javascript here.
+    </div>
+  </div>
+  
+  <h3>Plain URL</h3>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      
+    </div>
+  </div>
+{% endblock main %}

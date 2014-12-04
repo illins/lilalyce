@@ -1,0 +1,43 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      &nbsp;
+    </div>
+
+    <div class="panel-body">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      <hr />
+      <h3>Select Friends</h3>
+      <div id="facebook-friend-list">
+        <i class="fa fa-spinner fa-spin"></i> Loading
+      </div>
+    </div>
+  </div>
+      
+      <script id="template_facebook_friend" type="text/template">
+        <div class="media">
+        <input type="checkbox" class="facebook_friend" data-fbid="<%= fb_id %>" <%= checked %> />
+        <a class="pull-left" href="#">
+        <img class="media-object" src="<%= photo_url %>" alt="<%= name %>">
+        </a>
+        <div class="media-body">
+        <h4 class="media-heading"><%= name %></h4></div>
+        </div>
+      </script>
+
+  <script>
+    $(function() {
+      sidebar_init();
+      facebook_ready(facebook_friends);
+    });
+  </script>
+{% endblock main %}

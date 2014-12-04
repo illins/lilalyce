@@ -1,0 +1,25 @@
+{% extends "apps/wp/templates/download/form.twig" %}
+
+{% block main %}
+
+  <div class="row">
+    <div class="col-xs-3"></div>
+    <div class="col-xs-6">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+    </div>
+    <div class="col-xs-3"></div>
+  </div>
+
+  <div id="twitter_relationship"></div>
+  <script>
+    $(function() {
+      twitter_relationship();
+    });
+  </script>
+{% endblock main %}

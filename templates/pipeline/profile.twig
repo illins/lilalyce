@@ -1,0 +1,41 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      Login or create a profile here.
+    </div>
+    
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-4"></div>
+        <div class="col-xs-4">
+          <br /><br />
+          <a class="btn btn-default btn-block" href="/wp/profile/new-user/">New User</a>
+          <br /><br />
+          <a class="btn btn-default btn-block" href="/user/login/?return={{ blink.request.url }}">Email Login</a>
+          <br /><br />
+          <button class="btn btn-default btn-block">Facebook Login</button>
+          <br /><br />
+          <button class="btn btn-default btn-block">Twitter Login</button>
+          <br /><br />
+          <button class="btn btn-default btn-block">Instagram Login</button>
+        </div>
+        <div class="col-xs-4"></div>
+      </div>
+    </div>
+  </div>
+
+  {#<script>
+    $(document).ready(function() {
+      user_loggedin(profile_init);
+      sidebar_init();
+    });
+  </script>
+  #}
+  <script>
+        $(function() {
+          sidebar_init();
+        });
+      </script>
+{% endblock main %}
