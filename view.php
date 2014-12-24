@@ -444,6 +444,11 @@ namespace Wp {
     protected function get_step_definition_list() {
       // Define the initial steps which are always 'marketplace' and 'delivery' method.
       $definition = array(
+          "modules" => array(
+              "title" => "Modules",
+              "template" => ConfigTemplate::DefaultTemplate("pipeline/modules.twig"),
+              "form" => "\Blink\Form"
+          ),
           "marketplace" => array(
               "title" => "Marketplace",
               "template" => ConfigTemplate::DefaultTemplate("pipeline/marketplace.twig"),
@@ -453,8 +458,7 @@ namespace Wp {
               "title" => "Delivery",
               "template" => ConfigTemplate::DefaultTemplate("pipeline/delivery.twig"),
               "form" => "\Wp\DeliveryForm"
-          ),
-          
+          )
       );
       
       // Define the conditional steps based on the delivery method.
@@ -841,8 +845,8 @@ namespace Wp {
         $context['main_step'] = "profile";
       } else if($this->current_step == "checkout") {
         $context['main_step'] = $this->current_step;
-      } else if($this->current_step == "marketplace") {
-        $context['main_step'] = $this->current_step;
+      } else if($this->current_step == "marketplace" || $this->current_step == "modules") {
+        $context['main_step'] = "marketplace";
       } else if(in_array($this->current_step, array("create", "send"))) {
         $context['main_step'] = "checkout";
       } else if($this->current_step == "done") {
