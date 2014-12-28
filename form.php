@@ -29,7 +29,8 @@ namespace Wp {
           "sff" => "Select Facebook Friends",
           "fp" => "Facebook Page",
           "e" => "Email",
-          "el" => "Email List"
+          "el" => "Email List",
+          "text" => "Text"
       );
       
       $form_fields = parent::Fields();
@@ -78,6 +79,16 @@ namespace Wp {
       $form_fields = parent::Fields();
       $this->list_id = $form_fields->HiddenCharField(array("verbose_name"=>"List","name"=>"list_id","max_length"=>100,"blank"=>false));
       $this->emails = $form_fields->HiddenCharField(array("verbose_name"=>"Email List","name"=>"emails","max_length"=>1000,"blank"=>true));
+      return $form_fields;
+    }
+  }
+  
+  class TextForm extends BaseForm {
+    public $numbers;
+    
+    public function Fields() {
+      $form_fields = parent::Fields();
+      $this->numbers = $form_fields->CharField(array("verbose_name"=>"Phone Numbers","name"=>"numbers","max_length"=>1000,"blank"=>false,"help_text"=>"Seperate Phone Numbers by a comma ','."));
       return $form_fields;
     }
   }

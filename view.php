@@ -18,6 +18,8 @@ namespace Wp {
   require_once("apps/blink-user-role/api.php");
 
   require_once("apps/swiftmailer/api.php");
+  
+  require_once("apps/blink-twilio/api.php");
 
   use Wapo\PromotionCategory;
   use Wapo\Promotion;
@@ -162,6 +164,18 @@ namespace Wp {
         // Check data error.
         if(isset($result['data']['error'])) {
           throw new \Exception($result['data']['error']);
+        }
+      } else if($delivery == "text") {
+        $number_list = explode(",", $request->cookie->find("numbers"));
+        
+        if(!count($number_list)) {
+          throw new \Exception("You did not enter phone numbers. Please enter 10-digit phone numbers");
+        }
+        
+        foreach($number_list as $number) {
+          if(strlen($number) != 10 || !is_int((int) $number)) {
+            throw new \Exception("You have some invalid phone numbers. Please enter 10-digit phone numbers");
+          }
         }
       }
     } catch (\Exception $ex) {
@@ -372,6 +386,21 @@ namespace Wp {
         $wapo->quantity = $sent_emails;
         $wapo->save(false);
         
+      } else if($cookies['delivery'] == "text") {
+        $number_list = explode(",", $request->cookie->find("numbers"));
+        
+        $targeturl = \Wapo\WapoTargetUrl::new_code($wapo, "t");
+        foreach($number_list as $number) {
+          $recipient = array(
+              "wapo"      => $wapo,
+              "targeturl" => $targeturl,
+              "contact"   => $number,
+          );
+          WapoRecipient::create_save($recipient, false);
+        }
+        
+        $wapo->quantity = count($number_list);
+        $wapo->save(false);
       }
     } catch (\Exception $ex) {
       return array(true, $ex->getMessage(), null);
@@ -473,6 +502,12 @@ namespace Wp {
             "title" => "Email",
             "template" => ConfigTemplate::DefaultTemplate("pipeline/email.twig"),
             "form" => "\Blink\Form"
+        );
+      } else if($this->delivery == "text") {
+        $definition["text"] = array(
+            "title" => "Text",
+            "template" => ConfigTemplate::DefaultTemplate("pipeline/text.twig"),
+            "form" => "\Wp\TextForm"
         );
       } else if($this->delivery == "el") {
         $definition["el"] = array(
@@ -685,6 +720,21 @@ namespace Wp {
         }
         
         $this->request->cookie->set("quantity", $result['data']['success_count']);
+      } else if($this->current_step == "text") {
+        $number_list = explode(",", $this->form->get("numbers"));
+        
+        if(!count($number_list)) {
+          throw new \Exception("You have some invalid phone numbers. Please enter 10-digit phone numbers");
+        }
+        
+        foreach($number_list as $number) {
+          if(strlen($number) != 10 || !is_int((int) $number)) {
+            \Blink\Messages::error("You have some invalid phone numbers. Please enter 10-digit phone numbers");
+            return $this->form_invalid();
+          }
+        }
+        
+        $this->request->cookie->set("quantity", count($number_list));
       } else if($this->current_step == "profile") {
         
       } else if($this->current_step == "el") {
@@ -993,6 +1043,16 @@ namespace Wp {
             }
           } else {
             throw new \Exception("Invalid send designation.");
+          }
+        } else if($delivery == "text") {
+          $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo"=>$wapo));
+          $recipient_list = WapoRecipient::queryset()->depth(1)->filter(array("wapo"=>$wapo))->fetch();
+          $message  = sprintf("%s has sent you a Wapo. Follow %s/%s to download.", $wapo->profile, $site, $targeturl->code);
+          foreach($recipient_list as $recipient) {
+            $result = \BlinkTwilio\Api::send_sms($recipient->contact, $message);
+            $recipient->resource = $result->sid;
+            $recipient->sent = 1;
+            $recipient->save(false);
           }
         }
       } catch (Exception $ex) {
