@@ -7,8 +7,16 @@ namespace Wp {
   require_once("apps/wp/download/view.php");
   
   require_once("apps/wp/views/mailchimp.php");
+  
+  require_once("apps/wp/scalablepress/url.php");
 
   $wp_url_patterns = array(
+      array(
+          "uri" => '/scalablepress',
+          "url_patterns" => \Blink\include_url_patters($wp_scalable_url_patterns)
+      ),
+      
+      /* Mailchimp API */
       array(
           "uri" => "/mailchimp/lists/$",
           "view" => MailChimpListsView::as_view(),

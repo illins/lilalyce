@@ -1,0 +1,319 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-body" id="categoryContainer">
+      <form class="form-inline" id="categoryContainer" >
+        
+      </form>
+
+
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-body" id="garment-content">
+
+    </div>
+  </div>
+  
+  <script type="text/template" id="template-product">
+    <div class="row">
+      <div class="col-md-6 md-margin-bottom-50">
+        <div class="ms-showcase2-template">
+          <!-- Master Slider -->
+          <div class="master-slider ms-skin-default" id="masterslider">
+            <% _.each(imageList, function(image, index) { %> 
+                <div class="ms-slide">
+                  <img class="ms-brd" src="<%= image.url %>" data-src="<%= image.url %>" alt="<%= image.label %>">
+                  <img class="ms-thumb" src="<%= image.url %>" alt="thumb">
+                </div>
+            <% }); %>
+          </div>
+          <!-- End Master Slider -->
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="shop-product-heading">
+          <h2><%= product.name %></h2>
+          {#<ul class="list-inline shop-product-social">
+            <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+            <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+            <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+            <li><a href="#"><i class="fa fa-pinterest"></i></a></li>
+          </ul>#}
+        </div><!--/end shop product social-->
+
+        {#<ul class="list-inline product-ratings margin-bottom-30">
+          <li><i class="rating-selected fa fa-star"></i></li>
+          <li><i class="rating-selected fa fa-star"></i></li>
+          <li><i class="rating-selected fa fa-star"></i></li>
+          <li><i class="rating fa fa-star"></i></li>
+          <li><i class="rating fa fa-star"></i></li>
+          <li class="product-review-list">
+            <span>(1) <a href="#">Review</a> | <a href="#"> Add Review</a></span>
+          </li>
+        </ul><!--/end shop product ratings-->#}
+
+        <p><%= product.description %></p><br>
+
+        <ul class="list-inline shop-product-prices margin-bottom-30">
+          {#<li class="shop-red">$57.00</li>
+          <li class="line-through">$70.00</li>#}
+          <% if(product.available)  { %>
+          <li><small class="shop-bg-green time-day-left">Available</small></li>
+          <% } else { %>
+          <li><small class="shop-bg-red time-day-left">Out of stock</small></li>
+          <% } %>
+        </ul><!--/end shop product prices-->
+
+        <h3 class="shop-product-title">Color</h3>
+        <ul class="list-inline product-color margin-bottom-30">
+          <% _.each(colorList, function(color) { %> 
+              <li style="display: inline-block; padding: 3px; border: solid 1px #ccc; background-color: #<%= color.hex %>;">
+                <input type="radio" class="color-picker" id="color-<%= color.hex %>" value="<%= color.hex %>" data-hex="<%= color.hex %>" name="color" title="<%= color.name %>>
+                <label for="color-<%= color.hex %>" title="<%= color.name %>"></label>
+              </li>
+          <% }); %>
+          
+        </ul><!--/end product color-->
+        
+        <h3 class="shop-product-title">Size</h3>
+        <ul class="list-inline product-size margin-bottom-30">
+
+        </ul><!--/end product size-->
+
+        <h3 class="shop-product-title">Quantity</h3>
+        <div class="margin-bottom-40">
+            <input type='text' class="form-control" name='qty' value="1" id='qty'/>
+        </div><!--/end product quantity-->    
+
+        {#<ul class="list-inline add-to-wishlist add-to-wishlist-brd">
+          <li class="wishlist-in">
+            <i class="fa fa-heart"></i>
+            <a href="#">Add to Wishlist</a>
+          </li>
+          <li class="compare-in">
+            <i class="fa fa-exchange"></i>
+            <a href="#">Add to Compare</a>
+          </li>
+        </ul>    
+        <p class="wishlist-category"><strong>Categories:</strong> <a href="#">Clothing,</a> <a href="#">Shoes</a></p>#}
+        
+      </div>
+    </div>
+  </script>
+{% endblock main %}
+
+{% block sub_extra_css %}
+  <link rel="stylesheet" href="/static/unify/Shop-UI/assets/css/shop.style.css">
+  <link rel="stylesheet" href="/static/unify/Shop-UI/assets/css/app.css">
+  <link rel="stylesheet" href="/static/unify/Shop-UI/assets/plugins/master-slider/quick-start/masterslider/style/masterslider.css">
+  <link rel='stylesheet' href="/static/unify/Shop-UI/assets/plugins/master-slider/quick-start/masterslider/skins/default/style.css">
+{% endblock sub_extra_css %}
+
+{% block sub_extra_javascript %}
+  <!-- Master Slider -->
+  <script src="/static/unify/Shop-UI/assets/plugins/owl-carousel/owl-carousel/owl.carousel.js"></script>
+  <script src="/static/unify/Shop-UI/assets/plugins/master-slider/quick-start/masterslider/masterslider.min.js"></script>
+  <script src="/static/unify/Shop-UI/assets/plugins/master-slider/quick-start/masterslider/jquery.easing.min.js"></script>
+
+<script src="/static/unify/Shop-UI/assets/js/plugins/owl-carousel.js"></script>
+<script src="/static/unify/Shop-UI/assets/js/plugins/master-slider.js"></script>
+<script src="/static/unify/Shop-UI/assets/js/forms/product-quantity.js"></script>
+  <script>
+
+    $(document).ready(function () {
+      var CategoryCollection = Backbone.Collection.extend({
+        parse: function(resp, xhr) {
+          return resp.category_list;
+        }
+      });
+      
+      var ProductCollection = Backbone.Collection.extend({
+        parse: function(resp, xhr) {
+          return resp.category.products;
+        }
+      });
+      
+      var CategoryListView = Backbone.View.extend({
+        el: '#categoryContainer',
+        initialize: function() {
+          this.collection = new CategoryCollection();
+          this.collection.url = '/wp/scalablepress/category/';
+          this.collection.bind('reset add remove', this.render, this);
+          this.collection.fetch();
+          
+          this.subview = new ProductListView();
+        },
+        render: function() {
+          var select = $tag.el('select');
+          select.id('category-list').class(['form-control']);
+          
+          _.map(this.collection.toJSON(), function (item) {
+            select.appendChild($tag.el('option').attr({value: item.categoryId}).text(item.name))
+          });
+          
+          this.$el.html('Category: ');
+          this.$el.append(select.html());
+        },
+        events: {
+          'change #category-list': 'productList'// Show the product list if a category list changes.
+        },
+        productList: function() {
+          var categoryId = $('#category-list').val();
+          this.subview.collection.url = encodeURI('/wp/scalablepress/category/' + categoryId + '/');
+          this.subview.collection.fetch();
+        }
+      });
+      
+      var ProductListView = Backbone.View.extend({
+        el: '#garment-content',
+        initialize: function() {
+          this.collection = new ProductCollection();
+          this.collection.url = '/wp/scalablepress/category/hoodies/';
+          this.collection.bind('reset add remove', this.render, this);
+          this.collection.fetch();
+          
+          this.subview = new ProductView();
+        },
+        render: function() {
+          var main = $tag.el('div').class(['filter-results']);
+          var row = $tag.el('div').class(['row', 'illustration-v2', 'margin-bottom-30']);
+          
+          _.map(this.collection.toJSON(), function(item) {
+            var col = $tag.el('div').class(['col-md-4']);
+            var src = (_.isUndefined(item.image)) ? '' : item.image.url;
+            var label = (_.isUndefined(item.image)) ? '' : item.image.label;
+            col.appendChild(
+                      $tag.el('div').class(['product-img', 'product-img-brd']).appendChild(
+                        $tag.el('a').attr({a: '#'}).appendChild(
+                          $tag.el('img').class(['full-width', 'img-responsive']).attr({src: src, alt: label})
+                        )
+                      )
+                    );
+            col.appendChild(
+                      $tag.el('div').class(['product-description product-description-brd margin-bottom-30']).appendChild(
+                        $tag.el('div').class(['overflow-h margin-bottom-5']).appendChild(
+                          $tag.el('div').class(['pull-left']).appendChild(
+                            $tag.el('h4').class(['title-price']).appendChild(
+                              $tag.el('a').attr({href: '#'}).data({'id': item.id}).class(['product-item']).text(item.name)
+                            )
+                          )
+                        )
+                      )
+                    );
+            row.appendChild(col);
+          });
+          
+          main.appendChild(row);
+          this.$el.html(main.html());
+        },
+        events: {
+          'click .product-item': 'product'
+        },
+        product: function(e) {
+          e.preventDefault();
+          var productId = $(e.target).data('id');
+          this.subview.model.urlRoot = '/wp/scalablepress/products/' + productId + '/';
+          var that = this;
+          this.subview.model.fetch({
+            success: function(resp) {
+              that.subview.render();
+            }
+          });
+        }
+        
+      });
+      
+      var ProductModel = Backbone.Model.extend({
+        parse: function(resp, xhr) {
+          return resp.product;
+        }
+      });
+      
+      var ProductView = Backbone.View.extend({
+        el: '#garment-content',
+        template: _.template($('#template-product').html()),
+        model: new ProductModel(),
+        initialize: function() {
+          this.model.urlRoot = '/wp/scalablepress/products/gildan-50-50-hoodie/';
+          var that = this;
+          this.model.fetch({
+            success: function(resp) {
+              that.render();
+            }
+          });
+        },
+        render: function() {
+          var model = this.model.toJSON();
+          // Gather up the images.
+          var imageList = [];
+          if(!_.isUndefined(model.image)) {
+            imageList.push({'label': model.image.label, 'url': model.image.url});
+          }
+          if(!_.isUndefined(model.additionalImages)) {
+            _.map(model.additionalImages, function(item) {
+              imageList.push({'label': item.label, 'url': item.url});
+            });
+          }
+          
+          // Gather the color list.
+          var colorList = [];
+          if(!_.isUndefined(model.colors)) {
+            _.map(model.colors, function(color) {
+              colorList.push(color);
+            });
+          }
+          
+          this.$el.html(this.template({product: model, imageList: imageList, colorList: colorList}));
+          MasterSliderShowcase2.initMasterSliderShowcase2();
+        },
+        events: {
+          'click .color-picker': 'renderSizes'
+        },
+        renderSizes: function(e) {
+          var hexColor = $(e.target).data('hex');
+          var model = this.model.toJSON();
+          
+          _.map(model.colors, function(color) {
+            if(String(color.hex) === String(hexColor)) {
+              $('.product-size').html('');
+              
+              var template = _.template('<li><input type="radio" id="size-<%= size %>" name="size" value="<%= size %>"><label for="size-<%= size %>"><%= size %></label></li>');
+              _.map(color.sizes, function(size) {
+                $('.product-size').append(template({size: size}));
+              });
+            }
+          });
+        }
+      });
+      
+      categoryListView = new CategoryListView();
+      //var productView = new ProductView();
+      
+      
+      // Load the categories.
+      {#$.get( "/wp/scalablepress/category/", function( data ) {
+        if(data.error) {
+          alert('Server error occured.');
+        } else {
+          var select = $tag.el('select');
+          select.id('categoryList').class(['form-control']);
+          
+          _.map(data.category_list, function (item) {
+            select.appendChild($tag.el('option').attr({value: item.categoryId}).text(item.name))
+          });
+          
+          console.log(select.insert('#categoryContainer').html());
+          
+        }
+      }).fail(function() {
+        alert('Server error occured.');
+      });#}
+
+      sidebar_init();
+    });
+  </script>
+{% endblock sub_extra_javascript %}

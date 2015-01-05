@@ -412,7 +412,8 @@ namespace Wp {
   /**
    * - Process the Wapo Promotion steps.
    * - Step 1 - Marketplace
-   *    - Display a list of promotional items to buy. 
+   *    - Display the different types of marketplace we have. 
+   *      - Scalable - (code name garments).
    * - Step 2 - Delivery
    *    - Display a list of delivery methods.
    * - Step 3 - Depends on step 2.
@@ -482,6 +483,11 @@ namespace Wp {
               "title" => "Marketplace",
               "template" => ConfigTemplate::DefaultTemplate("pipeline/marketplace.twig"),
               "form" => "\Wp\MarketplaceForm"
+          ),
+          "garment" => array(
+              "title" => "Garments",
+              "template" => ConfigTemplate::DefaultTemplate("pipeline/garment.twig"),
+              "form" => "\Blink\Form"
           ),
           "delivery" => array(
               "title" => "Delivery",
@@ -895,7 +901,7 @@ namespace Wp {
         $context['main_step'] = "profile";
       } else if($this->current_step == "checkout") {
         $context['main_step'] = $this->current_step;
-      } else if($this->current_step == "marketplace" || $this->current_step == "modules") {
+      } else if(in_array($this->current_step, array("modules", "marketplace", "garment"))) {
         $context['main_step'] = "marketplace";
       } else if(in_array($this->current_step, array("create", "send"))) {
         $context['main_step'] = "checkout";
