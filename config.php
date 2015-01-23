@@ -5,7 +5,6 @@
 
 namespace Wp {
   
-
   require_once("blink/base/config.php");
 
   /**
@@ -42,7 +41,8 @@ namespace Wp {
         "stf"=>"Select Twitter Followers",
         "atf"=>"Any Twitter Followers",
         "mailchimp"=>"MailChimp",
-        "text" => "Text Message"
+        "text" => "Text Message",
+        "addr" => "Address"
     );
   }
 

@@ -22,6 +22,18 @@ namespace Wp {
           "name" => "ScalablePressProductDetailTemplateView",
           "title" => "Product Detail"
       ),
+      array(
+          "uri" => "/products/(?P<product_id>[\w-]+)/availability/$",
+          "view" => ScalablePressAvailabilityTemplateView::as_view(),
+          "name" => "ScalablePressAvailabilityTemplateView",
+          "title" => "Product Availability"
+      ),
+      array(
+          "uri" => "/quote/$",
+          "view" => ScalablePressQuoteFormView::as_view(),
+          "name" => "ScalablePressQuoteFormView",
+          "title" => "Product Quote"
+      ),
   );
 }
 

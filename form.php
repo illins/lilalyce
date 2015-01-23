@@ -6,12 +6,186 @@ namespace Wp {
   /**
    * Marketplace form.
    */
-  class MarketplaceForm extends \Blink\Form {
+//  class MarketplaceForm extends \Blink\Form {
+//    public $promotion_id;
+//    
+//    public function Fields() {
+//      $form_fields = parent::Fields();
+//      $this->promotion_id = $form_fields->IntegerField(array("verbose_name"=>"Promotion","name"=>"promotion_id"));
+//      return $form_fields;
+//    }
+//  }
+  
+  /**
+   * Wapo form.
+   */
+  class WapoMarketplaceForm extends \Blink\Form {
     public $promotion_id;
     
     public function Fields() {
       $form_fields = parent::Fields();
       $this->promotion_id = $form_fields->IntegerField(array("verbose_name"=>"Promotion","name"=>"promotion_id"));
+      return $form_fields;
+    }
+  }
+  
+  /**
+   * Garment form.
+   */
+  class GarmentPickForm extends \Blink\Form {
+    public $category_id;
+    public $product_id;
+    public $color;
+    public $quantity;
+    public $size;
+    
+    public function Fields() {
+      $form_fields = parent::Fields();
+      
+      $this->category_id = $form_fields->HiddenIntegerField(array("verbose_name"=>"Category ID","name"=>"category_id"));
+      $this->product_id = $form_fields->HiddenIntegerField(array("verbose_name"=>"Product ID","name"=>"product_id"));
+      $this->color = $form_fields->HiddenCharField(array("name"=>"color","max_length"=>10));
+      $this->quantity = $form_fields->HiddenIntegerField(array("name"=>"quantity","max_length"=>5,"min_value"=>1));
+      $this->size = $form_fields->HiddenCharField(array("name"=>"size","max_length"=>10));
+      
+      return $form_fields;
+    }
+  }
+  
+  /**
+   * Garment form.
+   */
+  class GarmentForm extends \Blink\Form {
+    public $category_id;
+    public $product_id;
+    public $color;
+    public $quantity;
+    public $size;
+    public $name;
+    public $address1;
+    public $city;
+    public $state;
+    public $zip;
+    public $designId;
+    
+    public function Fields() {
+      $form_fields = parent::Fields();
+      
+      $STATES = array(
+          "" => "Select State",
+          "AL" => "Alabama",
+          "AK" => "Alaska",
+          "AZ" => "Arizona",
+          "AR" => "Arkansas",
+          "CA" => "California",
+          "CO" => "Colorado",
+          "CT" => "Connecticut",
+          "DE" => "Delaware",
+          "FL" => "Florida",
+          "GA" => "Georgia",
+          "HI" => "Hawaii",
+          "ID" => "Idaho",
+          "IL" => "Illinois",
+          "IN" => "Indiana",
+          "IA" => "Iowa",
+          "KS" => "Kansas",
+          "KY" => "Kentucky",
+          "LA" => "Louisiana",
+          "ME" => "Maine",
+          "MD" => "Maryland",
+          "MA" => "Massachusetts",
+          "MI" => "Michigan",
+          "MN" => "Minnesota",
+          "MS" => "Mississippi",
+          "MO" => "Missouri",
+          "MT" => "Montana",
+          "NE" => "Nebraska",
+          "NV" => "Nevada",
+          "NH" => "New Hampshire",
+          "NJ" => "New Jersey",
+          "NM" => "New Mexico",
+          "NY" => "New York",
+          "NC" => "North Carolina",
+          "ND" => "North Dakota",
+          "OH" => "Ohio",
+          "OK" => "Oklahoma",
+          "OR" => "Oregon",
+          "PA" => "Pennsylvania",
+          "RI" => "Rhode Island",
+          "SC" => "South Carolina",
+          "SD" => "South Dakota",
+          "TN" => "Tennessee",
+          "TX" => "Texas",
+          "UT" => "Utah",
+          "VT" => "Vermont",
+          "VA" => "Virginia",
+          "WA" => "Washington",
+          "WV" => "West Virginia",
+          "WI" => "Wisconsin",
+          "WY" => "Wyoming"
+      );
+      
+      $this->category_id = $form_fields->HiddenIntegerField(array("verbose_name"=>"Category ID","name"=>"category_id"));
+      $this->product_id = $form_fields->HiddenIntegerField(array("verbose_name"=>"Product ID","name"=>"product_id"));
+      $this->color = $form_fields->HiddenCharField(array("name"=>"color","max_length"=>10));
+      $this->quantity = $form_fields->IntegerField(array("name"=>"quantity","max_length"=>5,"min_value"=>1));
+      $this->size = $form_fields->HiddenCharField(array("name"=>"size","max_length"=>10));
+      $this->name = $form_fields->CharField(array("name"=>"name","max_length"=>100));
+      $this->address1 = $form_fields->TextField(array("name"=>"address1"));
+      $this->city = $form_fields->CharField(array("name"=>"city"));
+      $this->state = $form_fields->CharField(array("name"=>"state",$choices=$STATES));
+      $this->zip = $form_fields->IntegerField(array("name"=>"zip","min_length"=>5,"max_length"=>5));
+      $this->designId = $form_fields->HiddenCharField(array("verbose_name"=>"Design ID","name"=>"designId","max_length"=>100));
+      
+      return $form_fields;
+    }
+  }
+  
+  /**
+   * Tango form.
+   */
+  class TangoMarketplaceForm extends \Blink\Form {
+    public $sku;
+    public $amount;
+    
+    public function Fields() {
+      $form_fields = parent::Fields();
+      $this->sku = $form_fields->HiddenCharField(array("name"=>"sku"));//,"value"=>"AMZN-E-V-STD"
+      $this->amount = $form_fields->DecimalField(array("name"=>"amount"));
+      return $form_fields;
+    }
+  }
+  
+  /**
+   * I feel Goods form.
+   */
+  class IfgMarketplaceForm extends \Blink\Form {
+    public $promotioncategory;
+    public $sku;
+    public $amount;
+    
+    public function Fields() {
+      $form_fields = parent::Fields();
+      $this->promotioncategory = $form_fields->HiddenIntegerField(array("name"=>"promotioncategory"));
+      $this->sku = $form_fields->HiddenCharField(array("name"=>"sku"));
+      $this->amount = $form_fields->DecimalField(array("name"=>"amount"));
+      return $form_fields;
+    }
+  }
+  
+  /**
+   * Scalable form.
+   */
+  class ScalableMarketplaceForm extends \Blink\Form {
+    public $promotioncategory;
+    public $sku;
+    public $amount;
+    
+    public function Fields() {
+      $form_fields = parent::Fields();
+      $this->promotioncategory = $form_fields->HiddenIntegerField(array("name"=>"promotioncategory"));
+      $this->sku = $form_fields->HiddenCharField(array("name"=>"sku"));
+      $this->amount = $form_fields->DecimalField(array("name"=>"amount"));
       return $form_fields;
     }
   }

@@ -20,6 +20,8 @@ namespace Wp {
   require_once("apps/swiftmailer/api.php");
   
   require_once("apps/blink-twilio/api.php");
+  
+  require_once("apps/blink-tangocard/tangocard/tangocard.php");
 
   use Wapo\PromotionCategory;
   use Wapo\Promotion;
@@ -440,6 +442,9 @@ namespace Wp {
   class WpCookieWizardView extends \Blink\CookieWizardView {
     protected $delivery;
     
+    private $promotioncategory_list = array();
+    private $promotioncategory = null;
+    private $promotion = null;
     /**
      * Override certain forms. To do this, form for this step *must be a 'Blink\Form'.
      * @return type
@@ -472,7 +477,7 @@ namespace Wp {
      * @return type
      */
     protected function get_step_definition_list() {
-      // Define the initial steps which are always 'marketplace' and 'delivery' method.
+      // First step is always the modules.
       $definition = array(
           "modules" => array(
               "title" => "Modules",
@@ -482,20 +487,62 @@ namespace Wp {
           "marketplace" => array(
               "title" => "Marketplace",
               "template" => ConfigTemplate::DefaultTemplate("pipeline/marketplace.twig"),
-              "form" => "\Wp\MarketplaceForm"
-          ),
-          "garment" => array(
-              "title" => "Garments",
-              "template" => ConfigTemplate::DefaultTemplate("pipeline/garment.twig"),
               "form" => "\Blink\Form"
           ),
-          "delivery" => array(
-              "title" => "Delivery",
-              "template" => ConfigTemplate::DefaultTemplate("pipeline/delivery.twig"),
-              "form" => "\Wp\DeliveryForm"
-          )
       );
       
+      /**
+       * Marketplace is now driven by promotion category.
+       * The promotion category, like Wapo, 'Tango Card', 'Scallable Press', 'ifeelgoods',
+       * determines which marketplace is displayed (via include in the template).
+       * Also, the promotion category determines which form is being used.
+       */
+      $promotioncategory_id = $this->request->get->find("promotioncategory_id", null);
+      if(!$promotioncategory_id) {
+        $promotioncategory_id = $this->request->cookie->find("promotioncategory_id", null);
+      }
+      
+      // If none is set, use the default Wapo, otherwise get the requested promotion.
+      if(!$promotioncategory_id) {
+        $this->promotioncategory = PromotionCategory::get_or_404(array("name"=>"Wapo"), "Promotion Category not found.");
+      } else {
+        $this->promotioncategory = PromotionCategory::get_or_404(array("id"=>$promotioncategory_id), "Promotion Category not found.");
+      }
+      
+      // Now that we know which marketplace we are looking at, determine the form and other additional info.
+      // Wapo is the default form.
+      if ($this->promotioncategory->name == "Tango Card") {
+        $definition['marketplace']['form'] = "\Wp\TangoMarketplaceForm";
+      } else if ($this->promotioncategory->name == "I Feel Goods") {
+        $definition['marketplace']['form'] = "\Wp\IfgMarketplaceForm";
+      } else if ($this->promotioncategory->name == "Scalable Press") {
+        $definition['scalable'] = array(
+            "title" => "Scalable Press",
+            "template" => ConfigTemplate::DefaultTemplate("pipeline/marketplace/scalable.twig"),
+            "form" => "\Wp\ScalableMarketplaceForm"
+        );
+        $definition["garment-pick"] = array(
+            "title" => "Garments",
+            "template" => ConfigTemplate::DefaultTemplate("pipeline/garment-pick.twig"),
+            "form" => "\Wp\GarmentPickForm"
+        );
+        $definition["garment-quote"] = array(
+            "title" => "Garments",
+            "template" => ConfigTemplate::DefaultTemplate("pipeline/garment-quote.twig"),
+            "form" => "\Wp\GarmentQuoteForm"
+        );
+        $definition['marketplace']['form'] = "\Wp\ScalableMarketplaceForm";
+      } else {
+        $definition['marketplace']['form'] = "\Wp\WapoMarketplaceForm";
+      }
+
+      // Define the initial steps which are always 'marketplace' and 'delivery' method.
+      $definition["delivery"] = array(
+          "title" => "Delivery",
+          "template" => ConfigTemplate::DefaultTemplate("pipeline/delivery.twig"),
+          "form" => "\Wp\DeliveryForm"
+      );
+
       // Define the conditional steps based on the delivery method.
       if($this->delivery == "ffa") {
         $definition["ffa"] = array(
@@ -673,10 +720,10 @@ namespace Wp {
       
       // Check that the promotion is valid.
       if($this->current_step == "marketplace") {
-        if(!count(Promotion::queryset()->filter(array("id"=>$this->form->get("promotion_id")))->fetch())) {
-          \Blink\Messages::error("Promotion not found.");
-          return $this->form_invalid();
-        }
+//        if(!count(Promotion::queryset()->filter(array("id"=>$this->form->get("promotion_id")))->fetch())) {
+//          \Blink\Messages::error("Promotion not found.");
+//          return $this->form_invalid();
+//        }
         
       } else if($this->current_step == "delivery") {
         $this->delivery = $this->form->get("delivery");
@@ -799,6 +846,12 @@ namespace Wp {
         } else {
           return array("email"=>array("value"=>$this->request->cookie->find("email")));
         }
+      } else if($this->current_step == "garment-pick") {
+        return array(
+            "category_id" => array(
+                "value" => "ladies-performance-shirts"
+            )
+        );
       }
       
       return parent::get_data();
@@ -806,24 +859,26 @@ namespace Wp {
 
     protected function get_context_data() {
       $context = parent::get_context_data();
-
+      
+      // If we are in the marketplace stage.
       if($this->current_step == "marketplace") {
-        $context['promotioncategory_list'] = PromotionCategory::queryset()->order_by(array("name"))->all();
-        try {
-          $context['promotioncategory'] = Promotion::queryset()->get(array("id"=>$this->request->get->find("promotioncategory_id", 1)));
-        } catch (\Exception $ex) {
-          $context['promotioncategory'] = (count($context['promotioncategory_list'])) ? $context['promotioncategory_list'][0] : null;
-        }
-        $context['promotion_list'] = Promotion::queryset()->filter(array("promotioncategory"=>$context['promotioncategory']))->fetch();
+        $promotioncategory_list = PromotionCategory::queryset()->order_by(array("name"))->all();
         
-        // Get the promotino if any.
-        if($this->request->cookie->is_set("promotion_id")) {
-          try {
-            $context['promotion'] = Promotion::queryset()->get(array("id"=>$this->request->cookie->get("promotion_id")));
-          } catch (\Exception $ex) {
-            $context['promotion'] = null;
-          }
+        // Depending on which promotioncategory we are looking at, get the api.
+        if ($this->promotioncategory->name == "Tango Card") {
+          $tango = new \BlinkTangoCard\TangoCardAPI();
+          $context['tangocard'] = $tango->rewards();
+        } else if ($this->promotioncategory->name == "I Feel Goods") {
+          
+        } else if ($this->promotioncategory->name == "Scalable Press") {
+          
+        } else {
+          $context['promotion_list'] = Promotion::queryset()->filter(array("promotioncategory"=>$this->promotioncategory))->fetch();
+          $context['promotion'] = Promotion::get_or_null(array("id"=>$this->request->cookie->find("promotion_id", null)));
         }
+
+        $context['promotioncategory'] = $this->promotioncategory;
+        $context['promotioncategory_list'] = $promotioncategory_list;
       } else if($this->current_step == "delivery") {
         $context['delivery'] = $this->request->cookie->find("delivery", null);
       } else if($this->current_step == "el") {
@@ -901,7 +956,7 @@ namespace Wp {
         $context['main_step'] = "profile";
       } else if($this->current_step == "checkout") {
         $context['main_step'] = $this->current_step;
-      } else if(in_array($this->current_step, array("modules", "marketplace", "garment"))) {
+      } else if($this->current_step == "marketplace") {
         $context['main_step'] = "marketplace";
       } else if(in_array($this->current_step, array("create", "send"))) {
         $context['main_step'] = "checkout";

@@ -9,11 +9,21 @@ namespace Wp {
   require_once("apps/wp/views/mailchimp.php");
   
   require_once("apps/wp/scalablepress/url.php");
+  require_once("apps/wp/ifeelgoods/url.php");
+  require_once("apps/wp/tangocard/url.php");
 
   $wp_url_patterns = array(
       array(
           "uri" => '/scalablepress',
           "url_patterns" => \Blink\include_url_patters($wp_scalable_url_patterns)
+      ),
+      array(
+          "uri" => '/ifeelgoods',
+          "url_patterns" => \Blink\include_url_patters($wp_ifeelgoods_url_patterns)
+      ),
+      array(
+          "uri" => '/tangocard',
+          "url_patterns" => \Blink\include_url_patters($wp_tangocard_url_patterns)
       ),
       
       /* Mailchimp API */
@@ -179,7 +189,7 @@ namespace Wp {
           "title" => "DashboardTemplateView"
       ),
       array(
-          "uri" => "/(?P<step>\w+)/$",
+          "uri" => "/(?P<step>[\w-]+)/$",
           "view" => WpCookieWizardView::as_view(),
           "name" => "DashboardTemplateView",
           "title" => "DashboardTemplateView"

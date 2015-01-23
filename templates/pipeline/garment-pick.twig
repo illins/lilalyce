@@ -1,0 +1,191 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-body" id="garment-breadcrumbs">
+      <div class="row">
+        <div id="garment-category-products" class="col-xs-8">
+          
+        </div>
+        <div id="garment-product" class="col-xs-4">
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-body" id="garment-content">
+
+    </div>
+  </div>
+  
+  <div class="panel panel-default panel-aqua hidden" id="garment-quantity">
+    <div class="panel-body">
+      {#{% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+      
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}#}
+      
+      {{ form.hidden.category_id.field|raw }}
+      {{ form.hidden.product_id.field|raw }}
+      
+      <input type="hidden" id="initial-size" value="{{ form.hidden.size.value }}" />
+      <input type="hidden" id="initial-color" value="{{ form.hidden.color.value }}" />
+      <input type="hidden" id="initial-quantity" value="{{ form.hidden.quantity.value }}" />
+    </div>
+  </div>
+  
+  {% verbatim %}
+  <script id="template-category-products" type="text/x-handlebars-template">
+    <div class="row">
+      <div class="col-xs-6">
+        <select id="garment-category-list" class="form-control" name="category_id">
+          {{#categoryList}}
+            <option value="{{categoryId}}" {{#category}}{{categoryId}}{{/category}}>{{name}}</option>
+          {{/categoryList}}
+        </select>
+      </div>
+      <div class="col-xs-6" id="garment-products">
+        
+      </div>
+    </div>
+  </script>
+  
+  <script id="template-products" type="text/x-handlebars-template">
+    <div class="row">
+    {{#productList}}
+      {{#image}}
+      <div class="col-md-4">
+          <div class="thumbnails thumbnail-style">
+              <img class="img-responsive" src="{{image.url}}" alt="{{image.label}}" />
+              <div class="caption">
+                  <h4><a class="hover-effect garment-product" href="#" data-id="{{id}}">{{name}}</a></h4>
+              </div>
+          </div>
+      </div>
+      {{/image}}
+    {{/productList}}
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars-template" id="template-product">
+    <div class="row">
+      <div class="col-md-6 md-margin-bottom-50">
+        <div class="ms-showcase2-template">
+          <!-- Master Slider -->
+          <div class="master-slider ms-skin-default" id="masterslider">
+            {{#imageList}}
+                <div class="ms-slide">
+                  <img class="ms-brd" src="{{url}}" data-src="{{url}}" alt="{{label}}">
+                  <img class="ms-thumb" src="{{url}}" alt="thumb">
+                </div>
+            {{/imageList}}
+          </div>
+          <!-- End Master Slider -->
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="shop-product-heading">
+          <h2>{{product.name}}</h2>
+        </div><!--/end shop product social-->
+
+        <p>{{product.description}}</p><br>
+
+        <ul class="list-inline shop-product-prices margin-bottom-30">
+        {{#product.available}}
+          <li><small class="shop-bg-green time-day-left">Available</small></li>
+        {{/product.available}}
+            
+        {{^product.available}}
+          <li><small class="shop-bg-red time-day-left">Out of stock</small></li>
+        {{/product.available}}
+        </ul><!--/end shop product prices-->
+
+        <h3 class="shop-product-title">Color</h3>
+        <ul class="list-inline product-color margin-bottom-30">
+            {{#colorList}}
+              <li style="display: inline-block; padding: 3px; border: solid 1px #ccc; background-color: #{{hex}};">
+                <input type="radio" class="garment-color-picker" id="color-{{hex}}" value="{{hex}}" data-hex="{{hex}}" name="color" title="{{name}}>
+                <label for="color-{{hex}}" title="{{name}}"></label>
+              </li>
+            {{/colorList}}
+          
+        </ul><!--/end product color-->
+        
+        <h3 class="shop-product-title">Size</h3>
+        <ul class="list-inline product-size margin-bottom-30">
+
+        </ul><!--/end product size-->
+
+        <h3 class="shop-product-title">Quantity</h3>
+        <div class="margin-bottom-40">
+            <input type='text' class="form-control" name='quantity' value="1" id='quantity'/>
+        </div><!--/end product quantity-->
+        
+      </div>
+    </div>
+  </script>
+  {% endverbatim %}
+  
+  {#var main = $tag.el('div').class(['filter-results']);
+          var row = $tag.el('div').class(['row', 'illustration-v2', 'margin-bottom-30']);
+          
+          _.map(this.collection.toJSON(), function(item) {
+            var col = $tag.el('div').class(['col-md-4']);
+            var src = (_.isUndefined(item.image)) ? '' : item.image.url;
+            var label = (_.isUndefined(item.image)) ? '' : item.image.label;
+            col.appendChild(
+                      $tag.el('div').class(['product-img', 'product-img-brd']).appendChild(
+                        $tag.el('a').attr({a: '#'}).appendChild(
+                          $tag.el('img').class(['full-width', 'img-responsive']).attr({src: src, alt: label})
+                        )
+                      )
+                    );
+            col.appendChild(
+                      $tag.el('div').class(['product-description product-description-brd margin-bottom-30']).appendChild(
+                        $tag.el('div').class(['overflow-h margin-bottom-5']).appendChild(
+                          $tag.el('div').class(['pull-left']).appendChild(
+                            $tag.el('h4').class(['title-price']).appendChild(
+                              $tag.el('a').attr({href: '#'}).data({'id': item.id}).class(['product-item']).text(item.name)
+                            )
+                          )
+                        )
+                      )
+                    );
+            row.appendChild(col);
+          });
+          
+          main.appendChild(row);
+          this.$el.html(main.html());#}
+{% endblock main %}
+
+{% block sub_extra_css %}
+  <link rel="stylesheet" href="/static/unify/Shop-UI/assets/css/shop.style.css">
+  <link rel="stylesheet" href="/static/unify/Shop-UI/assets/css/app.css">
+  <link rel="stylesheet" href="/static/unify/Shop-UI/assets/plugins/master-slider/quick-start/masterslider/style/masterslider.css">
+  <link rel='stylesheet' href="/static/unify/Shop-UI/assets/plugins/master-slider/quick-start/masterslider/skins/default/style.css">
+{% endblock sub_extra_css %}
+
+{% block sub_extra_javascript %}
+  <!-- Master Slider -->
+  <script src="/static/unify/Shop-UI/assets/plugins/owl-carousel/owl-carousel/owl.carousel.js"></script>
+  <script src="/static/unify/Shop-UI/assets/plugins/master-slider/quick-start/masterslider/masterslider.min.js"></script>
+  <script src="/static/unify/Shop-UI/assets/plugins/master-slider/quick-start/masterslider/jquery.easing.min.js"></script>
+
+<script src="/static/unify/Shop-UI/assets/js/plugins/owl-carousel.js"></script>
+<script src="/static/unify/Shop-UI/assets/js/plugins/master-slider.js"></script>
+<script src="/static/unify/Shop-UI/assets/js/forms/product-quantity.js"></script>
+
+<script src="/apps/wp/static/js/garment-pick.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#next_button').addClass('disabled');
+    sidebar_init();
+  });
+</script>
+{% endblock sub_extra_javascript %}

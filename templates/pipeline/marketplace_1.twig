@@ -14,7 +14,7 @@
             {% endfor %}
         </ul>
         &nbsp;&nbsp;
-        <h3 style="display: inline;"><span class="label label-info">{{ promotioncategory }}</span></h3>
+        <h3 style="display: inline"><span class="label label-info">{{ promotioncategory }}</span></h3>
       </div>
     </div>
   </div>
@@ -32,15 +32,32 @@
       {% else %}
         {% include 'apps/wp/templates/pipeline/includes/marketplace/wapo/index.twig' %}
       {% endif %}
+
     </div>
   </div>
+
 
 {% endblock main %}
 
 {% block sub_extra_javascript %}
   <script>
     $(function () {
-      sidebar_init();
+    {#$(".marketplace-item").click(function() {
+      $(".marketplace-item").css('background-color', 'white');
+      $(this).css('background-color', '#cccccc');
+      $("#promotion_id").val(parseInt($(this).attr("id")));
     });
+    
+    $('.promotion-description').each(function() {
+      var all = $(this).html();
+      if(all.length > 145) {
+        var partial = all.substr(0, 145);
+        $(this).html(partial);
+        $(this).append(' <span style="font-weight: bold;" title="' + all + '">...</span>');
+      }
+    });#}
+
+        sidebar_init();
+      });
   </script>
 {% endblock sub_extra_javascript %}
