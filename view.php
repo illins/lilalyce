@@ -33,6 +33,79 @@ namespace Wp {
   use Wapo\Contact;
   use Wapo\ContactItem;
   use Wapo\Member;
+  
+  class TangoJSONView extends \Blink\JSONView {
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      return $c;
+      
+      $tc = new \BlinkTangoCard\TangoCardAPI();
+      
+      $ainfo = array(
+          "identifier" => "creation-and-things-test1",
+          "email" => "livedev1@yahoo.com",
+          "customer" => "CreationAndThingsTest1"
+      );
+//      $c['account'] = $tc->request("accounts", $ainfo);
+      
+      $cc_info = array(
+          "customer" => $ainfo['customer'],
+          "account_identifier" => $ainfo['identifier'],
+          "client_ip" => "55.44.33.22", //$_SERVER['SERVER_ADDR'],
+          "credit_card" => array(
+              "number" => "4111111111111111",
+              "security_code" => "123",
+              "expiration" => "2016-11",
+              "billing_address" => array(
+                "f_name" => "John",
+                "l_name" => "Doe",
+                "address" => "1234 Fake St",
+                "city" => "Springfield",
+                "state" => "WA",
+                "zip" => "99196",
+                "country" => "USA",
+                "email" => "livedev1@yahoo.com"
+              )
+          )
+      );
+      
+      $c['cc_info'] = $cc_info;
+      //$c['cc_register'] = $tc->request("cc_register", $cc_info);
+      $cc_token = "28130103";
+      
+      $cc_fund = array(
+          "customer" => $ainfo['customer'],
+          "account_identifier" => $ainfo['identifier'],
+          "amount" => 100000,
+          "client_ip" => "55.44.33.22",
+          "security_code" => "123",
+          "cc_token" => "28130103"
+      );
+      //$c['cc_fund'] = $tc->request("cc_fund", $cc_fund);
+
+      $info = array(
+          "customer" => "Creation and Things Test",
+          "account_identifier" => "creation-and-things-test",
+          "recipient" => array(
+              "name" => "John Doe",
+              "email" => "condev1@outlook.com"),
+          "sku" => "AMC-E-V-STD",//AMZN-E-V-STD  - TNGO-E-V-STD
+          "amount" => 2000,
+          "reward_message" => "Thank you for participating in the XYZ survey.",
+          "reward_subject" => "XYZ Survey, thank you...",
+          "reward_from" => "Jon Survey Doe"
+      );
+      
+      
+      $endpoint = sprintf("accounts/%s/%s", $ainfo['customer'], $ainfo['identifier']);
+      $c['endpoint'] = $endpoint;
+      $c['account_info'] = $tc->request($endpoint);
+      $c['order'] = $tc->place_order($info);
+      //$c['info'] = $info;
+
+      return $c;
+    }
+  }
 
   /**
    * 
@@ -43,11 +116,36 @@ namespace Wp {
   function validate_cart($cookies, $request) {
     // Verify that we can send this...
     try {
+      // Check that promotion is set.
+      $promotion = Promotion::get_or_null(array("id"=>$request->cookie->find("promotion_id")));
+      
       // If promotion is not valid, this is an error.
-      if (!isset($cookies['promotion_id']) || !count(Promotion::queryset()->filter(array("id" => $cookies['promotion_id']))->fetch())) {
+      if (!$promotion) {
         throw new \Exception("Promotion not selected.");
       }
-
+      
+      $promotioncategory = $promotion->promotioncategory;
+      if($promotioncategory->id != $request->cookie->find("promotioncategory_id")) {
+        throw new \Exception("Promotion not selected.");
+      }
+      
+      // If this promotioncategory is 'Tango Card', do some checks.
+      if($promotioncategory->name == "Tango Card") {
+        // Check that the sku exists.
+        $sku = \Wapo\TangoCardRewards::get_or_null(array("sku"=>$request->cookie->find("sku")));
+        if(!$sku) {
+          throw new \Exception("Please select a 'Card'.");
+        }
+        
+        // If this unit_price == -1 (i.e. custom), check that the range is within min/max.
+        if($sku->unit_price == -1) {
+          $amount = $request->cookie->find("amount", 0);
+          if($amount < $sku->min_price || $amount > $sku->max_price) {
+            throw new \Exception("'Card' amount must be within range.");
+          }
+        }
+      }
+      
       // Check that delivery method is valid.
       $delivery_methods = array("ffa", "e", "el", "aff", "fp", "atf", "stf", "aif", "sif");
       if (!isset($cookies['delivery']) && !in_array($cookies['delivery'], $delivery_methods)) {
@@ -513,6 +611,7 @@ namespace Wp {
       // Wapo is the default form.
       if ($this->promotioncategory->name == "Tango Card") {
         $definition['marketplace']['form'] = "\Wp\TangoMarketplaceForm";
+        $this->promotion = Promotion::get_or_404(array("promotioncategory"=>$this->promotioncategory), "Tango not configured correctly.");
       } else if ($this->promotioncategory->name == "I Feel Goods") {
         $definition['marketplace']['form'] = "\Wp\IfgMarketplaceForm";
       } else if ($this->promotioncategory->name == "Scalable Press") {
@@ -725,6 +824,9 @@ namespace Wp {
 //          return $this->form_invalid();
 //        }
         
+        $this->request->cookie->set("promotioncategory_id", $this->promotioncategory->id);
+        $this->request->cookie->set("promotion_id", $this->promotion->id);
+        
       } else if($this->current_step == "delivery") {
         $this->delivery = $this->form->get("delivery");
       } else if($this->current_step == "ffa") {
@@ -801,6 +903,19 @@ namespace Wp {
         }
         
         $this->request->cookie->set("profile_id", $contact->profile->id);
+      } else if($this->current_step == "e") {
+        $emails = Config::MAX_EMAIL_DELIVERY_COUNT_GUEST;
+        if($this->request->user) {
+          $emails = Config::MAX_EMAIL_DELIVERY_COUNT_USER;
+        }
+        
+        $quantity = 0;
+        for($i = 1; $i <= $emails; $i++) {
+          if($this->request->post->find("email-$i", null)) {
+            $quantity++;
+          }
+        }
+        $this->request->cookie->set("quantity", $quantity);
       } else if($this->current_step == "checkout") {
         
         list($error, $message) = validate_cart($this->request->cookie->all(), $this->request);
@@ -921,6 +1036,9 @@ namespace Wp {
         
         // Check the promotion.
         $context['promotion'] = Promotion::get_or_404(array("id"=>$cookies['promotion_id']), "Promotion you selected not found.");
+        $context['sku'] = \Wapo\TangoCardRewards::get_or_null(array("sku"=>$this->request->cookie->find("sku")));
+        $context['promotioncategory'] = $context['promotion']->promotioncategory;
+        $context['amount'] = $this->request->cookie->find("amount");
         
         // Get the delivery method.
         $context['delivery'] = $cookies['delivery'];

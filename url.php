@@ -25,6 +25,12 @@ namespace Wp {
           "uri" => '/tangocard',
           "url_patterns" => \Blink\include_url_patters($wp_tangocard_url_patterns)
       ),
+      array(
+          "uri" => "/order/$",
+          "view" => TangoJSONView::as_view(),
+          "name" => "TangoJSONView",
+          "title" => "Tango View"
+      ),
       
       /* Mailchimp API */
       array(

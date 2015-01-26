@@ -34,12 +34,8 @@ namespace Wp {
       $context = parent::get_context_data();
       
       // Get the promotion.
-      $promotion = null;
-      try {
-        $promotion = Promotion::queryset()->get(array("id"=>$this->request->cookie->find("promotion_id")));
-      } catch (\Exception $ex) {
-
-      }
+      $promotion = Promotion::get_or_null(array("id"=>$this->request->cookie->find("promotion_id")));
+      $sku = \Wapo\TangoCardRewards::get_or_null(array("sku"=>$this->request->cookie->find("sku")));
       
       // Get the delivery method.
       $delivery_method = $this->request->cookie->find("delivery");
@@ -88,6 +84,9 @@ namespace Wp {
       $context['delivery'] = $delivery_method;
       $context['delivery_name'] = isset(Config::$DeliveryMethod[$delivery_method]) ? Config::$DeliveryMethod[$delivery_method] : "";
       $context['promotion'] = $promotion;
+      $context['sku'] = $sku;
+      $context['amount'] = $this->request->cookie->find("amount");
+      $context['promotioncategory'] = ($promotion) ? $promotion->promotioncategory : null;
       
       return $context;
     }
