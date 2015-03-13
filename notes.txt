@@ -1,0 +1,83 @@
+API Information:
+API User Guide:  http://bit.ly/ifeelgoods-api-user-guide
+Username : ifeelgoods-docs
+Password : ifeelgoodsdocs2014
+
+Technical Documentation: http://docs.ifgfulfillment.apiary.io/
+
+Here's a link to our mini-catalog:
+catalog.ifeelgoods.com
+
+
+API key: 34dc7c8a6380dc046ffc9b4ea0b401bb024e1ef36722ad2e44690ce1b5a9e5bd
+API Secret: a0aebb0f3702a099f022037226bda2ec21127ef71e4f52e75280868e285883e4
+Promotion ID: 117
+
+-> HOWTO for reward.
+
+Here is the meaning of each parameter in the codes section:
+    name: the name of the reward code that you will display (e.g.: “reward code”, “gift card number”, “voucher code”, “pin code”, etc.)
+    value: the actual reward code you need to display to your customers. It is the code that your customers will use to redeem on the reward website
+    format: the format in which this code is displayed (string or link)
+    usage: the usage for the reward code.
+
+Here are two examples of API answers, with one or two codes:
+
+With one code:
+"codes": [
+        {
+          "name": "Reward Code",
+          "value": “ABCDE-12345"
+          "format": "string",
+          "usage": "primary"
+        }
+]
+
+=> This means you have to display the value “ABCDE-12345” to your customers
+
+With two codes:
+"codes": [
+        {
+          "name": “Gift Card Number",
+          "value": “ABCDE-12345"
+          "format": "string",
+          "usage": "primary"
+        }
+        {
+          "name": “Pin Code",
+          "value": “WXYZ"
+          "format": "string",
+          "usage": “security"
+        }
+]
+
+=> This means you have to display both values to your customers, with their name associated, like this:
+Gift Card Number: ABCDE-12345
+Pin Code WXYZ
+
+
+==> Create a Wapo (Promotion)
+  -- Slightly modified pipeline without current first/last steps.
+  -> Set profile, name.
+  -> Set expiration date.
+  -> Add reward and quantity.
+  -> Select social media if applicable or Free For All.
+  -> Pay for the rewards.
+  -> Send it out
+
+==> Send out a Wapo
+  -> Create a specialized link.
+  -> Bitly shorten URL for export.
+  -> Distribute the URL platform chosen.
+
+==> Create a specialized link.
+  -> Link to their product/service page (for signup/adding, etc).
+  -> Link to this promotion.
+  -> Generate a bitly URL for this promotion.
+
+==> Bitly URL.
+  -> Redirects to Wapo to reserve a reward for a period of time.
+  -> Append more information to product/service page URL.
+  -> Forward to product/service for signup. 
+  -> If success, send out information (email) to retrieve reward or redirect user back (with email) to retrieve download. 
+  -> Download reward and mark it as completed.

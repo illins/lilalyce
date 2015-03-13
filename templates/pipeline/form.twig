@@ -35,16 +35,16 @@ blockquote {padding: 1px;}
   <div class="stepwizard">
     <div class="stepwizard-row">
       <div class="stepwizard-step">
-        <button type="button" class="btn {% if main_step == "marketplace" %}btn-primary{% else %}btn-default{% endif %} btn-circle"  disabled="disabled">1</button>
+        <button type="button" class="btn {% if main_step == "profile" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">1</button>
+        <p>Profile</p>
+      </div>
+      <div class="stepwizard-step">
+        <button type="button" class="btn {% if main_step == "marketplace" %}btn-primary{% else %}btn-default{% endif %} btn-circle"  disabled="disabled">2</button>
         <p>Marketplace</p>
       </div>
       <div class="stepwizard-step">
-        <button type="button" class="btn {% if main_step == "delivery" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">2</button>
+        <button type="button" class="btn {% if main_step == "delivery" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">3</button>
         <p>Delivery</p>
-      </div>
-      <div class="stepwizard-step">
-        <button type="button" class="btn {% if main_step == "profile" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">3</button>
-        <p>Profile</p>
       </div>
       <div class="stepwizard-step">
         <button type="button" class="btn {% if main_step == "checkout" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">4</button>
@@ -56,6 +56,49 @@ blockquote {padding: 1px;}
       </div>
     </div>
   </div>
+        
+        {#<div class="row">
+          <div class="col-xs-1"></div>
+          <div class="col-xs-2" style="background-color: grey;">
+            <div class="testimonials testimonials-v1">
+              <div class="testimonial-info">
+                <img src="/static/unify/assets/img/testimonials/img1.jpg" alt="" style="max-width: 40%;">
+                <span class="testimonial-author">
+                  {% if progress.profile.profile %}
+                    {{ progress.profile.profile.name }}
+                  {% elseif progress.profile.name %}
+                    {{ progress.profile.name }}
+                    <em>{{ progress.profile.email }}</em>
+                  {% else %}
+                    No Data
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+            
+          </div>
+          <div class="col-xs-2 bg-yellow">
+            <div class="row">
+              <div class="col-xs-4 funny-boxes-img" style="background-color: red;">
+                <img class="img-responsive" src="/static/unify/assets/img/new/img10.jpg" alt="" style="width: 100%;">
+              </div>
+              <div class="col-xs-8">
+                <h2><a href="#">{{ progress.profile.name }}</a></h2>
+                <p>{{ progress.profile.email }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-2 bg-green">
+            Delivery
+          </div>
+          <div class="col-xs-2 bg-grey">
+            Checkout
+          </div>
+          <div class="col-xs-2 bg-aqua">
+            Confirmation
+          </div>
+          <div class="col-xs-1"></div>
+        </div>#}
   
   {#<div class="row">
     <div class="row bs-wizard" style="border-bottom:0;">

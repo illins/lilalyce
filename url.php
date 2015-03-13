@@ -3,7 +3,10 @@
 namespace Wp {
   require_once("apps/wp/delivery-method.php");
   require_once("apps/wp/checkout.php");
+  
   require_once("apps/wp/view.php");
+  require_once 'apps/wp/views/pipeline/wizard.php';
+  
   require_once("apps/wp/download/view.php");
   
   require_once("apps/wp/views/mailchimp.php");

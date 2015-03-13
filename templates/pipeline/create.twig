@@ -22,12 +22,15 @@
         type: 'GET',
         dataType: 'json'
       }).done(function (data) {
+        console.log(data);
         if (data.error) {
           $("#error").show().html(data.message);
           $("#loading").hide();
         } else {
           $("#next_button").click();
         }
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log('fail: ', jqXHR);
       });
     });
   </script>

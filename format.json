@@ -1,0 +1,78 @@
+{
+  "blink":
+          {
+            "message_list": [],
+            "request":
+                    {
+                      "method": "get",
+                      "url": "/wp/order/",
+                      "query_string": "",
+                      "request_url": "/wp/order/",
+                      "user": []
+                    },
+            "Debug": true,
+            "SiteName": "Site",
+            "Site": "http://redbk.com",
+            "PageTitle": "Tango View"
+
+          },
+  "redemption":
+          {
+            "data":
+                    {
+                      "id": "7R5BV-KQ97L",
+                      "url": "https://redemption-sandbox.ifeelgoods.com/#/7R5BV-KQ97L",
+                      "state": "redeemed",
+                      "order_id": "test-1",
+                      "testing": false,
+                      "activation_datetime": "2015-02-11T17:25:58.000-08:00",
+                      "redeemed_datetime": "2015-02-11T17:25:58.000-08:00",
+                      "updated_datetime": "2015-02-11T17:25:58.000-08:00",
+                      "promotion":
+                              {
+                                "id": 117,
+                                "status": "enabled",
+                                "state": "ready"
+
+                              },
+                      "reward":
+                              {
+                                "sku": "TAR-TGT-5USD-US",
+                                "status": "enabled",
+                                "state": "ready"
+
+                              },
+                      "user":
+                              {
+                                "id": 144
+
+                              },
+                      "authentication_systems":
+                              [
+                                "facebook_connect",
+                                "email",
+                                "google"
+
+                              ],
+                      "notification_channels":
+                              [
+                                "email"
+
+                              ],
+                      "reward_codes":
+                              {
+                                "type": "unique_code",
+                                "codes":
+                                        [
+                                          {
+                                            "name": "Gift Card Number",
+                                            "value": "test1",
+                                            "format": "string",
+                                            "usage": "primary"
+                                          }
+                                        ]
+                              }
+                    }
+          }
+
+}

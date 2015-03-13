@@ -1,0 +1,222 @@
+<div id="reward-select-container"><select id="reward-select" class="form-control"></select></div>
+<hr />
+
+<div class="row" id="rewards-container" style="background-color: whitesmoke;">
+
+</div>
+
+<div id="reward-container" style="background-color: whitesmoke; display: none;">
+  <button type="button" class="btn btn-info back-to-reward-list"><i class="fa fa-arrow-left"></i> Back to List</button>
+
+  <br /><br />
+
+  {% for field in form.hidden %}
+    {{ field.field|raw }}
+  {% endfor %}
+
+  <div class="row">  
+    <div class="col-xs-6">
+      <img id="reward-image-src" class="img-responsive" src="" alt="..." style="width: 100%;" />
+      <br />
+      <h3 id="reward-title"></h3>
+      <h4 id="reward-amount-info"></h4>
+    </div>
+    <div class="col-xs-6">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script type="text/template" id="reward-item-template">
+  <div class="col-md-4">
+  <div class="thumbnails thumbnail-style">
+  <img class="img-responsive" src="<%= image_url %>" alt="" />
+  <div class="caption">
+  <p><%= reward.description %></p>
+  <% if(unit_price) { %>
+  <h3 class="hover-effect"><%= unit_price %> <%= reward.currency_type %></h3>
+  <% } else { %>
+  <h3 class="hover-effect" ><%= min %> - <%= max %> <%= reward.currency_type %></h3>
+  <% } %>
+  <p><a href="#" data-sku="<%= reward.sku %>" class="btn-u btn-u-xs select-reward">Select <i class="fa fa-angle-right margin-left-5"></i></a></p>
+  </div>
+  </div>
+  </div>
+</script>
+
+<script type="text/template" id="reward-template">
+
+</script>
+
+<script>
+  $(function () {
+    // Brands as returned from api.
+    var brandCollection = new Backbone.Collection;
+    brandCollection.reset({{ tangocard.brands|json_encode()|raw }});
+    $("#next_button").addClass('disabled');// Disable the next button until we have all the data needed.
+
+    // All the rewards for easy access. Initialized when BrandListView is displayed.
+    var rewardCollection = new Backbone.Collection;
+
+    // Detail view for a selected reward.
+    var RewardDetailView = Backbone.View.extend({
+      el: '#reward-container',
+      model: null,
+      render: function () {
+        $("#rewards-container").hide();// Hide the rewards container.
+        console.log(this.model.toJSON());
+        var unit_price = this.model.get('unit_price');
+
+        // Set the title and sku value.
+        this.$el.find('#reward-title').html(this.model.get('description'));
+        this.$el.find('#sku').val(this.model.get('sku'));
+
+        // If unit price is -1, then we need the user to enter a value between min_price and max_price.
+        // Also, if that is the case, then we need to show the input box for the amount.
+        if (unit_price === -1) {
+          this.$el.find('#amount').parent().show();// Show the amount input (just in case).
+          this.$el.find('#reward-amount-info').html((this.model.get('min_price') / 100) + ' - ' + (this.model.get('max_price') / 100) + ' ' + this.model.get('currency_type'));
+        } else {
+          this.$el.find('#amount').parent().hide();// Hide the amount input
+          this.$el.find('#reward-amount-info').html(this.model.get('unit_price') + ' ' + this.model.get('currency_type'));
+        }
+
+        this.$el.find('#reward-image-src').attr('src', this.model.get('image_url'));
+
+        this.$el.show();// Show the reward container.
+
+        this.updateAmount();// Check the amount if set for the next button.
+      },
+      events: {
+        'keyup #amount': 'updateAmount',
+        'click .back-to-reward-list': 'showRewardList'
+      },
+      updateAmount: function () {
+        // If this requires an amount, then we check the value, otherwise we enable the next button
+        if (this.model.get('unit_price') === -1) {
+          // If a number is entered, enable the next button.
+          if ($('#amount').val()) {
+            $('#next_button').removeClass('disabled');
+          } else {
+            $('#next_button').addClass('disabled');
+          }
+        } else {
+          $('#next_button').removeClass('disabled');
+        }
+      },
+      showRewardList: function () {
+        brandListView.showRewards();
+      }
+    });
+
+    // Show a list/grid of the rewards for a given brand.
+    var RewardListView = Backbone.View.extend({
+      el: '#rewards-container',
+      template: _.template($("#reward-item-template").html()),
+      model: new Backbone.Model,
+      subview: new RewardDetailView(),
+      initialize: function () {
+
+      },
+      render: function () {
+        var that = this;
+        var model = this.model.toJSON();
+        this.$el.html('');
+        _.map(model.rewards, function (reward) {
+          var unit_price = 0;
+          var max = 1;
+          var min = 1;
+
+          if (reward.unit_price >= 0) {
+            unit_price = reward.unit_price / 100;
+          } else {
+            min = reward.min_price / 100;
+            max = reward.max_price / 100;
+          }
+
+          that.$el.append(that.template({reward: reward, image_url: model.image_url, unit_price: unit_price, min: min, max: max}));
+        });
+      },
+      events: {
+        'click .select-reward': 'selectReward'
+      },
+      selectReward: function (e) {
+        var e = e || null;
+
+        var sku = null;
+        if (e) {
+          e.preventDefault();
+          sku = $(e.target).data('sku');
+        } else {
+          sku = $('#sku').val();
+        }
+
+        var reward = rewardCollection.findWhere({sku: sku});
+        if (!_.isUndefined(reward)) {
+          this.subview.model = reward;
+          this.subview.render();
+        }
+      }
+    });
+
+    // Show a list of brands in a select list.
+    var BrandListView = Backbone.View.extend({
+      el: '#reward-select-container',
+      collection: null,
+      initialize: function (options) {
+        this.collection = options.collection;
+        this.subview = new RewardListView();
+        this.render();
+      },
+      render: function () {
+        var that = this;
+        _.each(this.collection.toJSON(), function (brand) {
+          that.$el.find('select').append('<option value="' + brand.description + '">' + brand.description + '</option>');
+
+          // Initialize the rewardCollection.
+          _.each(brand.rewards, function (reward) {
+            reward.image_url = brand.image_url;
+            reward.description = brand.description;
+            rewardCollection.add(reward);
+          });
+        });
+        
+        this.showRewards();
+      },
+      events: {
+        'change #reward-select': 'showRewards'
+      },
+      showRewards: function () {
+        var that = this;
+        var selectedBrand = $('#reward-select').val();
+        _.each(this.collection.toJSON(), function (brand) {
+          if (brand.description === selectedBrand) {
+            that.subview.model = new Backbone.Model(brand);
+            that.subview.render();
+            return;
+          }
+        });
+
+        // If it is the case that they are in detail view, hide it and show the
+        // list container.
+        $('#reward-container').hide();
+        $('#rewards-container').show();
+      }
+    });
+
+    var brandListView = new BrandListView({collection: brandCollection});
+
+    // If we have an sku value, search the rewardCollection and select the 
+    // dropdown list.
+    if ($('#sku').val()) {
+      var reward = rewardCollection.findWhere({sku: $('#sku').val()});
+      if (reward) {
+        $('#reward-select').val(reward.get('description'));
+        brandListView.subview.subview.model = reward;
+        brandListView.subview.subview.render();
+      }
+    }
+  });
+</script>

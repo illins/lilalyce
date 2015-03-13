@@ -33,9 +33,38 @@ namespace Wp {
     public function get_context_data() {
       $context = parent::get_context_data();
       
+      $module = null;
+      $module_id = $this->request->cookie->find("module_id");
+      if ($module_id) {
+        $module = \Wapo\Module::get_or_404(array("id" => $module_id), "Module not found.");
+      } else {
+        $module = \Wapo\Module::get_or_404(array("tag" => "gift"), "Module not found.");
+      }
+      
+      // If this is an announcement, get information and return from here.
+      if($module->tag == "announcement") {
+        $twitter_announcement = $this->request->cookie->find("twitter_announcement");
+        if($twitter_announcement) {
+          $context['twitter_profile'] = (new \BlinkTwitter\BlinkTwitterAPI($this->request))->getTwitterProfile();
+        }
+        
+        $context['announcement'] = $this->request->cookie->find("announcement");
+        
+        return $context;
+      }
+
       // Get the promotion.
       $promotion = Promotion::get_or_null(array("id"=>$this->request->cookie->find("promotion_id")));
-      $sku = \Wapo\TangoCardRewards::get_or_null(array("sku"=>$this->request->cookie->find("sku")));
+      
+      // Add sku where it applies.
+      $sku = null;
+      if($promotion) {
+        if($promotion->promotioncategory->name == "I Feel Goods") {
+          $sku = \Wapo\IFeelGoodsRewards::get_or_null(array("sku"=>$this->request->cookie->find("sku")));
+        } else if($promotion->promotioncategory->name == "Tango Card") {
+          $sku = \Wapo\TangoCardRewards::get_or_null(array("sku"=>$this->request->cookie->find("sku")));
+        }
+      }
       
       // Get the delivery method.
       $delivery_method = $this->request->cookie->find("delivery");

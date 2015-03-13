@@ -19,8 +19,36 @@
         </p>
       </div>
     </div>
-
-    {% if promotion %}
+        
+    {% if module.tag == "announcement" %}
+      {# If we have a twitter_profile, then we are sending an announcement to twitter. #}
+      {% if twitter_profile %}
+        <div class="list-group">
+          <div class="list-group-item">
+            <h4 class="list-group-item-heading">Twitter Announcment</h4>
+            <div class="list-group-item-text">
+              <div class="media">
+                <a href="#">
+                  <img class="media-object" src="{{ twitter_profile.profile_image_url }}" alt="...">
+                </a>
+                <div class="media-body">
+                  <h4 class="media-heading">{{ twitter_profile.name }}[{{ twitter_profile.screen_name }}]</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      
+      <div class="list-group">
+        <div class="list-group-item">
+          <h4 class="list-group-item-heading">Announcement</h4>
+          <div class="list-group-item-text">
+            {{ announcement }}
+          </div>
+        </div>
+      </div>
+    {% elseif promotion %}
       <div class="list-group">
         <div class="list-group-item">
           <h4 class="list-group-item-heading">Promotion <a href="/wp/marketplace/" class="btn btn-link">[edit]</a></h4>
@@ -29,6 +57,8 @@
               <a class="pull-left" href="#">
                 {% if promotioncategory.name == "Tango Card" %}
                   <img class="media-object" src="{{ sku.brand_image_url }}" style="max-width: 50px; max-height: 50px;" alt="...">
+                {% elseif promotioncategory.name == "I Feel Goods" %}
+                  <img class="media-object" src="{{ sku.catalog_badge_image_url }}" style="max-width: 50px; max-height: 50px;" alt="...">
                 {% else %}
                   <img class="media-object" src="{{ promotion.icon.url }}" style="max-width: 50px; max-height: 50px;" alt="...">
                 {% endif %}
@@ -36,7 +66,10 @@
               <div class="media-body">
                 {% if promotioncategory.name == "Tango Card" %}
                   <h4 class="media-heading">{{ sku.description }}</h4>
-                  <p>${% if amount %}{{ amount }}{% else %}-{% endif %}</p>
+{#                  <p>${% if amount %}{{ amount }}{% else %}-{% endif %}</p>#}
+                {% elseif promotioncategory.name == "I Feel Goods" %}
+                  <h4 class="media-heading">{{ sku.name }}</h4>
+                  <p>$ {{ sku.face_value * quantity}}</p>
                 {% else %}
                   <h4 class="media-heading">{{ promotion.name }}</h4>
                   <p>${{ promotion.price }}</p>

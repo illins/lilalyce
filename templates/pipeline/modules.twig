@@ -4,63 +4,36 @@
   <form class="form" method="POST" action="">
     <div class="panel panel-default">
       <div class="panel-body">
-
-        <div class="row content-boxes-v2 margin-bottom-30">
-          <div class="col-md-4 md-margin-bottom-30">                
-            <h2 class="heading-sm">
-              <i class="icon-custom icon-sm icon-color-u fa fa-gift"></i>
-              <span>Giveaway</span>
-            </h2>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's</p>
-            <button type="submit" class="btn btn-link">Continue</button>
+        
+        {% for module_group in module_list | batch(3)%}
+          <div class="row content-boxes-v2 margin-bottom-30">
+            {% for module in module_group %}
+              <div class="col-md-4 md-margin-bottom-30">                
+                <h2 class="heading-sm">
+                  <i class="icon-custom icon-sm icon-color-u fa fa-gift"></i>
+                  <span>{{ module.name }}</span>
+                </h2>
+                <p>{{ module.description }}</p>
+                <button type="button" class="btn btn-link select-module" data-id="{{ module.id }}">Continue</button>
+              </div>
+            {%endfor%}
           </div>
-          <div class="col-md-4 md-margin-bottom-30">
-            <h2 class="heading-sm">
-              <i class="icon-custom icon-sm icon-color-u fa fa-shopping-cart"></i> 
-              <span>Product Sale</span>
-            </h2>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's</p>
-            <button type="submit" class="btn btn-link">Continue</button>
-          </div>
-          <div class="col-md-4">
-            <h2 class="heading-sm">
-              <i class="icon-custom icon-sm icon-color-u fa fa-credit-card"></i>
-              <span>Coupons</span>
-            </h2>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's</p>
-            <button type="submit" class="btn btn-link">Continue</button>
-          </div>
-        </div>
-
-        <div class="row content-boxes-v2 margin-bottom-30">
-          <div class="col-md-4 md-margin-bottom-30">                
-            <h2 class="heading-sm">
-              <i class="icon-custom icon-sm icon-color-u fa fa-bullhorn"></i>
-              <span>Announce a Special</span>
-            </h2>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's</p>
-            <button type="submit" class="btn btn-link">Continue</button>
-          </div>
-          <div class="col-md-4 md-margin-bottom-30">
-            <h2 class="heading-sm">
-              <i class="icon-custom icon-sm icon-color-u fa fa-bullhorn"></i> 
-              <span>Product Announcement</span>
-            </h2>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's</p>
-            <button type="submit" class="btn btn-link">Continue</button>
-          </div>
-          <div class="col-md-4">
-            <h2 class="heading-sm">
-              <i class="icon-custom icon-sm icon-color-u fa fa-bullhorn"></i>
-              <span>Simple Announcement</span>
-            </h2>
-            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's</p>
-            <button type="submit" class="btn btn-link">Continue</button>
-          </div>
-        </div>
-
-
+        {% endfor %}
       </div>
     </div>
+
+    {% for field in form.hidden %}
+      {{ field.field|raw }}
+    {% endfor %}
+    
   </form>
+    
+    <script>
+      $(function() {
+        $('.select-module').click(function(e) {
+          $('#module_id').val($(e.target).data('id'));
+          $('form').submit();
+        });
+      });
+    </script>
 {% endblock content %}

@@ -1,0 +1,58 @@
+{% extends "apps/wp/templates/pipeline/form.twig" %}
+
+{% block main %}
+
+  <div class="well well-sm">
+    <h3>Facebook</h3>
+  </div>
+  <hr class="devider devider-dashed" />
+  <a href="/facebook/?skip=1&return={{ blink.request.url }}" class="btn btn-block btn-primary">
+    <i class="fa fa-facebook"></i>
+    Facebook Login
+  </a>
+  <hr class="devider devider-db" />
+  
+  <div class="well well-sm">
+    <h3>Twitter Account</h3>
+  </div>
+  <hr class="devider devider-dashed" />
+  {# If they are logged in to twitter, show them their profile. #}
+  {% if twitter_profile %}
+    <div class="media">
+      <div class="media-left">
+        <input type="checkbox" name="twitter_announcement" value="1" {% if twitter_announcement %}checked{% endif %} />
+        <br />
+        <a href="#">
+          <img class="media-object" src="{{ twitter_profile.profile_image_url }}" alt="...">
+        </a>
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading">{{ twitter_profile.name }}[{{ twitter_profile.screen_name }}]</h4>
+        {{ twitter_profile.description }}
+      </div>
+    </div>
+  {% else %}
+    <a href="/twitter/?skip=1&return={{ blink.request.url }}" class="btn btn-block btn-u btn-u-aqua">
+      <i class="fa fa-twitter"></i>
+      Twitter Login
+    </a>
+  {% endif %}
+  <hr class="devider devider-db" />
+  
+  <div class="well well-sm">
+    <h3>MailChimp</h3>
+  </div>
+  <hr class="devider devider-dashed" />
+  <a href="/mailchimp/?skip=1&return={{ blink.request.url }}" class="btn btn-block btn-u btn-u-orange">
+    <i class="fa fa-mail-reply"></i>
+    MailChimp Login
+  </a>
+  <hr class="devider devider-db" />
+  
+
+  <script>
+    $(document).ready(function() {
+      sidebar_init();
+    });
+  </script>
+{% endblock main %}

@@ -5,7 +5,7 @@ namespace Wp {
 
   $wp_ifeelgoods_url_patterns = array(
       array(
-          "uri" => "/rewards/$",
+          "uri" => "/me/$",
           "view" => IfeelGoodsRewardsListTemplateView::as_view(),
           "name" => "IfeelGoodsCategoryListTemplateView",
           "title" => "Rewards List"

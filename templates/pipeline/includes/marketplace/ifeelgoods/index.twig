@@ -1,0 +1,199 @@
+<div class="row">
+  <div class="col-xs-4" id="filter_container">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <h3>Price</h3>
+        <div class="row">
+          <div class="col-xs-6">
+            MIN
+          </div>
+          <div class="col-xs-6">
+            <input type="int" value="0" class="form-control" id="face_value_min" />
+          </div>
+        </div>
+        <br />
+        <div class="row">
+          <div class="col-xs-6">
+            MAX
+          </div>
+          <div class="col-xs-6">
+            <input type="int" value="5000" class="form-control" id="face_value_max" />
+          </div>
+        </div>
+
+        <h3>Categories</h3>
+        <div id="category_container">
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  <div class="col-xs-8">
+    <div class="row" id="reward_container">
+      
+    </div>
+  </div>
+</div>
+
+<script id="template_reward" type="text/template">
+<div class="col-md-6">
+  <div class="thumbnails thumbnail-style">
+    <img class="img-responsive" src="<%= catalog_badge_image_url %>" alt="" />
+    <div class="caption">
+      <p><%= name %></p>
+      <div style="text-align: center;"><%= face_value %> <%= cost_currency %></div>
+      <br />
+      <p><a href="#" class="btn-u btn-u-xs select-reward" data-sku="<%= sku %>">Select <i class="fa fa-angle-right margin-left-5"></i></a></p>
+    </div>
+  </div>
+</div>
+</script>
+
+<script id="template_category" type="text/template">
+<div class="checkbox">
+  <label>
+    <input type="checkbox" name="category" value="<%= category %>"> <%= category %>
+  </label>
+</div>
+</script>
+
+<div style="background-color: whitesmoke; display: none;">
+  <button type="button" class="btn btn-info back-to-reward-list"><i class="fa fa-arrow-left"></i> Back to List</button>
+
+  <br /><br />
+
+  {% for field in form.hidden %}
+    {{ field.field|raw }}
+  {% endfor %}
+
+  {% for field in form.visible %}
+    {{ field.field|raw }}
+  {% endfor %}
+</div>
+
+<script>
+  $(function () {
+    // Brands as returned from api.
+    var rewardCollection = new Backbone.Collection;
+    $("#next_button").addClass('disabled');// Disable the next button until we have all the data needed.
+    
+    // Filter view.
+    var FilterView = Backbone.View.extend({
+      el: '#filter_container',
+      collection: new Backbone.Collection,
+      template: _.template($('#template_category').html()),
+      parentview: null,
+      initialize: function() {
+        this.collection.bind('reset add remove', this.render, this);
+      },
+      render: function() {
+        var that = this;
+        
+        this.$el.find('#category_container').html('');
+        this.collection.each(function(category) {
+          that.$el.find('#category_container').append(that.template(category.toJSON()));
+        });
+      },
+      events: {
+        'click input[name=category]': 'renderRewardView',
+        'keyup #face_value_min': 'renderRewardView',
+        'keyup #face_value_max': 'renderRewardView'        
+      },
+      renderRewardView: function() {
+        this.parentview.render();
+      }
+    });
+    
+    // View to display the marketplace.
+    var RewardView = Backbone.View.extend({
+      el: '#reward_container',
+      collection: rewardCollection,
+      template: _.template($('#template_reward').html()),
+      filterview: new FilterView,
+      initialize: function() {
+        this.collection.bind('reset add remove', this.render, this);
+        this.filterview.parentview = this;
+      },
+      render: function() {
+        this.$el.html('');// Clear everything.
+        var that = this;
+        
+        var category_list = [];
+        var category_name_list = [];
+        
+        var selected_category_list = [];
+        _.map($('input[name=category]:checked'), function(checkbox) {
+          selected_category_list.push($(checkbox).val());
+        });
+        var re = new RegExp('(' + selected_category_list.join('|') + ')', 'g');
+        
+        var fvmin = parseInt($('#face_value_min').val());
+        var fvmax = parseInt($('#face_value_max').val());
+        
+        fvmin = (_.isNaN(fvmin)) ? 0 : fvmin;
+        fvmax = (_.isNaN(fvmax)) ? 5000 : fvmax;
+        
+        // Display the collections.
+        this.collection.each(function(reward) {
+          // Determine if reward within price range.
+          var fv = parseFloat(reward.get('face_value'));
+          var fvpass = false;
+          if(fv >= fvmin && fv <= fvmax) {
+            fvpass = true;
+          }
+          
+          // Determine if the category is in the reward.
+          var cpass = true;
+          if(selected_category_list.length) {
+            cpass = false;
+            if(_.isArray(re.exec(reward.get('categories')))) {
+              cpass = true;
+            }
+          }
+          
+          // If they both pass, then we display it.
+          if(fvpass && cpass) {
+            that.$el.append(that.template(reward.toJSON()));
+          }
+        });
+        
+        // If this is the first time (i.e. this.categoryview.collection.length == 0),
+        // then fetch the categories available. 
+        if(this.filterview.collection.length == 0) {
+          // Collect the reward categories.
+          this.collection.each(function(reward) {
+            // Collect all the categories.
+            _.each(reward.get('categories').split('/'), function(category) {
+              // If already added, don't include them.
+              if(category_name_list.indexOf(category) === -1) {
+                category_name_list.push(category);
+                category_list.push({category:category});
+              }
+            });
+          });
+
+          // Add the categories found to the category collection.
+          this.filterview.collection.reset(category_list);
+        }
+      },
+      events: {
+        'click .select-reward': 'selectReward'
+      },
+      selectReward: function(e) {
+        e.preventDefault();// Prevent from going to link.
+        var sku = $(e.target).data('sku');// Get the form from the data object.
+        $('#sku').val(sku);// Set the form sku.
+        $('#next_button').removeClass('disabled');// Remove the disable button.
+        $('#next_button').click();// Submit the form.
+      }
+    });
+    
+    
+    
+    var rewardView = new RewardView();
+
+    rewardCollection.reset({{ ifeelgoods |json_encode()|raw }});
+    console.log(rewardCollection.toJSON());
+  });
+</script>

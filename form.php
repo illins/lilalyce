@@ -17,6 +17,33 @@ namespace Wp {
 //  }
   
   /**
+   * Modules form.
+   */
+  class WapoModuleForm extends \Blink\Form {
+    public $module_id;
+    
+    public function Fields() {
+      $form_fields = parent::Fields();
+      $this->module_id = $form_fields->HiddenIntegerField(array("verbose_name"=>"Module","name"=>"module_id"));
+      return $form_fields;
+    }
+  }
+  
+  /**
+   * Announcement Form - Basically a delivery message form.
+   */
+  class WapoAnnouncementForm extends \Blink\Form {
+    public $announcement;
+    
+    public function Fields() {
+      $form_fields = parent::Fields();
+      $this->announcement = $form_fields->TextField(array("name"=>"announcement"));
+      return $form_fields;
+    }
+  }
+  
+  
+  /**
    * Wapo form.
    */
   class WapoMarketplaceForm extends \Blink\Form {
@@ -144,14 +171,14 @@ namespace Wp {
   /**
    * Tango form.
    */
-  class TangoMarketplaceForm extends \Blink\Form {
+  class TangoCardMarketplaceForm extends \Blink\Form {
     public $sku;
-    public $amount;
+//    public $amount;
     
     public function Fields() {
       $form_fields = parent::Fields();
       $this->sku = $form_fields->HiddenCharField(array("name"=>"sku"));//,"value"=>"AMZN-E-V-STD"
-      $this->amount = $form_fields->DecimalField(array("name"=>"amount"));
+//      $this->amount = $form_fields->DecimalField(array("name"=>"amount"));
       return $form_fields;
     }
   }
@@ -160,15 +187,11 @@ namespace Wp {
    * I feel Goods form.
    */
   class IfgMarketplaceForm extends \Blink\Form {
-    public $promotioncategory;
     public $sku;
-    public $amount;
     
     public function Fields() {
       $form_fields = parent::Fields();
-      $this->promotioncategory = $form_fields->HiddenIntegerField(array("name"=>"promotioncategory"));
       $this->sku = $form_fields->HiddenCharField(array("name"=>"sku"));
-      $this->amount = $form_fields->DecimalField(array("name"=>"amount"));
       return $form_fields;
     }
   }
@@ -360,6 +383,8 @@ namespace Wp {
   class NewProfileForm extends \Blink\Form {
     public $name;
     public $email;// If no current account (require for facebook for back comunication).
+    public $password;
+    public $confirm_password;
 //    public $fb_loc_id;
 //    public $fb_loc_category;
 //    public $fb_loc_name;
@@ -368,6 +393,8 @@ namespace Wp {
       $form_fields = parent::Fields();
       $this->name = $form_fields->CharField(array("name"=>"name","verbose_name"=>"Name / Company Name","help_text"=>"Name to be used to create your profile."));
       $this->email = $form_fields->EmailField(array("name"=>"email","verbose_name"=>"Your email","help_text"=>"Email to be used to create or fetch your account (you retrieve your account at the last step)."));
+      $this->password = $form_fields->PasswordField(array("name"=>"password","help_text"=>"Enter password to be used for your account"));
+      $this->confirm_password = $form_fields->PasswordField(array("name"=>"confirm_password","help_text"=>"Confirm password to be used for your account"));
 //      $this->fb_loc_id = $form_fields->HiddenCharField(array("name"=>"fb_loc_id","verbose_name"=>"Facebook Location ID","max_length"=>50,"blank"=>true,"default"=>"103983392971091"));
 //      $this->fb_loc_category = $form_fields->HiddenCharField(array("name"=>"fb_loc_category","verbose_name"=>"Facebook Location Category","max_length"=>100,"blank"=>true,"default"=>"City"));
 //      $this->fb_loc_name = $form_fields->HiddenCharField(array("name"=>"fb_loc_name","verbose_name"=>"Facebook Location Name","max_length"=>256,"blank"=>true,"default"=>"South Bend, Indiana"));
