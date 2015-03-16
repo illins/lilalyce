@@ -26,6 +26,8 @@ namespace Wp {
   require_once 'apps/blink-bitly/bitly/bitly.php';
   
   require_once 'apps/wp/views/pipeline/definition.php';
+  
+  require_once 'apps/wp/views/pipeline/validate-wapo.php';
 
   use Wapo\PromotionCategory;
   use Wapo\Promotion;
@@ -134,17 +136,36 @@ namespace Wp {
   
   /**
    * 
+   * @param \Blink\Request $request
+   */
+  function create_wapo($request) {
+    try {
+      // Validate Wapo.
+      list($error, $message, $data) = validate_wapo($request);
+      if($error) {
+        throw new \Exception($message);
+      }
+      
+      // Determine which Wapo we are creating.
+      if($data['module']->tag == "announcement") {
+        return create_wapo_announcement($request, $data);
+      } else {
+        return create_wapo_general($request, $data);
+      }
+    } catch (\Exception $ex) {
+      return array(true, $ex->getMessage(), null);
+    }
+  }
+  
+  /**
+   * 
    * @param mixed $cookies
    * @param \Blink\Request $request
    * @throws \Exception
    */
-  function create_wapo($cookies, $request) {
+  function create_wapo_general($request, $data) {
     try {
-      // Validate the cart again.
-      list($error, $message) = validate_cart($cookies, $request);
-      if($error) {
-        throw new \Exception($message);
-      }
+      $module = $data['module'];
       
       $request->session->set('checkoutid', 1411015);
       
@@ -221,6 +242,7 @@ namespace Wp {
 
       // Create the wapo.
       $create = array(
+          "module" => $module,
           "profile" => $profile,
           "promotion" => $cookies["promotion_id"],
           "payment_method" => \Wapo\PaymentMethod::queryset()->get(array("name"=>"WePay")),
@@ -571,6 +593,42 @@ namespace Wp {
         
         $wapo->quantity = count($number_list);
         $wapo->save(false);
+      }
+    } catch (\Exception $ex) {
+      return array(true, $ex->getMessage(), null);
+    }
+    
+    return array(false, "", $wapo);
+  }
+  
+  /**
+   * Specialized function to create an announcement wapo.
+   * 
+   * @param mixed $cookies
+   * @param \Blink\Request $request
+   * @throws \Exception
+   */
+  function create_wapo_announcement($request, $data) {
+    try {
+      // Create the wapo.
+      $create = array(
+          "module" => $data['module'],
+          "profile" => $data['profile'],
+//          "payment_method" => \Wapo\PaymentMethod::queryset()->get(array("name"=>"WePay")),
+          "delivery_message" => $request->cookie->find("announcement"),
+          "status" => "p",
+      );
+      $wapo = Wapo::create_save($create, false);
+      $request->session->set("wapo_id", $wapo->id);
+
+      // Make an entry for each announcement service.
+      if($data['twitter_announcement']) {
+        $recipient = array(
+            "wapo" => $wapo,
+            "name" => "twitter_announcement",
+            "contact" => $data['twitter_account']->id
+        );
+        WapoRecipient::create_save($recipient, false);
       }
     } catch (\Exception $ex) {
       return array(true, $ex->getMessage(), null);

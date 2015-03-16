@@ -14,6 +14,8 @@ namespace Wp {
   require_once("apps/wp/scalablepress/url.php");
   require_once("apps/wp/ifeelgoods/url.php");
   require_once("apps/wp/tangocard/url.php");
+  
+  require_once 'apps/wp/views/pipeline/progress.php';
 
   $wp_url_patterns = array(
       array(
@@ -56,7 +58,18 @@ namespace Wp {
 //          "title" => "MailChimp List Members"
 //      ),
       
-      
+      array(
+          "uri" => "/progress/module/(?P<pk>\d+)/$",
+          "view" => ModuleJSONDetailView::as_view(),
+          "name" => "ModuleJSONDetailView",
+          "title" => "Module JSON Detail View"
+      ),
+      array(
+          "uri" => "/progress/profile/(?P<pk>\d+)/$",
+          "view" => ProfileJSONDetailView::as_view(),
+          "name" => "ProfileJSONDetailView",
+          "title" => "Profile JSON Detail View"
+      ),
       
       array(
           "uri" => "/sidebar/$",
@@ -66,15 +79,15 @@ namespace Wp {
       ),
       array(
           "uri" => "/createwapo/$",
-          "view" => CreateWapoView::as_view(),
-          "name" => "CreateWapoView",
-          "title" => "Create"
+          "view" => CreateWapoJSONView::as_view(),
+          "name" => "CreateWapoJSONView",
+          "title" => "Create Wapo"
       ),
       array(
           "uri" => "/sendwapo/$",
-          "view" => SendWapoView::as_view(),
-          "name" => "SendWapoView",
-          "title" => "Send"
+          "view" => SendWapoJSONView::as_view(),
+          "name" => "SendWapoJSONView",
+          "title" => "Send Wapo"
       ),
       array(
           "uri" => "/pay/$",

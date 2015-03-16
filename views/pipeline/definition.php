@@ -127,6 +127,7 @@ namespace Wp {
 
     // MARKETPLACE STEP.
 
+    // Skip marketplace if this is an announcement.
     $promotioncategory = null;
     if (!in_array($module->tag, array("announcement"))) {
       $definition["marketplace"] = array(
@@ -196,23 +197,19 @@ namespace Wp {
 
     // DELIVERY STEP.
     
+    // Set the main delivery page.
+    $definition["delivery"] = array(
+        "title" => "Delivery",
+        "template" => ConfigTemplate::DefaultTemplate("pipeline/delivery.twig"),
+        "form" => "\Blink\Form"
+    );
+    
     // If announcement, just output a blank form.
-    if ($module->tag == "announcement") {
-      $definition["delivery"] = array(
-          "title" => "Delivery",
-          "template" => ConfigTemplate::DefaultTemplate("pipeline/main_delivery.twig"),
-          "form" => "\Blink\Form"
-      );
-    } else {
+    if ($module->tag == "1announcement") {
       $delivery = $request->cookie->find("delivery", null);
       $delivery = $request->post->find("delivery", $delivery);
 
-      // Set the main delivery page.
-      $definition["delivery"] = array(
-          "title" => "Delivery",
-          "template" => ConfigTemplate::DefaultTemplate("pipeline/delivery.twig"),
-          "form" => "\Wp\DeliveryForm"
-      );
+      
 
       // Define the conditional steps based on the delivery method.
       if ($delivery == "ffa") {
@@ -289,13 +286,27 @@ namespace Wp {
         );
       }
     }
+    
+    // DETAILS STEP.
+    $definition["details"] = array(
+        "title" => "Details",
+        "template" => ConfigTemplate::DefaultTemplate("pipeline/details.twig"),
+        "form" => "\Wp\DetailsForm"
+    );
 
+    // CHECKOUT STEP.
+    
     // Checkout (ready to go pay).
     $definition["checkout"] = array(
         "title" => "Checkout",
         "template" => ConfigTemplate::DefaultTemplate("pipeline/checkout.twig"),
         "form" => "Wp\PaymentMethodForm"
     );
+    
+    // If this is an announcement, then we put a blank form.
+    if($module->tag == "announcement") {
+      $definition['checkout']['form'] = "\Blink\Form";
+    }
 
     // Create step (once they have paid).
     $definition["create"] = array(

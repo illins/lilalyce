@@ -1,214 +1,88 @@
 {% extends "apps/wp/templates/pipeline/form.twig" %}
 
 {% block main %}
+  {% for field in form.visible %}
+    {{ field.field|raw }}
+  {% endfor %}
 
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <div class="row">
-        <div class="col-xs-4">
-          <ul class="nav nav-tabs nav-stacked" id="delivery_tabs">
-            <li class="active"><a href="#ffa" data-toggle="tab">Free For All</a></li>
-            <li><a href="#email" data-toggle="tab">Email</a></li>
-            <li><a href="#text" data-toggle="tab">Text</a></li>
-            <li><a href="#facebook" data-toggle="tab">Facebook</a></li>
-            <li><a href="#twitter" data-toggle="tab">Twitter</a></li>
-{#            <li><a href="#instagram" data-toggle="tab">Instagram</a></li>#}
-          </ul>
+  {% for field in form.hidden %}
+    {{ field.field|raw }}
+  {% endfor %}
+  
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="active"><a id="ffa-tab-a" href="#ffa" role="tab" data-toggle="tab">Free For All</a></li>
+    <li><a id="e-tab-a" href="#e" role="tab" data-toggle="tab">Email</a></li>
+    <li><a id="facebook-tab-a" href="#facebook" role="tab" data-toggle="tab">Facebook</a></li>
+    <li><a id="twitter-tab-a" href="#twitter" role="tab" data-toggle="tab">Twitter</a></li>
+    <li><a id="mailchimp-tab-a" href="#mailchimp" role="tab" data-toggle="tab">MailChimp</a></li>
+  </ul>
+  <br /><br />
+  <div class="tab-content">
+    <div class="tab-pane active" id="ffa">
+      {{ ffa_form.visible.ffa_quantity.field|raw }}
+    </div>
+    <div class="tab-pane" id="e">
+      {% for field in e_form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+    </div>
+    <div class="tab-pane" id="facebook">
+      
+    </div>
+    <div class="tab-pane" id="twitter">
+      
+    </div>
+    <div class="tab-pane" id="mailchimp">
+
+    </div>
+  </div>
+  
+  <script type="text/template" id="twitter-login-view">
+    <div class="row">
+    <div class="col-xs-3"></div>
+      <div class="col-xs-6">
+        <a href="/twitter/?skip=1&return={{ blink.request.url }}" class="btn btn-block btn-u btn-u-aqua">
+          <i class="fa fa-twitter"></i>
+          Twitter Login
+        </a>
+      </div>
+      <div class="col-xs-3"></div>
+    </div>
+  </script>
+  
+  <script type="text/template" id="twitter-view">
+    <div class="panel panel-default">
+      <div class="panel-title pull-right">
+        <div class="checkbox">
+          <label>
+            <strong>Announce to Twitter</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="twitter_announcement" value="1" {% if twitter_announcement %}checked{% endif %} />&nbsp;
+          </label>
         </div>
-        <div class="col-xs-8">
-          <div class="tab-content">
-            <div class="tab-pane active" id="ffa">
-              <h5>Free for all</h5>
-              <div class="list-group">
-                <div href="#" class="list-group-item">
-                  <p class="list-group-item-text">Create a link that you can distribute in any medium you choose. Set a cap to limit how many Wapo(s) are sent.</p>
-                  <p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="ffa" {% if delivery == "ffa" %}checked{% endif %} /> <b>Select</b>
-                    </label>
-                  </div>
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="tab-pane" id="email">
-              <h5>Email</h5>
-              <div class="list-group">
-                <div href="#" class="list-group-item">
-                  <p class="list-group-item-text">Send a Wapo to an email or email list. Each user must authenticate through their email to confirm account.</p>
-                  <p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="e" {% if delivery == "e" %}checked{% endif %} /> <b>Select</b>
-                    </label>
-                  </div>
-                  </p>
-                </div>
-              </div>
-
-              <h5>Email List</h5>
-              <div class="list-group">
-                <div href="#" class="list-group-item">
-                  <p class="list-group-item-text">Send a Wapo to an email or email list. Each user must authenticate through their email to confirm account.</p>
-                  <p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="el" {% if delivery == "el" %}checked{% endif %} /> <b>Select</b>
-                    </label>
-                  </div>
-                  </p>
-                </div>
-              </div>
-                    
-              <h5>MailChimp</h5>
-              <div class="list-group">
-                <div href="#" class="list-group-item">
-                  <p class="list-group-item-text">Log in to your MailChimp account and send emails to your list.</p>
-                  <p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="mailchimp" {% if delivery == "mailchimp" %}checked{% endif %} /> <b>Select</b>
-                    </label>
-                  </div>
-                  </p>
-                </div>
-              </div>
-            </div>
-                    
-            <div class="tab-pane" id="text">
-              <h5>Text</h5>
-              <div class="list-group">
-                <div href="#" class="list-group-item">
-                  <p class="list-group-item-text">Send a Wapo to Phone number(s).</p>
-                  <p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="text" {% if delivery == "text" %}checked{% endif %} /> <b>Select</b>
-                    </label>
-                  </div>
-                  </p>
-                </div>
-              </div>
-            </div>
-                    
-            <div class="tab-pane" id="facebook">
-              <h2>Facebook</h2>
-
-              <h4>Any Friends</h4>
-              <div class="list-group">
-                <div href="#" class="list-group-item">
-                  <p class="list-group-item-text">Login to Facebook to send a wapo to any of your Friends. Buy the maximum number of Wapos and any of your friends can download the wapos up to the maximum. Anyone who clicks on link must be validated (they must log in through Facebook) and validated to be your friend.</p>
-                  <p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="aff" {% if delivery == "aff" %}checked{% endif %} /> <b>Select</b>
-                    </label>
-                  </div>
-                  </p>
-                </div>
-              </div>
-
-              {#<h4>Friends</h4>
-              <div class="list-group">
-                <div href="#" class="list-group-item">
-                  <p class="list-group-item-text">Login to Facebook to send a wapo to selected Friends. Message will be delivered as a mention (<a href="#">more</a>) and only the friends you select are able to download. Anyone who clicks on link must be validated (they must log in through Facebook) and validated to be your friend.</p>
-                  <p>
-                    <div class="checkbox">
-                      <label>
-                        <input type="radio" name="delivery" value="sff" {% if delivery == "sff" %}checked{% endif %} /> <b>Select</b>
-                      </label>
-                    </div>
-                  </p>
-                </div>
-              </div>#}
-
-              <h4>Pages</h4>
-              <div class="list-group">
-                <div href="#" class="list-group-item">
-                  <p class="list-group-item-text">Login to Facebook to send a wapo to page followers. Buy a maximum number of Wapos you would like to send and anyone who has liked your page can download the wapo. Anyone who clicks on link must be validated (they must log in through Facebook) and validated to like your page.</p>
-                  <p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="fp" {% if delivery == "fp" %}checked{% endif %} /> <b>Select</b>
-                    </label>
-                  </div>
-                  </p>
-                </div>
-              </div>
-              {#      <div class="list-group">
-                      <div href="#" class="list-group-item">
-                        <h5 class="list-group-item-heading">Page Followers</h5>
-                        <p class="list-group-item-text">Login to Facebook to attach one of your pages to a Wapo. Anyone who clicks on the link must be validated (they must log in through Facebook) and validated that they follow this page.</p>
-                        <p><a href="">Choose</a></p>
-                      </div>
-                    </div>#}
-            </div>
-            <div class="tab-pane" id="twitter">
-              <h5>Twitter</h5>
-              <div class="list-group">
-                <div href="#" class="list-group-item">
-                  <h5 class="list-group-item-heading">Any Followers</h5>
-                  <p class="list-group-item-text">Login through Twitter and post a link for a Wapo. Buy the maximum number of Wapos for any of your followers to download. Only your followers (Authenticated and confirmed) can download the Wapo.</p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="atf" {% if delivery == "atf" %}checked{% endif %} /> <b>Select</b>
-                    </label>
-                  </div>
-                </div>
-                <div href="#" class="list-group-item">
-                  <h5 class="list-group-item-heading">Followers</h5>
-                  <p class="list-group-item-text">Login through Twitter and post a link for a Wapo. Only the selected followers (Authenticated and confirmed) can download the Wapo.</p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="stf" {% if delivery == "stf" %}checked{% endif %} /> <b>Select</b>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {#<div class="tab-pane" id="instagram">
-              <h4>Instagram</h4>
-              <div class="list-group">
-                <div href="#" class="list-group-item">
-                  <h5 class="list-group-item-heading">Any Followers</h5>
-                  <p class="list-group-item-text">Login through Instagram and post a link for a Wapo. Buy the maximum number of Wapos for any of your followers to download. Only your followers (Authenticated and confirmed) can download the Wapo.</p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="aif" {% if delivery == "aif" %}checked{% endif %} /> <b>Select</b>
-                    </label>
-                  </div>
-                </div>
-                <div href="#" class="list-group-item">
-                  <h5 class="list-group-item-heading">Followers</h5>
-                  <p class="list-group-item-text">Login through Instagram and post a link for a Wapo. Only the selected followers (Authenticated and confirmed) can download the Wapo.</p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="sif" {% if delivery == "sif" %}checked{% endif %} /> <b>Select</b>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>#}
+      </div>
+      <div class="panel-body">
+        <div class="media">
+          <div class="media-left">
+            <a href="#">
+              <img class="media-object" src="<%= account.profile_image_url %>" alt="...">
+            </a>
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading"><%= account.name %>[<%= account.screen_name %>]</h4>
+            <%= account.description %>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </script>
 
   <script>
-    $(document).ready(function() {
-      sidebar_init();
+    $(function() {
       
-    {% if delivery in ['e', 'el', 'mailchimp'] %}
-      $('#delivery_tabs a[href="#email"]').tab('show');
-    {% elseif delivery in ['aff', 'fp'] %}
-      $('#delivery_tabs a[href="#facebook"]').tab('show');
-    {% elseif delivery in ['atf', 'stf'] %}
-      $('#delivery_tabs a[href="#twitter"]').tab('show');
-    {% elseif delivery in ['aif', 'sif'] %}
-      $('#delivery_tabs a[href="#instagram"]').tab('show');
-    {% endif %}
     });
   </script>
 {% endblock main %}
+
+{% block sub_extra_javascript %}
+  <script src="/apps/wp/static/wp/js/delivery.js"></script>
+{% endblock sub_extra_javascript %}

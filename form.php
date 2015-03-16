@@ -56,6 +56,36 @@ namespace Wp {
     }
   }
   
+  
+  // DELIVERY SECTION.
+  class DeliveryFFAForm extends \Blink\Form {
+    public $ffa_quantity;
+    
+    public function Fields() {
+      $form_fields = parent::Fields();
+      
+      $this->ffa_quantity = $form_fields->IntegerField(array("verbose_name"=>"Quantity","name"=>"ffa_quantity"));
+      
+      return $form_fields;
+    }
+  }
+  
+  /**
+   * Wapo Details form like delivery message and expiring date.
+   */
+  class DetailsForm extends \Blink\Form {
+    public $delivery_message;
+    public $expiring_date;
+    
+    public function Fields() {
+      $form_fields = parent::Fields();
+      $this->delivery_message = $form_fields->TextField(array("name"=>"delivery_message","blank"=>true,"help_text"=>"Message sent or seen by the Wapo recipient."));
+      $this->expiring_date = $form_fields->DateTimeField(array("name"=>"expiring_date","format"=>"m/d/Y H:i A","min_value"=>date("m/d/Y H:i A"), "help_text"=>"Date Wapo will expire (regardless of how many downloaded)."));
+      
+      return $form_fields;
+    }
+  }
+  
   /**
    * Garment form.
    */

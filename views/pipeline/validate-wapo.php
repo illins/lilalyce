@@ -39,43 +39,52 @@ namespace Wp {
   use Wapo\Member;
  
   /**
+   * Validate if the submitted data is enough to create a Wapo.
    * 
-   * @param mixed $cookies
    * @param \Blink\Request $request
+   * @return array array(boolean, string, data);
    * @throws \Exception
    */
-  function validate_cart($cookies, $request) {
-    // Verify that we can send this...
+  function validate_wapo($request) {
     try {
-      // Get the module.
+      // Determine what module we are on.
       $module = null;
-      $module_id = $this->request->cookie->find("module_id");
+      $module_id = $request->cookie->find("module_id");
       if ($module_id) {
-        $module = \Wapo\Module::get_or_null(array("id" => $module_id), "Module not found.");
+        $module = \Wapo\Module::get_or_null(array("id" => $module_id));
       } else {
-        $module = \Wapo\Module::get_or_null(array("tag" => "gift"), "Module not found.");
+        $module = \Wapo\Module::get_or_null(array("tag" => "gift"));
       }
       
-      // Check if module has been found.
+      // If no module, then this is an error.
       if(!$module) {
-        throw new \Exception("Module not found.");
+        throw new \Exception("Module error: Module not found.");
       }
       
-      // If this is an announcement, check it here and exit(don't continue) if everything checks out.
-      if($module->tag == "announcement") {
-        $at_least_one = false;// If we have one social media platform.
-        $twitter_announcement = $request->cookie->find("twitter_announcement", 0);
-        if($twitter_announcement) {
-          if(!(new \BlinkTwitter\BlinkTwitterAPI($this->request))->isLoggedIn()) {
-            throw new \Exception("Please log in to twitter to send a twitter announcement.");
-          }
-          $at_least_one = true;
-        }
-        
-        if($at_least_one) {
-          return array(true, "");
-        }
+      // Validate based on module.
+      if($module->tag == "gift") {
+        return validate_wapo_general($request, $module);
+      } else if($module->tag == "announcement") {
+        return validate_wapo_announcement($request, $module);
       }
+    } catch (\Exception $ex) {
+      return array(true, $ex->getMessage(), null);
+    }
+    
+    return array(false, "", null);
+  }
+ 
+  /**
+   * Validate that the data posted is enough to create a general Wapo.
+   * 
+   * @param \Blink\Request $request
+   * @param \Wapo\Module $module
+   * @return array See validate_wapo
+   * @throws \Exception
+   */
+  function validate_wapo_general($request, $module) {
+    try {
+      // PROMOTION STEP.
       
       // Check that promotion is set.
       $promotion = Promotion::get_or_null(array("id"=>$request->cookie->find("promotion_id")));
@@ -85,6 +94,7 @@ namespace Wp {
         throw new \Exception("Promotion not selected.");
       }
       
+      // Check the promotion category.
       $promotioncategory = $promotion->promotioncategory;
       if($promotioncategory->id != $request->cookie->find("promotioncategory_id")) {
         throw new \Exception("Promotion not selected.");
@@ -99,12 +109,12 @@ namespace Wp {
         }
         
         // If this unit_price == -1 (i.e. custom), check that the range is within min/max.
-        if($sku->unit_price == -1) {
-          $amount = $request->cookie->find("amount", 0);
-          if($amount < $sku->min_price || $amount > $sku->max_price) {
-            throw new \Exception("'Card' amount must be within range.");
-          }
-        }
+//        if($sku->unit_price == -1) {
+//          $amount = $request->cookie->find("amount", 0);
+//          if($amount < $sku->min_price || $amount > $sku->max_price) {
+//            throw new \Exception("'Card' amount must be within range.");
+//          }
+//        }
       } else if($promotioncategory->name == "I Feel Goods") {
         $sku = \Wapo\IFeelGoodsRewards::get_or_null(array("sku"=>$request->cookie->find("sku")));
         if(!$sku) {
@@ -112,19 +122,21 @@ namespace Wp {
         }
       }
       
+      // DELIVERY METHOD STEP.
+      
       // Check that delivery method is valid.
       $delivery_methods = array("ffa", "e", "el", "aff", "fp", "atf", "stf", "aif", "sif");
-      if (!isset($cookies['delivery']) && !in_array($cookies['delivery'], $delivery_methods)) {
+      if (!in_array($request->cookie->find('delivery'), $delivery_methods)) {
         throw new \Exception("Delivery method not found.");
       }
 
       // Check that we have an expiration date.
-      if (!isset($cookies['expiring_date'])) {
+      if (!$request->cookie->find('expiring_date')) {
         throw new \Exception("Please set the promotion expiring date.");
       }
 
       // Check that the date is valid and that it is greater than today.
-      $expiring_date = \DateTime::createFromFormat("m/d/Y H:i A", $cookies['expiring_date']);
+      $expiring_date = \DateTime::createFromFormat("m/d/Y H:i A", $request->cookie->find('expiring_date'));
       $error = \DateTime::getLastErrors();
       if ($error['error_count']) {
         throw new \Exception("Please select a valid expiring date.");
@@ -139,9 +151,9 @@ namespace Wp {
       }
 
       // For each delivery method, check that we have all variables set.
-      $delivery = $cookies['delivery'];
+      $delivery = $request->cookie->find('delivery');
       if ($delivery == "ffa") {
-        if (!isset($cookies['quantity']) && $cookies['quantity'] < 1) {
+        if (!$request->cookie->find('quantity') && $request->cookie->find('quantity', 0) < 1) {
           throw new \Exception("Please select a quantity for Free For All Delivery.");
         }
       } else if ($delivery == "e") {
@@ -152,7 +164,7 @@ namespace Wp {
         
         $recipient_count = 0;
         for($i = 1; $i <= $emails; $i++) {
-          if(isset($cookies["email-$i"])) {
+          if($request->cookie->find("email-$i")) {
             $recipient_count++;
           }
         }
@@ -168,41 +180,41 @@ namespace Wp {
         }
 
         // Check that the contact is theirs and that it is an email list.
-        if (!isset($cookies['contact_id']) || count(Contact::queryset()->depth(2)->filter(array("id" => $cookies['contact_id'], "wapo_distributor.user" => $this->request->user, "type" => "e"))->fetch())) {
+        if (!count(Contact::queryset()->depth(2)->filter(array("id" => $request->cookie->find('contact_id'), "wapo_distributor.user" => $this->request->user, "type" => "e"))->fetch())) {
           throw new \Exception("Please select a valid email list.");
         }
       } else if ($delivery == "aff") {
-        if (!isset($cookies['facebook_id'])) {
+        if (!$request->cookie->find('facebook_id')) {
           throw new \Exception("Please log in to Facebook to continue.");
         }
 
         // Check that they have a quantity.
-        if (!isset($cookies['quantity']) || $cookies['quantity'] < 1) {
+        if ($request->cookie->find('quantity', 0) < 1) {
           throw new \Exception("Please select a quantity for Any Facebook Friend Delivery.");
         }
       } else if ($delivery == "fp") {
-        if (!isset($cookies['facebook_page_id']) || !$cookies['facebook_page_id']) {
+        if (!$request->cookie->find('facebook_page_id')) {
           throw new \Exception("Please select Facebook Page.");
         }
 
         // Check that they have a quantity.
-        if (!isset($cookies['quantity']) || $cookies['quantity'] < 1) {
+        if ($request->cookie->find('quantity', 0) < 1) {
           throw new \Exception("Please select a quantity for Facebook Page Delivery.");
         }
       } else if ($delivery == "atf") {
-        if (!isset($cookies['quantity']) && $cookies['quantity'] < 1) {
+        if ($request->cookie->find('quantity', 0) < 1) {
           throw new \Exception("Please select a quantity for Any Twitter Follower Delivery.");
         }
       } else if ($delivery == "stf") {
-        if (!isset($cookies['twitter_followers']) && count(explode(",", $cookies['twitter_followers'])) < 1) {
+        if (count(explode(",", $request->cookie->find('twitter_followers', ''))) < 1) {
           throw new \Exception("Please select at least one Twitter Follower.");
         }
       } else if ($delivery == "aif") {
-        if (!isset($cookies['quantity']) && $cookies['quantity'] < 1) {
+        if ($request->cookie->find('quantity', 0) < 1) {
           throw new \Exception("Please select a quantity for Any Instagram Follower Delivery.");
         }
       } else if ($delivery == "sif") {
-        if (!isset($cookies['instagram_followers']) && count(explode(",", $cookies['instagram_followers'])) < 1) {
+        if (count(explode(",", $request->cookie->find('instagram_followers', 0))) < 1) {
           throw new \Exception("Please select at least one Instagram Follower.");
         }
       } else if($delivery == "mailchimp") {
@@ -245,10 +257,77 @@ namespace Wp {
         }
       }
     } catch (\Exception $ex) {
-      return array(true, $ex->getMessage());
+      return array(true, $ex->getMessage(), null);
+    }
+
+    $data = array(
+        "module" => $module
+    );
+    
+    return array(false, "", $data);
+  }
+ 
+  /**
+   * Specialized function to validate an announcement wapo.
+   * Returns data to be used to create the announcement without needing to fetch
+   * it again.
+   * 
+   * @param type $request
+   * @param \Wapo\Module $module
+   * @return type
+   * @throws \Exception
+   */
+  function validate_wapo_announcement($request, $module) {
+    try {
+      // PROFILE STEP
+      // Check that the profile is theirs. The announcement feature is only available to people with an account.
+      // @todo - add option for checking that they are a paying customer!? later.
+      $profile = \Wapo\Profile::get_or_null(array("id"=>$request->cookie->find("profile_id"),"wapo_distributor.user"=>$request->user));
+      if(!$profile) {
+        throw new \Exception("Profile error. Please select a valid profile.");
+      }
+      
+      // ANNOUNCEMENT STEP
+      
+      // ANNOUNCEMENT STEP ANNOUNCMENT TEXT.
+      
+      // Check that we have an announcement. 
+      if(!$request->cookie->find("announcement")) {
+        throw new \Exception("You have not entered an announcement to send.");
+      }
+      
+      // ANNOUNCEMENT STEP TWITTER.
+      $twitter_announcement = $request->cookie->find("twitter_announcement");
+      $twitter_account = null;
+      if($twitter_announcement) {
+        $twitter_account = (new \BlinkTwitter\BlinkTwitterAPI($request))->getTwitterProfile();
+        
+        if(!$twitter_account) {
+          throw new \Exception("You have selected Twitter Announcement but have not logged in to Twitter.");
+        }
+      }
+      
+      // Check that we have at least one announcemnt.
+      if(!$twitter_announcement) {
+        throw new \Exception("Please select at least one Announcement.");
+      }
+    } catch (\Exception $ex) {
+      return array(
+          "error" => true,
+          "message" => $ex->getMessage(),
+          null
+      );
     }
     
-    return array(false, "");
+    $data = array(
+        "error" => false,
+        "message" => "",
+        "module" => $module,
+        "profile" => $profile,
+        "twitter_announcement" => $twitter_announcement,
+        "twitter_account" => $twitter_account
+    );
+    
+    return array(false, '', $data);
   }
-  
 }

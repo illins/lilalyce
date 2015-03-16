@@ -24,6 +24,11 @@ namespace Wp {
   require_once("apps/blink-tangocard/tangocard/tangocard.php");
   
   require_once 'apps/blink-bitly/bitly/bitly.php';
+  
+  // Wapo functions.
+  require_once 'apps/wp/views/pipeline/validate-wapo.php';
+  require_once 'apps/wp/views/pipeline/create-wapo.php';
+  require_once 'apps/wp/views/pipeline/send-wapo.php';
 
   use Wapo\PromotionCategory;
   use Wapo\Promotion;
@@ -150,14 +155,10 @@ namespace Wp {
   /**
    * - Create a wapo in the create step of the pipeline.
    */
-  class CreateWapoView extends \Blink\TemplateView {
-    protected function get_content_type() {
-      return \Blink\View::CONTENT_JSON;
-    }
-    
+  class CreateWapoJSONView extends \Blink\JSONView {
     protected function get_context_data() {
       $c = parent::get_context_data();
-      list($error, $message, $wapo) = create_wapo($this->request->cookie->all(), $this->request);
+      list($error, $message, $wapo) = create_wapo($this->request);
       $c['error'] = $error;
       $c['message'] = $message;
       $c['wapo'] = $wapo;
@@ -168,119 +169,11 @@ namespace Wp {
   /**
    * - Performs the send of a Wapo depending on the delivery method.
    */
-  class SendWapoView extends \Blink\TemplateView {
-    protected function get_content_type() {
-      return \Blink\View::CONTENT_JSON;
-    }
-    
+  class SendWapoJSONView extends \Blink\JSONView {
     protected function get_context_data() {
       $c = parent::get_context_data();
-      
-      $delivery = $this->request->cookie->find("delivery");
-      $site = \Blink\ConfigSite::$Site;
-      
-      try {
-        $wapo = Wapo::queryset()->get(array("id" => $this->request->session->find("wapo_id")), "Wapo not found.");
-        $delivery_message = $wapo->delivery_message;
-        $message = "";
-        
-        if($delivery == "e" || $delivery == "el" || $delivery == "mailchimp") {
-          $mail = \Swift\Api::Message();
-
-          foreach(WapoRecipient::queryset()->filter(array("wapo" => $wapo))->fetch() as $recipient) {
-  //          $mail->setSubject(sprintf("%s has contacted us.", $this->form->get("name")));
-  //          $mail->setFrom(array($this->form->get("email") => $this->form->get("name")));
-  //          $mail->addReplyTo($this->form->get("email"));
-  //          $mail->setTo(array("livedev1@yahoo.com" => "Wapo.co"));//creationandthings@gmail.com
-  //          $mail->addCc(array("creationandthings@gmail.com" => "Wapo.co"));//
-  //          $message = \Blink\render_get($context, ConfigTemplate::Template("frontend/contact_us.twig"));
-  //          $mail->setBody($message, "text/html");
-  //          $result = \Swift\Api::Send($mail);
-
-//            $mail->setSubject("Subject");
-//            $mail->setFrom(array("swanjie3@yahoo.com" => ".."));
-//            //$mail->addReplyTo($this->form->get("email"));
-//            $mail->setTo(array($recipient->contact => ".."));//creationandthings@gmail.com
-//            //$mail->addCc(array("creationandthings@gmail.com" => "Wapo.co"));//
-//            $message = "Testing email.";
-//            $result = \Swift\Api::Send($mail);
-            
-            if($delivery_message) {
-              $message = $delivery_message . " " . sprintf("%s/%s", $site, $recipient->targeturl->code);
-            } else {
-              $message = sprintf("Click here '%s/%s' to download your Wapo.", $site, $recipient->targeturl->code);
-            }
-
-            $recipient->sent = @mail($recipient->contact, "You have been sent a Wapo.", $message);
-            $recipient->save(false);
-          }
-        } else if($delivery == "aff") {
-          $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo"=>$wapo));
-          if ($delivery_message) {
-            $message = $delivery_message . sprintf("%s/%s", $site, $targeturl->code);
-          } else {
-            $message = sprintf("Click here '%s/%s' to download your Wapo.", $site, $targeturl->code);
-          }
-          $c['message'] = $message;
-        } else if($delivery == "fp") {
-          $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo"=>$wapo));
-          if ($delivery_message) {
-            $message = $delivery_message . sprintf("%s/%s", $site, $targeturl->code);
-          } else {
-            $message = sprintf("Click here '%s/%s' to download your Wapo.", $site, $targeturl->code);
-          }
-          $c['message'] = $message;
-          $c['facebook_page_id'] = $wapo->external;
-        } else if(in_array($delivery, array("stf", "atf"))) {
-          $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo"=>$wapo));
-          if ($delivery_message) {
-            $message = $delivery_message . sprintf("%s/%s", $site, $targeturl->code);
-          } else {
-            $message = sprintf("Click here '%s/%s' to download your Wapo.", $site, $targeturl->code);
-          }
-          
-          $connection = new \TwitterOAuth(\Blink\ConfigTwitter::$ConsumerKey, \Blink\ConfigTwitter::$ConsumerSecret, $this->request->session->nmsp("twitter")->get('oauth_token'), $this->request->session->nmsp("twitter")->get('oauth_token_secret'));
-
-          $wapo = Wapo::queryset()->get(array("id"=>$this->request->session->find("wapo_id")), "Wapo not found.");
-          if($wapo->delivery_method_abbr == "atf") {
-            $info = array(
-              "status" => $message
-            );
-            $tweet = $connection->post('statuses/update', $info);
-          } else if($wapo->delivery_method_abbr == "stf") {
-            // Get the twitter followers and send to them.
-            $recipient_list = WapoRecipient::queryset()->depth(1)->filter(array("wapo"=>$wapo))->fetch();
-            foreach($recipient_list as $recipient) {
-              $info = array(
-                  "status" => sprintf("@%s %s", $recipient->contact, $message)
-              );
-              $tweet = $connection->post('statuses/update', $info);
-              $recipient->sent = 1;
-              $recipient->save(false);
-            }
-          } else {
-            throw new \Exception("Invalid send designation.");
-          }
-        } else if($delivery == "text") {
-          $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo"=>$wapo));
-          $recipient_list = WapoRecipient::queryset()->depth(1)->filter(array("wapo"=>$wapo))->fetch();
-          $message  = sprintf("%s has sent you a Wapo. Follow %s/%s to download.", $wapo->profile, $site, $targeturl->code);
-          foreach($recipient_list as $recipient) {
-            $result = \BlinkTwilio\Api::send_sms($recipient->contact, $message);
-            $recipient->resource = $result->sid;
-            $recipient->sent = 1;
-            $recipient->save(false);
-          }
-        }
-      } catch (Exception $ex) {
-        $c['error'] = true;
-        $c['message'] = $ex->getMessage();
-        return $c;
-      }
-      
+      send_wapo($this->request);
       $c['error'] = false;
-      $c['delivery'] = $delivery;
-
       return $c;
     }
   }

@@ -3,20 +3,34 @@
 {% block main %}
   <div class="alert alert-success">
     <i class="fa fa-2x fa-check-circle"></i> Congratulations!.
-    
+
     {% if wapo.delivery_method_abbr == "ffa" %}
       Wapo is ready for distribution. 
     {% else %}
-      Wapo has been sent.
+      {% if module.tag == "announcement" %}
+        Announcement has been sent.
+      {% else %}
+        Wapo has been sent.
+      {% endif %}
     {% endif %}
   </div>
 
-  <ul class="list-group">
-    <li class="list-group-item"><h3>Delivery Method <small>{{ wapo.delivery_method }}</small></h3></li>
-    <li class="list-group-item"><h3>Expiring Date <small>{{ wapo.expiring_date }}</small></h3></li>
-    <li class="list-group-item"><h3>Total Cost <small>{{ wapo.quantity * wapo.promotion.price }}</small></h3></li>
-    <li class="list-group-item"><h3>Total/Downloaded <small>{{ wapo.quantity }} / {{ wapo.downloaded }}</small></h3></li>
-  </ul>
+  {# If some items were not sent, notify here. #}
+  {% if not_sent %}
+    <div class="alert alert-danger">
+      <i class="fa fa-2x fa-exclamation-triangle"></i> Error!.
+      Some errors occured sending the Wapo. Please <a href="/user/login/?return=/wapo/dashboard/profile/">log in</a> to review errors.
+    </div>
+  {% endif %}
+
+  {% if module.tag != "announcement" %}
+    <ul class="list-group">
+      <li class="list-group-item"><h3>Delivery Method <small>{{ wapo.delivery_method }}</small></h3></li>
+      <li class="list-group-item"><h3>Expiring Date <small>{{ wapo.expiring_date }}</small></h3></li>
+      <li class="list-group-item"><h3>Total Cost <small>{{ wapo.quantity * wapo.promotion.price }}</small></h3></li>
+      <li class="list-group-item"><h3>Total/Downloaded <small>{{ wapo.quantity }} / {{ wapo.downloaded }}</small></h3></li>
+    </ul>
+  {% endif %}
 
   {% if wapo.delivery_method_abbr == "ffa" %}
     <strong>Use the following links for your free for all Wapo.</strong><br /><br />

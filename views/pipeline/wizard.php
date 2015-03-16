@@ -25,8 +25,10 @@ namespace Wp {
   
   require_once 'apps/blink-bitly/bitly/bitly.php';
   
-  require_once 'apps/wp/views/pipeline/create-wapo.php';
+  // Wapo functions.
   require_once 'apps/wp/views/pipeline/validate-wapo.php';
+  require_once 'apps/wp/views/pipeline/create-wapo.php';
+  require_once 'apps/wp/views/pipeline/send-wapo.php';
   
   require_once 'apps/blink-twitter/api.php';
 
@@ -128,7 +130,10 @@ namespace Wp {
         $this->request->cookie->set("promotioncategory_id", $this->promotioncategory->id);
         $this->request->cookie->set("promotion_id", $this->promotion->id);
         
-      } else if($this->current_step == "delivery") {
+      } else if($this->current_step == "announcement") { // ANNOUNCEMENT STEP.
+        // If we are sending a Twitter announcement.
+        $this->request->cookie->set("twitter_announcement", $this->request->post->find("twitter_announcement", 0));
+      }  else if($this->current_step == "delivery") {
         // If this is an announcement, we check for different values.
         if($this->module->tag == "announcement") {
           $this->request->cookie->set("twitter_announcement", $this->request->post->is_set("twitter_announcement"));
@@ -224,15 +229,18 @@ namespace Wp {
         $this->request->cookie->set("quantity", $quantity);
       } else if($this->current_step == "checkout") {
         
-        list($error, $message) = validate_cart($this->request->cookie->all(), $this->request);
+        list($error, $message, $data) = validate_wapo($this->request);
         
         if($error) {
           \Blink\Messages::error($message);
           return $this->get();
         }
         
-        // Redirect to fake pay and then come back to the create.
-        return \Blink\HttpResponseRedirect("/wp/pay/", false);
+        // For announcement, skip the payment step.
+        if($data['module']->tag != "announcement") {
+          // Redirect to fake pay and then come back to the create.
+          return \Blink\HttpResponseRedirect("/wp/pay/", false);
+        }
       } else if($this->current_step == "create") {
 //        list($error, $message, $wapo) = create_wapo($this->request->cookie->all(), $this->request);
 
@@ -307,17 +315,30 @@ namespace Wp {
 
         $context['promotioncategory'] = $this->promotioncategory;
         $context['promotioncategory_list'] = $promotioncategory_list;
+      } else if($this->current_step == "announcement") { // ANNOUNCEMENT STEP.
+        // Get the twitter info if one exists.
+        $context['twitter_announcement'] = $this->request->cookie->find("twitter_announcement", 0);
       } else if($this->current_step == "delivery") { // DELIVERY STEP
-        // If module is 'announcement', get the required data.
-        if($this->module->tag == "announcement") {// DELIVERY STEP ANNOUNCEMENT.
-          // Get the twitter info if one exists.
-          $context['twitter_announcement'] = $this->request->cookie->find("twitter_announcement", 0);
-          if($context['twitter_announcement']) {
-            $context['twitter_profile'] = (new \BlinkTwitter\BlinkTwitterAPI($this->request))->getTwitterProfile();
-          }
-        } else {// DELVIERY STEP OTHER.
-          $context['delivery'] = $this->request->cookie->find("delivery", null);
+        
+        $context['delivery'] = $this->request->cookie->find("delivery", null);
+        
+        // Prepare the FFA form.
+        $context['ffa_form'] = (new DeliveryFFAForm())->Form();
+        
+        // Prepare the email form.
+        $emails = Config::$NotLoggedInMaxEmailDeliveryCount;
+        if($this->request->user) {
+          $emails = Config::$LoggedInMaxEmailDeliveryCount;
         }
+        
+        $form_fields = new \Blink\FormFields();
+        $field_list = array();
+        for($i = 1; $i <= $emails; $i++) {
+          $blank = ($i == 1) ? false : true;
+          $field_list[] = $form_fields->EmailField(array("verbose_name"=>"Email $i","name"=>"email-$i","blank"=>$blank));
+        }
+        $context['e_form'] = (new \Blink\Form(array(), $field_list))->Form();
+        
       } else if($this->current_step == "el") {
         $contact_id = $this->request->cookie->find("contact_id");
         $filter = array("wapo_profile.wapo_distributor.user"=>$this->request->user,"type"=>"e");
@@ -357,14 +378,10 @@ namespace Wp {
         $cookies = $this->request->cookie->to_array();
         
         if($this->module->tag == "announcement") {
-          // Check if we have a twitter announcement.
-          $twitter_announcement = $this->request->cookie->find("twitter_announcement");
-          if($twitter_announcement) {
-            $context['twitter_profile'] = (new \BlinkTwitter\BlinkTwitterAPI($this->request))->getTwitterProfile();
-          }
-          
           $context['announcement'] = $this->request->cookie->find("announcement");
         } else {
+          
+          
           // Check the promotion.
           $context['promotion'] = Promotion::get_or_404(array("id"=>$this->request->cookie->find('promotion_id')), "Promotion you selected not found.");
           $context['sku'] = \Wapo\TangoCardRewards::get_or_null(array("sku"=>$this->request->cookie->find("sku")));
@@ -398,6 +415,7 @@ namespace Wp {
         $wapo = Wapo::get_or_404(array("id"=>$this->request->session->find("wapo_id", 4)));
         $context['targeturl_list'] = \Wapo\WapoTargetUrl::queryset()->filter(array("wapo"=>$wapo))->fetch();
         $context['wapo'] = $wapo;
+        $context['not_sent'] = WapoRecipient::queryset()->filter(array("wapo"=>$wapo,"sent"=>false))->total();
       }
       
       // Get the main steps rather than the current_steps to display the form progress.

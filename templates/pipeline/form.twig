@@ -12,6 +12,8 @@
   <script src="/apps/wp/static/wp/js/mailchimp.js"></script>
   <script src="/apps/wp/static/wp/js/pipeline.js"></script>
   
+  <script src="/apps/wp/static/wp/js/progress.js"></script>
+  
   <script src="/static/angular/angular.js"></script>
   <script src="/static/angular/angular-resource.js"></script>
   <script src="/static/angular/angular-route.js"></script>
@@ -22,7 +24,8 @@
 
 {% block extra_css %}
 {#  <link href="/apps/wp/static/progress/css/progress.css" rel="stylesheet" media="screen">#}
-  <link href="/apps/wp/static/stepwizard/css/stepwizard.css" rel="stylesheet" media="screen">
+{#  <link href="/apps/wp/static/stepwizard/css/stepwizard.css" rel="stylesheet" media="screen">#}
+<link href="/apps/wp/static/yamm/css/yamm.css" rel="stylesheet" media="screen">
   
 <style>
 blockquote {padding: 1px;}
@@ -32,108 +35,100 @@ blockquote {padding: 1px;}
 {% endblock extra_css %}
 
 {% block content %}
-  <div class="stepwizard">
-    <div class="stepwizard-row">
-      <div class="stepwizard-step">
-        <button type="button" class="btn {% if main_step == "profile" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">1</button>
-        <p>Profile</p>
-      </div>
-      <div class="stepwizard-step">
-        <button type="button" class="btn {% if main_step == "marketplace" %}btn-primary{% else %}btn-default{% endif %} btn-circle"  disabled="disabled">2</button>
-        <p>Marketplace</p>
-      </div>
-      <div class="stepwizard-step">
-        <button type="button" class="btn {% if main_step == "delivery" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">3</button>
-        <p>Delivery</p>
-      </div>
-      <div class="stepwizard-step">
-        <button type="button" class="btn {% if main_step == "checkout" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">4</button>
-        <p>Checkout</p>
-      </div>
-      <div class="stepwizard-step">
-        <button type="button" class="btn {% if main_step == "confirmation" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">5</button>
-        <p>Confirmation</p>
-      </div>
+  
+  <nav class="navbar yamm navbar-default " role="navigation">
+    <ul class="nav nav-justified">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            Module
+            <span class="caret"></span>
+          </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <div class="yamm-content" id="progress-module-view">
+                      
+                    </div>
+                </li>
+            </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            Profile
+            <span class="caret"></span>
+          </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <div class="yamm-content" id="progress-profile-view">
+                      
+                    </div>
+                </li>
+            </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            Marketplace
+            <span class="caret"></span>
+          </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <div class="yamm-content" id="progress-marketplace-view">
+                      
+                    </div>
+                </li>
+            </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            Checkout
+            <span class="caret"></span>
+          </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <div class="yamm-content">
+                      
+                    </div>
+                </li>
+            </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            Confirmation
+            <span class="caret"></span>
+          </a>
+            <ul class="dropdown-menu">
+                <li>
+                    <div class="yamm-content">
+                      
+                    </div>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+  
+<script type="text/template" id="progress-module-template">
+  <h3><%= data.name %></h3>
+  <p><%= data.description %></p>
+  <a href="/wp/" class="btn btn-primary btn-block">Change</a>
+</script>
+
+<script type="text/template" id="progress-profile-template">
+  <div class="media">
+    <div class="media-left media-middle">
+      <a href="#" target="_blank">
+        <% if (data.image.name) { %>
+          <img class="media-object img-thumbnail" style="max-height: 70px;" src="<%= data.image.url %>" alt="...">
+        <% } else { %>
+          <img class="media-object img-thumbnail" style="max-height: 70px;" src="/apps/wp/static/wp/images/profile.jpg" alt="...">
+        <% } %>
+      </a>
+    </div>
+    <div class="media-body">
+      <h4 class="media-heading"><%= data.name %></h4>
     </div>
   </div>
-        
-        {#<div class="row">
-          <div class="col-xs-1"></div>
-          <div class="col-xs-2" style="background-color: grey;">
-            <div class="testimonials testimonials-v1">
-              <div class="testimonial-info">
-                <img src="/static/unify/assets/img/testimonials/img1.jpg" alt="" style="max-width: 40%;">
-                <span class="testimonial-author">
-                  {% if progress.profile.profile %}
-                    {{ progress.profile.profile.name }}
-                  {% elseif progress.profile.name %}
-                    {{ progress.profile.name }}
-                    <em>{{ progress.profile.email }}</em>
-                  {% else %}
-                    No Data
-                  {% endif %}
-                </span>
-              </div>
-            </div>
-            
-          </div>
-          <div class="col-xs-2 bg-yellow">
-            <div class="row">
-              <div class="col-xs-4 funny-boxes-img" style="background-color: red;">
-                <img class="img-responsive" src="/static/unify/assets/img/new/img10.jpg" alt="" style="width: 100%;">
-              </div>
-              <div class="col-xs-8">
-                <h2><a href="#">{{ progress.profile.name }}</a></h2>
-                <p>{{ progress.profile.email }}</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-xs-2 bg-green">
-            Delivery
-          </div>
-          <div class="col-xs-2 bg-grey">
-            Checkout
-          </div>
-          <div class="col-xs-2 bg-aqua">
-            Confirmation
-          </div>
-          <div class="col-xs-1"></div>
-        </div>#}
-  
-  {#<div class="row">
-    <div class="row bs-wizard" style="border-bottom:0;">
-      <div class="col-xs-2 bs-wizard-step">
-        <div class="text-center bs-wizard-stepnum">1. Marketplace</div>
-        <div class="progress"><div class="progress-bar"></div></div>
-        <a href="/wp/marketplace/" class="bs-wizard-dot"></a>
-        <div class="bs-wizard-info text-center">Marketplace</div>
-      </div>
-      <div class="col-xs-3 bs-wizard-step {% if main_step in ["profile", "checkout", "confirmation"] %}complete{% elseif main_step == "delivery" %}active{% else %}disabled{% endif %}"><!-- complete -->
-        <div class="text-center bs-wizard-stepnum">2. Delivery</div>
-        <div class="progress"><div class="progress-bar"></div></div>
-        <a href="#" class="bs-wizard-dot"></a>
-        <div class="bs-wizard-info text-center">Delivery</div>
-      </div>
-      <div class="col-xs-2 bs-wizard-step {% if main_step in ["checkout", "confirmation"] %}complete{% elseif main_step == "profile" %}active{% else %}disabled{% endif %}"><!-- complete -->
-        <div class="text-center bs-wizard-stepnum">3. Profile</div>
-        <div class="progress"><div class="progress-bar"></div></div>
-        <a href="#" class="bs-wizard-dot"></a>
-        <div class="bs-wizard-info text-center">Profile</div>
-      </div>
-      <div class="col-xs-3 bs-wizard-step {% if main_step in ["confirmation"] %}complete{% elseif main_step == "checkout" %}active{% else %}disabled{% endif %}"><!-- active -->
-        <div class="text-center bs-wizard-stepnum">4. Checkout</div>
-        <div class="progress"><div class="progress-bar"></div></div>
-        <a href="#" class="bs-wizard-dot"></a>
-        <div class="bs-wizard-info text-center">Checkout</div>
-      </div>
-      <div class="col-xs-2 bs-wizard-step {% if main_step == "confirmation" %}active{% else %}disabled{% endif %}"><!-- active -->
-        <div class="text-center bs-wizard-stepnum">5. Confirmation</div>
-        <div class="progress"><div class="progress-bar"></div></div>
-        <a href="#" class="bs-wizard-dot"></a>
-        <div class="bs-wizard-info text-center">Confirmation</div>
-      </div>
-    </div>
-  </div>#}
+  <a href="/wp/profile/" class="btn btn-primary btn-block">Change</a>
+</script>
 
   <form class="form" role="form" method="post" action="{{ form.post_url }}">
     <div class="row">
@@ -152,11 +147,8 @@ blockquote {padding: 1px;}
     <br />
 
     <div class="row">
-      <div class="col-xs-8">
+      <div class="col-xs-12">
       {% block main %}{% endblock main %}
-    </div>
-    <div id="sidebar" class="col-xs-4">
-
     </div>
   </div>
 </form>
