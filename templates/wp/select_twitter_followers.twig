@@ -1,0 +1,149 @@
+{% extends "apps/wp/templates/wp/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      &nbsp;
+    </div>
+
+    <div class="panel-body">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+    </div>
+  </div>
+    
+  <div id="twitter-view">
+    <i class="fa fa-spinner fa-spin"></i> Loading
+  </div>
+
+  <script type="text/template" id="twitter-login-template">
+    <div class="row">
+    <div class="col-xs-3"></div>
+      <div class="col-xs-6">
+        <a href="/twitter/?skip=1&return={{ blink.request.url }}" class="btn btn-block btn-u btn-u-aqua">
+          <i class="fa fa-twitter"></i>
+          Twitter Login
+        </a>
+      </div>
+      <div class="col-xs-3"></div>
+    </div>
+  </script>
+  
+  <script type="text/template" id="twitter-followers-template">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="media">
+          <div class="media-left">
+            <a href="#">
+              <img class="media-object" src="<%= follower.profile_image_url %>" alt="...">
+            </a>
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading">
+              <input type="checkbox" class="follower" value="<%= follower.screen_name %>" <%= follower.checked %> />&nbsp;&nbsp;&nbsp;
+              <%= follower.name %>[<%= follower.screen_name %>]
+            </h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+  
+  <script>
+    $(function() {
+      // Disabled next button until they are logged in.
+      $('#next_button').addClass('disabled');
+      
+      // Set the announcement cookie whenever value changes in case they navigate away.
+      $('#quantity').keyup(function () {
+        $.cookie('quantity', $(this).val());
+      });
+      $('#delivery_message').keyup(function () {
+        $.cookie('delivery_message', $(this).val());
+      });
+      $('#expiring_date').keyup(function () {
+        $.cookie('expiring_date', $(this).val());
+      });
+  
+      // View to display if they have not logged in to twitter.
+      var twitterLoginView = new (Backbone.View.extend({
+        el: '#twitter-view',
+        view: null,
+        template: _.template($('#twitter-login-template').html()),
+        render: function() {
+          this.$el.html(this.template());
+        }
+      }));
+
+      // View to display if they have logged in to twitter.
+      var twitterFollowersView = new (Backbone.View.extend({
+        el: '#twitter-view',
+        view: null,
+        follower_list: null,
+        template: _.template($('#twitter-followers-template').html()),
+        events: {
+          'click .follower': 'selected'
+        },
+        selected: function(e) {
+          var sn = $(e.target).val();
+          var followers = ($('#twitter_followers').val()) ? $('#twitter_followers').val().split(',') : [];
+          if(_.contains(followers, sn)) {
+            followers.splice(followers.indexOf(sn), 1);
+          } else {
+            followers.push(sn);
+          }
+          
+          // Set the followers back.
+          $('#twitter_followers').val(followers.join(','));
+          
+          // Enable next button.
+          if(followers.length) {
+            $('#next_button').removeClass('disabled');
+          } else {
+            $('#next_button').addClass('disabled');
+          }
+        },
+        render: function() {
+          var that = this;
+          this.$el.html('');
+          
+          // Get any selected followers.
+          var followers = ($('#twitter_followers').val()) ? $('#twitter_followers').val().split(',') : [];
+          
+          // Render the followers and add them, selecting those selected already.
+          _.each(this.follower_list, function(follower) {
+            var foll = $.extend({checked: ''}, follower);
+            foll.checked = (_.contains(followers, follower.screen_name)) ? 'checked' : '';
+            that.$el.append(that.template({follower: foll}));
+          });
+          
+          // If we have followers, then remove the disable button.
+          if($('#twitter_followers').val()) {
+            $('#next_button').removeClass('disabled');
+          }
+        }
+      }));
+
+      // Point each view to the other.
+      twitterLoginView.view = twitterFollowersView;
+      twitterFollowersView.view = twitterLoginView;
+
+      // Ping Twitter API to see if they are logged in.
+      $.get('/twitter/authenticated/', function(data) {
+        if(data.authenticated) {
+          $.get('/twitter/followers/', function(data) {
+            twitterFollowersView.follower_list = data.follower_list;
+            twitterFollowersView.render();
+          });
+        } else {
+          twitterLoginView.render();
+        }
+      });
+    });
+  </script>
+{% endblock main %}

@@ -1,0 +1,19 @@
+{% extends "apps/wp/templates/wp/form.twig" %}
+
+{% block main %}
+  <div class="list-group">
+    <div class="list-group-item">
+      <div class="list-group-item-text">
+        {% for field in form.visible %}
+          {{ field.field|raw }}
+        {% endfor %}
+
+        {% for field in form.hidden %}
+          {{ field.field|raw }}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {% include 'apps/wp/templates/wp/includes/sidebar/sidebar.twig' %}
+{% endblock main %}

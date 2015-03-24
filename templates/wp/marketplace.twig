@@ -1,0 +1,38 @@
+{% extends "apps/wp/templates/wp/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div class="btn-group">
+        <button type="button" class="btn btn-default">Category</button>
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+          {% for mypromotioncategory in promotioncategory_list %}
+            <li><a href="/wp/marketplace/?promotioncategory_id={{ mypromotioncategory.id }}">{{ mypromotioncategory.name }}</a></li>
+            {% endfor %}
+        </ul>
+        &nbsp;&nbsp;
+        <h3 style="display: inline;"><span class="label label-info">{{ promotioncategory }}</span></h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-body">
+      {% if promotioncategory.name == "Tango Card" %}
+        {% include 'apps/wp/templates/wp/includes/marketplace/tangocard/index.twig' %}
+      {% elseif promotioncategory.name == "Scalable Press" %}
+        {% include 'apps/wp/templates/wp/includes/marketplace/scalablepress/index.twig' %}
+      {% elseif promotioncategory.name == "I Feel Goods" %}
+        {% include 'apps/wp/templates/wp/includes/marketplace/ifeelgoods/index.twig' %}
+      {% elseif promotioncategory.name == "Scalable Press" %}
+        {% include 'apps/wp/templates/wp/includes/marketplace/scalablepress/index.twig' %}
+      {% else %}
+        {% include 'apps/wp/templates/wp/includes/marketplace/wapo/index.twig' %}
+      {% endif %}
+    </div>
+  </div>
+
+{% endblock main %}

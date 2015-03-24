@@ -4,20 +4,27 @@ namespace Wp {
   require_once("apps/wp/delivery-method.php");
   require_once("apps/wp/checkout.php");
   
+  // WP pipeline views.
   require_once("apps/wp/view.php");
-  require_once 'apps/wp/views/pipeline/wizard.php';
+  require_once 'apps/wp/views/wp/wizard.php';
+  require_once 'apps/wp/views/wp/progress.php';
   
+  // WP download.
   require_once("apps/wp/download/view.php");
   
+  // API access urls.
   require_once("apps/wp/views/mailchimp.php");
-  
   require_once("apps/wp/scalablepress/url.php");
   require_once("apps/wp/ifeelgoods/url.php");
   require_once("apps/wp/tangocard/url.php");
   
-  require_once 'apps/wp/views/pipeline/progress.php';
-
   $wp_url_patterns = array(
+      array(
+          "uri" => "/test/$",
+          "view" => TestView::as_view(),
+          "name" => "TangoJSONView",
+          "title" => "Tango View"
+      ),
       array(
           "uri" => '/scalablepress',
           "url_patterns" => \Blink\include_url_patters($wp_scalable_url_patterns)
@@ -69,6 +76,12 @@ namespace Wp {
           "view" => ProfileJSONDetailView::as_view(),
           "name" => "ProfileJSONDetailView",
           "title" => "Profile JSON Detail View"
+      ),
+      array(
+          "uri" => "/testandor/$",
+          "view" => TestJSONView::as_view(),
+          "name" => "TestJSONView",
+          "title" => "Test AND/OR"
       ),
       
       array(

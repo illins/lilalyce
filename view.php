@@ -12,23 +12,21 @@ namespace Wp {
   require_once("apps/wapo/helper.php");
   require_once("apps/wp/form.php");
 
+  // User API.
   require_once("apps/blink-user/api.php");
   require_once("apps/wepay/api.php");
-
   require_once("apps/blink-user-role/api.php");
-
+  
+  // Pipeline functions APIs.
   require_once("apps/swiftmailer/api.php");
-  
   require_once("apps/blink-twilio/api.php");
-  
   require_once("apps/blink-tangocard/tangocard/tangocard.php");
-  
   require_once 'apps/blink-bitly/bitly/bitly.php';
   
   // Wapo functions.
-  require_once 'apps/wp/views/pipeline/validate-wapo.php';
-  require_once 'apps/wp/views/pipeline/create-wapo.php';
-  require_once 'apps/wp/views/pipeline/send-wapo.php';
+  require_once 'apps/wp/views/wp/validate-wapo.php';
+  require_once 'apps/wp/views/wp/create-wapo.php';
+  require_once 'apps/wp/views/wp/send-wapo.php';
 
   use Wapo\PromotionCategory;
   use Wapo\Promotion;
@@ -40,6 +38,16 @@ namespace Wp {
   use Wapo\Contact;
   use Wapo\ContactItem;
   use Wapo\Member;
+  
+  class TestView extends \Blink\TemplateView {
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      
+//      echo phpinfo();
+      exit();
+      return $c;
+    }
+  }
   
   class TangoJSONView extends \Blink\JSONView {
     protected function get_context_data() {

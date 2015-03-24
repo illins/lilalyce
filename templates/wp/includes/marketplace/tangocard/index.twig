@@ -1,0 +1,160 @@
+<div id="reward-select-container"><select id="reward-select" class="form-control"></select></div>
+<hr />
+
+<div class="row" id="rewards-container" style="background-color: whitesmoke;">
+
+</div>
+
+<div id="reward-container" style="background-color: whitesmoke; display: none;">
+  <button type="button" class="btn btn-info back-to-reward-list"><i class="fa fa-arrow-left"></i> Back to List</button>
+
+  <br /><br />
+
+  {% for field in form.hidden %}
+    {{ field.field|raw }}
+  {% endfor %}
+
+  <div class="row">  
+    <div class="col-xs-6">
+      <img id="reward-image-src" class="img-responsive" src="" alt="..." style="width: 100%;" />
+      <br />
+      <h3 id="reward-title"></h3>
+      <h4 id="reward-amount-info"></h4>
+    </div>
+    <div class="col-xs-6">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script type="text/template" id="reward-item-template">
+  <div class="col-md-4">
+  <div class="thumbnails thumbnail-style">
+  <img class="img-responsive" src="<%= reward.brand_image_url %>" alt="" />
+  <div class="caption">
+  <p><%= reward.description %></p>
+  <h3 class="hover-effect"><%= reward.unit_price %> <%= reward.currency_type %></h3>
+  <p><a href="#" data-sku="<%= reward.sku %>" class="btn-u btn-u-xs select-reward">Select <i class="fa fa-angle-right margin-left-5"></i></a></p>
+  </div>
+  </div>
+  </div>
+</script>
+
+<script type="text/template" id="reward-template">
+
+</script>
+
+<script>
+  $(function () {
+    // Disable the next button until we have all the data needed.
+    $("#next_button").addClass('disabled');
+    
+    // Brands (inique brand/category)..
+    var brandCollection = new Backbone.Collection;
+    {#brandCollection.reset({{ tangocard|json_encode()|raw }});#}
+    
+
+    // Store all the rewards available in reward collection.
+    // This list will be used to filter out the unique brands.
+    var rewardCollection = new Backbone.Collection;
+    rewardCollection.reset({{ tangocard|json_encode()|raw }});
+    
+        
+    var RewardListView = Backbone.View.extend({
+      el: '#rewards-container',
+      template: _.template($("#reward-item-template").html()),
+      collection: null,
+      selected_brand: null,
+      initialize: function () {
+
+      },
+      render: function () {
+        var that = this;
+        
+        this.$el.html('');// Clear the items.
+        
+        // Render the items.
+        _.each(this.collection.where({brand_description: this.selected_brand}), function (reward) {
+          var json_reward = reward.toJSON();
+          json_reward['unit_price'] = reward.get('unit_price') / 100;
+          that.$el.append(that.template({reward: json_reward}));
+        });
+      },
+      events: {
+        'click .select-reward': 'selectReward'
+      },
+      selectReward: function (e) {
+        var e = e || null;
+        var sku = null;
+        
+        if (e) {
+          e.preventDefault();
+          sku = $(e.target).data('sku');
+        } else {
+          sku = $('#sku').val();
+        }
+        
+        $('#sku').val(sku);
+        $('#next_button').click();
+      }
+    });
+
+    // Show a list of brands in a select list.
+    var BrandListView = Backbone.View.extend({
+      el: '#reward-select-container',
+      collection: null,
+      initialize: function (options) {
+        this.collection = options.collection;
+        this.subview = new RewardListView();
+        this.subview.collection = options.rewardcollection;
+{#        this.render();#}
+      },
+      render: function () {
+        var that = this;
+{#        var reward_list = this.collection.find({brand_description: this.model.get('brand_description')});#}
+        this.collection.each(function (brand) {
+          that.$el.find('select').append('<option value="' + brand.get('brand_description') + '">' + brand.get('brand_description') + '</option>');
+        });
+        
+        this.showRewards();
+      },
+      events: {
+        'change #reward-select': 'showRewards'
+      },
+      showRewards: function () {
+        var that = this;
+        this.subview.selected_brand = $('#reward-select').val();
+{#        this.subview.collection = this.collection.where({brand_description: selected_brand});#}
+        this.subview.render();
+      }
+    });
+
+    // Filter out the reward collection to create the brand collection.
+    rewardCollection.each(function(reward) {
+      if(!brandCollection.findWhere({brand_description: reward.get('brand_description')})) {
+        brandCollection.add(reward);
+      }
+    });
+    
+    
+    // Create an instance of the brand list view, add the brand collection and render it.
+    var brandListView = new BrandListView({collection: brandCollection, rewardcollection: rewardCollection});
+    brandListView.render();
+
+    // If we have an sku value (i.e. submitted before).
+    if ($('#sku').val()) {
+      // Search the reward collection.
+      var reward = rewardCollection.findWhere({sku: $('#sku').val()});
+      
+      // If we have a reward.
+      if (reward) {
+        // Set the brandListView subview (rewardListView)
+        brandListView.subview.selected_brand = reward.get('brand_description');
+        // Render the list containing this brand.
+        brandListView.subview.render();
+      }
+    }
+  });
+</script>

@@ -343,12 +343,12 @@ namespace Wp {
 //    }
   }
   
-  class AnyFacebookFriendsForm extends GenericQuantityForm {
-    public $facebook_id;
+  class AnyFacebookFriendsForm extends BaseForm {
+    public $quantity;
     
     public function Fields() {
       $form_fields = parent::Fields();
-      $this->facebook_id = $form_fields->HiddenCharField(array("verbose_name"=>"Facebook ID","name"=>"facebook_id","min_length"=>1,"max_length"=>20));
+      $this->quantity = $form_fields->IntegerField(array("name"=>"quantity","min_value"=>1,"help_text"=>"Enter the number of Wapos to send."));
       return $form_fields;
     }
   }

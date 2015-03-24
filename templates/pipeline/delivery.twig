@@ -10,11 +10,11 @@
   {% endfor %}
   
   <ul class="nav nav-tabs" role="tablist">
-    <li class="active"><a id="ffa-tab-a" href="#ffa" role="tab" data-toggle="tab">Free For All</a></li>
-    <li><a id="e-tab-a" href="#e" role="tab" data-toggle="tab">Email</a></li>
-    <li><a id="facebook-tab-a" href="#facebook" role="tab" data-toggle="tab">Facebook</a></li>
-    <li><a id="twitter-tab-a" href="#twitter" role="tab" data-toggle="tab">Twitter</a></li>
-    <li><a id="mailchimp-tab-a" href="#mailchimp" role="tab" data-toggle="tab">MailChimp</a></li>
+    <li class="active"><a id="ffa-tab-view" href="#ffa" role="tab" data-toggle="tab">Free For All</a></li>
+    <li><a id="e-tab-view" href="#e" role="tab" data-toggle="tab">Email</a></li>
+    <li><a id="facebook-tab-view" href="#facebook" role="tab" data-toggle="tab">Facebook</a></li>
+    <li><a id="twitter-tab-view" href="#twitter" role="tab" data-toggle="tab">Twitter</a></li>
+    <li><a id="mailchimp-tab-view" href="#mailchimp" role="tab" data-toggle="tab">MailChimp</a></li>
   </ul>
   <br /><br />
   <div class="tab-content">
@@ -30,14 +30,16 @@
       
     </div>
     <div class="tab-pane" id="twitter">
-      
+      <div id="twitter-login-view"></div>
+      <div id="twitter-stf-view"></div>
+      <div id="twitter-atf-view"></div>
     </div>
     <div class="tab-pane" id="mailchimp">
 
     </div>
   </div>
   
-  <script type="text/template" id="twitter-login-view">
+  <script type="text/template" id="twitter-login-template">
     <div class="row">
     <div class="col-xs-3"></div>
       <div class="col-xs-6">
@@ -55,8 +57,8 @@
       <div class="panel-title pull-right">
         <div class="checkbox">
           <label>
-            <strong>Announce to Twitter</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="checkbox" name="twitter_announcement" value="1" {% if twitter_announcement %}checked{% endif %} />&nbsp;
+            <strong>Any Twitter Friends</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" name="twitter_delivery" value="atf" {% if twitter_delivery == "atf" %}checked{% endif %} />&nbsp;
           </label>
         </div>
       </div>
@@ -69,10 +71,55 @@
           </div>
           <div class="media-body">
             <h4 class="media-heading"><%= account.name %>[<%= account.screen_name %>]</h4>
-            <%= account.description %>
+            <%= account.description %><br /><br />
+            <input type="text" id="twitter_atf_quantity" name="twitter_atf_quantity" value="0" />
           </div>
         </div>
       </div>
+    </div>
+  </script>
+  
+  <script type="text/template" id="twitter-stf-template">
+    <div class="media">
+      <div class="media-left">
+        <a href="#">
+          <input type="checkbox" name="stf" value="<%= follower.id %>" />
+          <img class="media-object" src="<%= follower.profile_image_url %>" alt="...">
+        </a>
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading"><%= follower.name %>[<%= follower.screen_name %>]</h4>
+        <%= account.description %>
+      </div>
+    </div>
+  </script>
+  
+  <script type="text/template" id="mailchimp-login-template">
+    <div class="row">
+    <div class="col-xs-3"></div>
+      <div class="col-xs-6">
+        <a href="/mailchimp/?skip=1&return={{ blink.request.url }}" class="btn btn-block btn-u btn-u-aqua">
+          <i class="fa fa-twitter"></i>
+          Mailchimp Login
+        </a>
+      </div>
+      <div class="col-xs-3"></div>
+    </div>
+  </script>
+  
+  <script type="text/template" id="mailchimp-list-template">
+    <div class="checkbox">
+      <label>
+        <input type="radio" name="mailchimp_list_id" value="<%= list.id %>"> <%= list.name %>
+      </label>
+    </div>
+  </script>
+  
+  <script type="text/template" id="mailchimp-email-template">
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" name="mailchimp_email" value="<%= email.id %>"> <%= email.name %>
+      </label>
     </div>
   </script>
 

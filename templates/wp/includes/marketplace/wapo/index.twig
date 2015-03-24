@@ -1,0 +1,45 @@
+
+
+{% for mypromotion in promotion_list %}
+  {% if loop.first %}
+    <div class="row">
+    {% endif %}
+
+    {% if not loop.index % 4 %}
+    </div><div class="row">
+    {% endif %}
+
+    <div class="col-xs-4" class="marketplace-item">
+      <div class="thumbnail" style="padding: 0;">
+        <div style="padding:4px; width: 200px; height: 200px; text-align: center;">
+          <img alt="300x200"  src="{{ mypromotion.icon.url }}" style="max-width: 100%; max-height: 100%;">
+          {#                    <img src="{{ mypromotion.icon.url }}" alt="..." style="max-width: 100%; max-height: 100%;" class="img-rounded">#}
+        </div>
+        <div class="caption">
+          <div style="font-weight: bold;">
+            {{ mypromotion.name }}
+          </div>
+          <p class="promotion-description" style="height: 100px; font-size: small; overflow: hidden;">{{ mypromotion.description }}</p>
+          <hr />
+          <div class="row">
+            <div class="col-xs-8">
+              <button class="btn btn-default btn-block disabled">
+                $ {{ mypromotion.price }}
+              </button>
+            </div>
+            <div class="col-xs-4">
+              <label class="btn btn-block btn-default">
+                <input type="radio" name="promotion_id" value="{{ mypromotion.id }}" {% if promotion.id == mypromotion.id %}checked{% endif %} />
+              </label>
+            </div>
+          </div>
+        </div> 
+      </div>
+    </div>
+
+    {% if loop.last %}
+    </div>
+  {% endif %}
+{% else %}
+  <h3>No items</h3>
+{% endfor %}

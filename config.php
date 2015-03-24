@@ -40,7 +40,7 @@ namespace Wp {
         "el"=>"Email List",
         "stf"=>"Select Twitter Followers",
         "atf"=>"Any Twitter Followers",
-        "mailchimp"=>"MailChimp",
+        "mailchimp"=>"MailChimp Email",
         "text" => "Text Message",
         "addr" => "Address"
     );

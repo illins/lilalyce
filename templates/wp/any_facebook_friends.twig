@@ -1,0 +1,121 @@
+{% extends "apps/wp/templates/wp/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      &nbsp;
+    </div>
+
+    <div class="panel-body">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+    </div>
+  </div>
+    
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div id="facebook_permissions">
+        <h3>Facebook permissions required<small><a href="/wapo/faq/" target="_blank">more</a></small></h3>
+        <p id="facebook_permissions_required">public_profile, publish_actions</p>
+        <p id="missing_facebook_permissions" class="hidden"></p>
+      </div>
+    </div>
+  </div>
+  
+  <div id="facebook-view">
+    <i class="fa fa-spinner fa-spin"></i> Loading
+  </div>
+      
+  <script type="text/template" id="facebook-login-template">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <a href="/facebook/?skip=1&return={{ blink.request.url|url_encode }}&scope=public_profile,publish_actions,manage_pages" class="btn btn-block btn-u btn-u-aqua">
+          <i class="fa fa-facebook"></i>
+          Facebook Login
+        </a>
+      </div>
+    </div>
+  </script>
+  
+  <script type="text/template" id="facebook-template">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="media">
+          <div class="media-left">
+            <a href="#">
+              <% if(picture.url) { %>
+                <img class="media-object" src="<%= picture.url %>" alt="...">
+              <% } %>
+            </a>
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading"><%= profile.name %></h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+  
+  <script>
+    $(function() {
+      // Disabled next button until they are logged in.
+      $('#next_button').addClass('disabled');
+      
+      // Set the announcement cookie whenever value changes in case they navigate away.
+      $('#quantity').keyup(function () {
+        $.cookie('quantity', $(this).val());
+      });
+      $('#delivery_message').keyup(function () {
+        $.cookie('delivery_message', $(this).val());
+      });
+      $('#expiring_date').keyup(function () {
+        $.cookie('expiring_date', $(this).val());
+      });
+  
+      // View to display if they have not logged in to facebook.
+      var facebookLoginView = new (Backbone.View.extend({
+        el: '#facebook-view',
+        view: null,
+        template: _.template($('#facebook-login-template').html()),
+        render: function() {
+          this.$el.html(this.template());
+        }
+      }));
+
+      // View to display if they have logged in to facebook.
+      var facebookView = new (Backbone.View.extend({
+        el: '#facebook-view',
+        view: null,
+        profile: null,
+        picture: null,
+        template: _.template($('#facebook-template').html()),
+        render: function() {
+          this.$el.html(this.template({profile: this.profile, picture: this.picture}));
+          
+          // They can click the next button.
+          $('#next_button').removeClass('disabled');
+        }
+      }));
+
+      // Point each view to the other.
+      facebookLoginView.view = facebookView;
+      facebookView.view = facebookLoginView;
+
+      // Ping Twitter API to see if they are logged in.
+      $.get('/facebook/authenticated/', function(data) {
+        if(data.authenticated) {
+          facebookView.profile = data.profile;
+          facebookView.picture = data.picture;
+          facebookView.render();
+        } else {
+          facebookLoginView.render();
+        }
+      });
+    });
+  </script>
+{% endblock main %}

@@ -1,0 +1,32 @@
+{% extends "apps/wp/templates/wp/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div id="error" class="alert alert-danger hidden"></div>
+
+      <div id="loading">
+        <h4><i class="fa fa-3x fa-spinner fa-spin"></i> Please wait while your wapo is sent.</h4>
+      </div>
+    </div>
+  </div>
+{% endblock main %}
+
+{% block sub_extra_javascript %}
+  <script>
+    $(document).ready(function () {
+      $.ajax({
+        url: '/wp/sendwapo/',
+        type: 'GET',
+        dataType: 'json'
+      }).done(function (data) {
+        if (data.error) {
+          $("#error").show().html(data.message);
+          $("#loading").hide();
+        } else {
+          $("#next_button").click();
+        }
+      });
+    });
+  </script>
+{% endblock sub_extra_javascript %}

@@ -1,0 +1,38 @@
+{% extends "apps/wp/templates/wp/form.twig" %}
+
+{% block main %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      Select a profile for your Wapo.
+    </div>
+    <div class="panel-body">
+      <table class="table">
+        <tbody>
+          {% for myprofile in profile_list %}
+            <tr>
+              <td style="width: 5px;">
+                <div class="checkbox">
+                  <label>
+                    <input type="radio" name="profile_id" value="{{ myprofile.id }}" {% if profile.id == myprofile.id %}checked{% endif %} /> <b></b>
+                  </label>
+                </div>
+              </td>
+              <td>
+                <div class="media">
+                  {% if myprofile.image.name %}
+                    <img class="media-object img-thumbnail" style="max-height: 70px;" src="{{ myprofile.image.url }}" alt="...">
+                  {% else %}
+                    <img class="media-object img-thumbnail" style="max-height: 70px;" src="/apps/wp/static/wp/images/profile.jpg" alt="...">
+                  {% endif %}
+                  <div class="media-body">
+                    <h4 class="media-heading">{{ myprofile }}</h4>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock main %}
