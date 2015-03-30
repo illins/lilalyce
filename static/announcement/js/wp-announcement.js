@@ -7,23 +7,26 @@
 
     // View to display if they have not logged in to twitter.
     var twitterLoginView = new (Backbone.View.extend({
-      el: '#twitter',
+      el: '#twitter-login-view',
       view: null,
-      template: _.template($('#twitter-login-view').html()),
+      template: _.template($('#twitter-login-template').html()),
       render: function() {
         this.$el.html(this.template());
+        this.$el.show();
       }
     }));
 
     // View to display if they have logged in to twitter.
     var twitterView = new (Backbone.View.extend({
-      el: '#twitter',
+      el: '#twitter-view',
       view: null,
       account: null,
-      template: _.template($('#twitter-view').html()),
+      template: _.template($('#twitter-template').html()),
       render: function() {
-        this.$el.html(this.template({account: this.account}));
-        $('#twitter-tab-a').html('Twitter <i class="fa fa-twitter"></i>');
+        this.$el.html('<h3>Twitter Account</h3>');
+        this.$el.append(this.template({account: this.account}));
+        this.$el.show();
+        $('#twitter-tab-view').html('Twitter <i class="fa fa-twitter"></i>');
       }
     }));
 
@@ -46,12 +49,13 @@
 
     // View to display if they have not logged in to facebook.
     var facebookLoginView = new (Backbone.View.extend({
-      el: '#facebook-view',
+      el: '#facebook-login-view',
       facebookview: null,
       facebookpageview: null,
       template: _.template($('#facebook-login-template').html()),
       render: function() {
         this.$el.html(this.template());
+        this.$el.show();
       }
     }));
     
@@ -63,9 +67,11 @@
       picture: null,
       template: _.template($('#facebook-template').html()),
       render: function() {
-        this.$el.html(this.template({profile: this.profile, picture: this.picture}));
-
-        $('#facebook-tab-a').html('Facebook <i class="fa fa-facebook"></i>');
+        this.$el.html('<h3>Facebook Account</h3>');
+        this.$el.append(this.template({profile: this.profile, picture: this.picture}));
+        this.$el.show();
+        
+        $('#facebook-tab-view').html('Facebook <i class="fa fa-facebook"></i>');
       }
     }));
 
@@ -77,15 +83,31 @@
       template: _.template($('#facebook-page-template').html()),
       render: function() {
         var that = this;
-        this.$el.html('');
+        this.$el.html('<h3>Facebook Page(s)</h3>');
+        
+        // Fetch previously selected pages.
+        var facebook_page_id_list = [];
+        if($.cookie('facebook_page_announcement')) {
+          facebook_page_id_list = $.cookie('facebook_page_announcement').split(',');
+        }
 
         // Render the pages and add them, selecting the one selected.
         _.each(this.page_list, function(page) {
           var fp = $.extend({checked: ''}, page);
-//          fp.checked = (String(page.id) === String(facebook_page_id)) ? 'checked' : '';
+          fp.checked = (_.contains(facebook_page_id_list, String(page.id))) ? 'checked' : '';
           that.$el.append(that.template({page: fp}));
         });
+        this.$el.show();
+        
+        $('#facebook-tab-view').html('Facebook <i class="fa fa-user"></i>');
       }
+//      display: function(value) {
+//        if(value) {
+//          this.$el.show();
+//        } else {
+//          this.$el.hide();
+//        }
+//      }
     }));
     
     // Point each view to the other.
@@ -110,5 +132,15 @@
         facebookLoginView.render();
       }
     });
+    
+    // When a tab is clicked, set it as the current tab.
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      $.cookie('announcement-current-tab', $(e.target).attr('id'));
+    });
+    
+    // During loading of the page, load the last tab the user clicked on or default.
+    if($.cookie('announcement-current-tab')) {
+      $('#' + $.cookie('announcement-current-tab')).click();
+    }
   });
 })(Backbone, $, _);

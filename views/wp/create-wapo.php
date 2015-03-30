@@ -510,10 +510,37 @@ namespace Wp {
    */
   function create_wapo_announcement($request, $data) {
     try {
+      $profile = null;
+
+      // If they are logged in, get or create a profile.
+      if ($request->user) {
+        if ($data['profile']) {
+          $profile = Profile::queryset()->get(array("id"=>$data['profile']));
+        } else {
+          // Create a new profile.
+          $distributor = Distributor::get_or_create_save(array("user"=>$request->user), false);
+          $profile = Profile::create_save(array("distributor" => $distributor, "name" => $data['name']), false);
+        }
+      } else {
+        // Check if the user exists.
+        $user_list = \User\User::queryset()->filter(array("email"=>$data['profile_email']))->fetch();
+        $user = null;
+        if(count($user_list)) {
+          $user = $user_list[0];
+        } else {
+          // If not logged in, means they are using email so create an account.
+          list($error, $message, $user) = \User\Api::create_user(array("email"=>$data["profile_email"]), true);
+        }
+        
+        // Create their distributor and profile using the name.
+        $distributor = Distributor::get_or_create_save(array("user"=>$user), false);
+        $profile = Profile::get_or_create_save(array("distributor"=>$distributor, "name"=>$data["profile_name"]));
+      }
+      
       // Create the wapo.
       $create = array(
           "module" => $data['module'],
-          "profile" => $data['profile'],
+          "profile" => $profile,
 //          "payment_method" => \Wapo\PaymentMethod::queryset()->get(array("name"=>"WePay")),
           "delivery_message" => $request->cookie->find("announcement"),
           "status" => "p",
@@ -529,6 +556,26 @@ namespace Wp {
             "contact" => $data['twitter_account']->id
         );
         WapoRecipient::create_save($recipient, false);
+      }
+      
+      if($data['facebook_announcement']) {
+        $recipient = array(
+            "wapo" => $wapo,
+            "name" => "facebook_announcement",
+            "contact" => $data['facebook_account']->id
+        );
+        WapoRecipient::create_save($recipient, false);
+      }
+      
+      if(count($data['facebook_page_id_list'])) {
+        foreach($data['facebook_page_id_list'] as $page_id) {
+          $recipient = array(
+              "wapo" => $wapo,
+              "name" => "facebook_page_announcement",
+              "contact" => $page_id
+          );
+          WapoRecipient::create_save($recipient, false);
+        }
       }
     } catch (\Exception $ex) {
       return array(true, $ex->getMessage(), null);

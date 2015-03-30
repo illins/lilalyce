@@ -200,9 +200,29 @@ namespace Wp {
         // If Twitter announcement, tweet.
         if ($recipient->name == "twitter_announcement") {
           // Tweet and update if it has been sent.
-          $tweet = tweet(array("status" => $wapo->delivery_message . date("H:i:s")), $request);
+          $tweet = tweet(array("status" => $wapo->delivery_message), $request);
           if ($tweet) {
             $recipient->resource = $tweet->id;
+            $recipient->sent = true;
+            $recipient->save(false);
+          } else {
+            $error = true;
+          }
+        } else if ($recipient->name == "facebook_announcement") {
+          // Post to Facebook Feed.
+          $facebook = fb_post_feed($request, $wapo->delivery_message, "");
+          if ($facebook) {
+            $recipient->resource = $facebook->getProperty('id');
+            $recipient->sent = true;
+            $recipient->save(false);
+          } else {
+            $error = true;
+          }
+        } else if ($recipient->name == "facebook_page_announcement") {
+          // Post to Facebook Page Feed.
+          $facebook = fb_page_post_feed($request, $recipient->contact, $wapo->delivery_message, "");
+          if ($facebook) {
+            $recipient->resource = $facebook->getProperty('id');
             $recipient->sent = true;
             $recipient->save(false);
           } else {

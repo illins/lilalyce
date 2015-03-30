@@ -368,11 +368,31 @@ namespace Wp {
   function validate_wapo_announcement($request, $module) {
     try {
       // PROFILE STEP
-      // Check that the profile is theirs. The announcement feature is only available to people with an account.
-      // @todo - add option for checking that they are a paying customer!? later.
-      $profile = \Wapo\Profile::get_or_null(array("id"=>$request->cookie->find("profile_id"),"wapo_distributor.user"=>$request->user));
-      if(!$profile) {
-        throw new \Exception("Profile error. Please select a valid profile.");
+      $profile = null;
+      $profile_name = "";
+      $profile_email = "";
+      
+      // If we have an email set, then this is a new profile.
+      if($request->cookie->is_set("email")) {
+        $profile_name = $request->cookie->find("name", "");
+        $profile_email = $request->cookie->find("email", "");
+        
+        if($request->user) {
+          $profile = \Wapo\Profile::get_or_null(array("email"=>$profile_email));
+          
+          // Clear the profile name/email if this is filled in.
+          if($profile) {
+            $profile_name = "";
+            $profile_email = "";
+          }
+        }
+      } else {
+        $profile = \Wapo\Profile::get_or_null(array("id"=>$request->cookie->find("profile_id"),"wapo_distributor.user"=>$request->user));
+      }
+      
+      // Check that at least one or the other is filled in.
+      if(!$profile && !$profile_name && !$profile_email) {
+        throw new \Exception("Profile error. Please select a valid profile or create a new profile.");
       }
       
       // ANNOUNCEMENT STEP
@@ -395,16 +415,46 @@ namespace Wp {
         }
       }
       
+      // ANNOUNCEMENT STEP FACEBOOK.
+      $facebook_announcement = $request->cookie->find("facebook_announcement");
+      $facebook_account = null;
+      if($facebook_announcement) {
+        $facebook_account = (new \BlinkFacebook\BlinkFacebookApi($request))->getUserProfile();
+        if(!$facebook_account) {
+          throw new \Exception("You have selected Facebook Announcement but have not logged in to Facebook.");
+        }
+      }
+      
+      // ANNOUNCEMENT STEP FACEBOOK PAGE.
+      $facebook_page_announcement = $request->cookie->find("facebook_page_announcement");
+      if($facebook_page_announcement) {
+        $facebook_account = (new \BlinkFacebook\BlinkFacebookApi($request))->getUserProfile();
+        if(!$facebook_account) {
+          throw new \Exception("You have selected Facebook Page Announcement but have not logged in to Facebook.");
+        }
+        
+        // Fetch the pages for validation.
+        $facebook_page_id_list = explode(",", $facebook_page_announcement);
+        $facebook_page_list = (new \BlinkFacebook\BlinkFacebookApi($request))->getFacebookPages();
+        $fb_page_id_list = array();
+        foreach($facebook_page_list as $page) {
+          $fb_page_id_list[] = $page->id;
+        }
+        
+        foreach($facebook_page_id_list as $page_id) {
+          if(!in_array($page_id, $fb_page_id_list)) {
+            throw new \Exception("You have selected an invalid Facebook Page.");
+          }
+        }
+        
+      }
+      
       // Check that we have at least one announcemnt.
       if(!$twitter_announcement) {
         throw new \Exception("Please select at least one Announcement.");
       }
     } catch (\Exception $ex) {
-      return array(
-          "error" => true,
-          "message" => $ex->getMessage(),
-          null
-      );
+      return array(true, $ex->getMessage(), array());
     }
     
     $data = array(
@@ -412,8 +462,13 @@ namespace Wp {
         "message" => "",
         "module" => $module,
         "profile" => $profile,
+        "profile_name" => $profile_name,
+        "profile_email" => $profile_email,
         "twitter_announcement" => $twitter_announcement,
-        "twitter_account" => $twitter_account
+        "twitter_account" => $twitter_account,
+        "facebook_announcement" => $facebook_announcement,
+        "facebook_account" => $facebook_account,
+        "facebook_page_id_list" => $facebook_page_id_list
     );
     
     return array(false, '', $data);

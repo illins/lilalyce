@@ -118,8 +118,19 @@ namespace Wp {
         $this->request->cookie->set("promotion_id", $this->promotion->id);
         
       } else if($this->current_step == "announcement") { // ANNOUNCEMENT STEP.
-        // If we are sending a Twitter announcement.
+        // If we are sending a Twitter account announcement.
         $this->request->cookie->set("twitter_announcement", $this->request->post->find("twitter_announcement", 0));
+        
+        // If we are sending a Facebook account announcement.
+        $this->request->cookie->set("facebook_announcement", $this->request->post->find("facebook_announcement"));
+        
+        // If we are sending a Facebook page announcement.
+        if($this->request->post->is_set("facebook_page")) {
+          $facebook_pages = $this->request->post->find("facebook_page");
+          $this->request->cookie->set("facebook_page_announcement", implode(",", $facebook_pages));
+        } else {
+          $this->request->cookie->delete("facebook_page_announcement");
+        }
       }  else if($this->current_step == "delivery") {
         // If this is an announcement, we check for different values.
         if($this->module->tag == "announcement") {
@@ -215,7 +226,6 @@ namespace Wp {
         }
         $this->request->cookie->set("quantity", $quantity);
       } else if($this->current_step == "checkout") {
-        
         list($error, $message, $data) = validate_wapo($this->request);
         
         if($error) {
@@ -312,7 +322,7 @@ namespace Wp {
 //      $step_list = array_keys($this->step_definition_list);
       $step_list = array();
       if($module && $module->tag == "announcement") {
-        $step_list = array("profiles", "announcement", "delivery", "done");
+        $step_list = array("profiles", "announcement", "delivery", "checkout", "done");
       } else {
         $step_list = array("profiles", "marketplace", "delivery", "checkout", "done");
       }
@@ -366,8 +376,7 @@ namespace Wp {
         $context['promotioncategory'] = $this->promotioncategory;
         $context['promotioncategory_list'] = $promotioncategory_list;
       } else if($this->current_step == "announcement") { // ANNOUNCEMENT STEP.
-        // Get the twitter info if one exists.
-        $context['twitter_announcement'] = $this->request->cookie->find("twitter_announcement", 0);
+        
       } else if($this->current_step == "delivery") { // DELIVERY STEP
         
       } else if($this->current_step == "ffa") {
@@ -449,6 +458,11 @@ namespace Wp {
           $progress['profile']['profile'] = \Wapo\Profile::get_or_null(array("id"=>$this->request->cookie->get("profile_id")));
         }
       }
+      
+      // Get the announcement data if any.
+      $context['twitter_announcement'] = $this->request->cookie->find("twitter_announcement", 0);
+      $context['facebook_announcement'] = $this->request->cookie->find("facebook_announcement", 0);
+      $context['facebook_page_announcement'] = $this->request->cookie->is_set("facebook_page_announcement", false);
       
       // Add the common data for all the steps to the context.
       $context['module'] = $module;
