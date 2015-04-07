@@ -58,7 +58,7 @@
 //    $definition = array(
 //        "modules" => array(
 //            "title" => "Modules",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/modules.twig"),
+//            "template" => TemplateConfig::Template("pipeline/modules.twig"),
 //            "form" => "\Wp\WapoModuleForm"
 //        )
 //    );
@@ -73,7 +73,7 @@
 //      if ($request->user && $request->post->find("name")) {
 //        $definition["new_profile"] = array(
 //            "title" => "New Profile",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/new_profile.twig"),
+//            "template" => TemplateConfig::Template("pipeline/new_profile.twig"),
 //            "form" => "\Wp\NewProfileForm"
 //        );
 //      } else if ($request->user) {
@@ -81,13 +81,13 @@
 //        if (Profile::exists(array("wapo_distributor.user" => $request->user))) {
 //          $definition["profiles"] = array(
 //              "title" => "Profile",
-//              "template" => ConfigTemplate::DefaultTemplate("pipeline/profiles.twig"),
+//              "template" => TemplateConfig::Template("pipeline/profiles.twig"),
 //              "form" => "\Wp\ProfilesForm"
 //          );
 //        } else {
 //          $definition["new_profile"] = array(
 //              "title" => "New Profile",
-//              "template" => ConfigTemplate::DefaultTemplate("pipeline/new_profile.twig"),
+//              "template" => TemplateConfig::Template("pipeline/new_profile.twig"),
 //              "form" => "\Wp\NewProfileForm"
 //          );
 //        }
@@ -95,7 +95,7 @@
 //        // If not logged in, then they are creating a new profile.
 //        $definition["new_profile"] = array(
 //            "title" => "New Profile",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/new_profile.twig"),
+//            "template" => TemplateConfig::Template("pipeline/new_profile.twig"),
 //            "form" => "\Wp\NewProfileForm"
 //        );
 //      }
@@ -106,20 +106,20 @@
 //        if (Profile::exists(array("wapo_distributor.user" => $request->user))) {
 //          $definition["profiles"] = array(
 //              "title" => "Profile",
-//              "template" => ConfigTemplate::DefaultTemplate("pipeline/profiles.twig"),
+//              "template" => TemplateConfig::Template("pipeline/profiles.twig"),
 //              "form" => "\Wp\ProfilesForm"
 //          );
 //        } else {
 //          $definition["new_profile"] = array(
 //              "title" => "New Profile",
-//              "template" => ConfigTemplate::DefaultTemplate("pipeline/new_profile.twig"),
+//              "template" => TemplateConfig::Template("pipeline/new_profile.twig"),
 //              "form" => "\Wp\NewProfileForm"
 //          );
 //        }
 //      } else {// If not logged in, then they are creating a new profile.
 //        $definition["new_profile"] = array(
 //            "title" => "New Profile",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/new_profile.twig"),
+//            "template" => TemplateConfig::Template("pipeline/new_profile.twig"),
 //            "form" => "\Wp\NewProfileForm"
 //        );
 //      }
@@ -132,7 +132,7 @@
 //    if (!in_array($module->tag, array("announcement"))) {
 //      $definition["marketplace"] = array(
 //          "title" => "Marketplace",
-//          "template" => ConfigTemplate::DefaultTemplate("pipeline/marketplace.twig"),
+//          "template" => TemplateConfig::Template("pipeline/marketplace.twig"),
 //          "form" => "\Blink\Form"
 //      );
 //
@@ -165,17 +165,17 @@
 //      } else if ($promotioncategory->name == "Scalable Press") {
 //        $definition['scalable'] = array(
 //            "title" => "Scalable Press",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/marketplace/scalable.twig"),
+//            "template" => TemplateConfig::Template("pipeline/marketplace/scalable.twig"),
 //            "form" => "\Wp\ScalableMarketplaceForm"
 //        );
 //        $definition["garment-pick"] = array(
 //            "title" => "Garments",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/garment-pick.twig"),
+//            "template" => TemplateConfig::Template("pipeline/garment-pick.twig"),
 //            "form" => "\Wp\GarmentPickForm"
 //        );
 //        $definition["garment-quote"] = array(
 //            "title" => "Garments",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/garment-quote.twig"),
+//            "template" => TemplateConfig::Template("pipeline/garment-quote.twig"),
 //            "form" => "\Wp\GarmentQuoteForm"
 //        );
 //        $definition['marketplace']['form'] = "\Wp\ScalableMarketplaceForm";
@@ -188,7 +188,7 @@
 //    if ($module->tag == "announcement") {
 //      $definition["announcement"] = array(
 //          "title" => "Announcement",
-//          "template" => ConfigTemplate::DefaultTemplate("pipeline/announcement.twig"),
+//          "template" => TemplateConfig::Template("pipeline/announcement.twig"),
 //          "form" => "\Wp\WapoAnnouncementForm"
 //      );
 //    }
@@ -200,7 +200,7 @@
 //    // Set the main delivery page.
 //    $definition["delivery"] = array(
 //        "title" => "Delivery",
-//        "template" => ConfigTemplate::DefaultTemplate("pipeline/delivery.twig"),
+//        "template" => TemplateConfig::Template("pipeline/delivery.twig"),
 //        "form" => "\Blink\Form"
 //    );
 //    
@@ -215,73 +215,73 @@
 //      if ($delivery == "ffa") {
 //        $definition["ffa"] = array(
 //            "title" => "Free For All",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/free_for_all.twig"),
+//            "template" => TemplateConfig::Template("pipeline/free_for_all.twig"),
 //            "form" => "\Wp\FreeForAllForm"
 //        );
 //      } else if ($delivery == "e") {
 //        $definition["e"] = array(
 //            "title" => "Email",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/email.twig"),
+//            "template" => TemplateConfig::Template("pipeline/email.twig"),
 //            "form" => "\Blink\Form"
 //        );
 //      } else if ($delivery == "text") {
 //        $definition["text"] = array(
 //            "title" => "Text",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/text.twig"),
+//            "template" => TemplateConfig::Template("pipeline/text.twig"),
 //            "form" => "\Wp\TextForm"
 //        );
 //      } else if ($delivery == "el") {
 //        $definition["el"] = array(
 //            "title" => "Email List",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/email_list.twig"),
+//            "template" => TemplateConfig::Template("pipeline/email_list.twig"),
 //            "form" => "\Wp\EmailListForm"
 //        );
 //      } else if ($delivery == "mailchimp") {
 //        $definition["mailchimp"] = array(
 //            "title" => "MailChimp",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/mailchimp.twig"),
+//            "template" => TemplateConfig::Template("pipeline/mailchimp.twig"),
 //            "form" => "\Wp\MailChimpForm"
 //        );
 //      } else if ($delivery == "aff") {
 //        $definition["aff"] = array(
 //            "title" => "Any Facebook Friend",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/any_facebook_friends.twig"),
+//            "template" => TemplateConfig::Template("pipeline/any_facebook_friends.twig"),
 //            "form" => "\Wp\AnyFacebookFriendsForm"
 //        );
 //      } else if ($delivery == "sff") {
 //        $definition["sff"] = array(
 //            "title" => "Facebook Friends",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/select_facebook_friends.twig"),
+//            "template" => TemplateConfig::Template("pipeline/select_facebook_friends.twig"),
 //            "form" => "\Wp\FacebookFriendsForm"
 //        );
 //      } else if ($delivery == "fp") {
 //        $definition["fp"] = array(
 //            "title" => "Facebook Page Followers",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/facebook_page.twig"),
+//            "template" => TemplateConfig::Template("pipeline/facebook_page.twig"),
 //            "form" => "\Wp\FacebookPageForm"
 //        );
 //      } else if ($delivery == "atf") {
 //        $definition["atf"] = array(
 //            "title" => "Any Twitter Followers",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/any_twitter_followers.twig"),
+//            "template" => TemplateConfig::Template("pipeline/any_twitter_followers.twig"),
 //            "form" => "\Wp\GenericQuantityForm"
 //        );
 //      } else if ($delivery == "stf") {
 //        $definition["stf"] = array(
 //            "title" => "Select Twitter Followers",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/select_twitter_followers.twig"),
+//            "template" => TemplateConfig::Template("pipeline/select_twitter_followers.twig"),
 //            "form" => "\Wp\SelectTwitterFollowersForm"
 //        );
 //      } else if ($delivery == "aif") {
 //        $definition["aif"] = array(
 //            "title" => "Any Instagram Followers",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/any_instagram_followers.twig"),
+//            "template" => TemplateConfig::Template("pipeline/any_instagram_followers.twig"),
 //            "form" => "\Wp\GenericQuantityForm"
 //        );
 //      } else if ($delivery == "sif") {
 //        $definition["sif"] = array(
 //            "title" => "Select Instagram Followers",
-//            "template" => ConfigTemplate::DefaultTemplate("pipeline/select_instagram_followers.twig"),
+//            "template" => TemplateConfig::Template("pipeline/select_instagram_followers.twig"),
 //            "form" => "\Wp\SelectInstagramFollowersForm"
 //        );
 //      }
@@ -290,7 +290,7 @@
 //    // DETAILS STEP.
 //    $definition["details"] = array(
 //        "title" => "Details",
-//        "template" => ConfigTemplate::DefaultTemplate("pipeline/details.twig"),
+//        "template" => TemplateConfig::Template("pipeline/details.twig"),
 //        "form" => "\Wp\DetailsForm"
 //    );
 //
@@ -299,7 +299,7 @@
 //    // Checkout (ready to go pay).
 //    $definition["checkout"] = array(
 //        "title" => "Checkout",
-//        "template" => ConfigTemplate::DefaultTemplate("pipeline/checkout.twig"),
+//        "template" => TemplateConfig::Template("pipeline/checkout.twig"),
 //        "form" => "Wp\PaymentMethodForm"
 //    );
 //    
@@ -311,7 +311,7 @@
 //    // Create step (once they have paid).
 //    $definition["create"] = array(
 //        "title" => "Create",
-//        "template" => ConfigTemplate::DefaultTemplate("pipeline/create.twig"),
+//        "template" => TemplateConfig::Template("pipeline/create.twig"),
 //        "form" => "Blink\Form"
 //    );
 //
@@ -320,7 +320,7 @@
 //      // Send step.
 //      $definition["send"] = array(
 //          "title" => "Send",
-//          "template" => ConfigTemplate::DefaultTemplate("pipeline/send.twig"),
+//          "template" => TemplateConfig::Template("pipeline/send.twig"),
 //          "form" => "Blink\Form"
 //      );
 //    }
@@ -328,7 +328,7 @@
 //    // Add the done step.
 //    $definition["done"] = array(
 //        "title" => "Confirmation",
-//        "template" => ConfigTemplate::DefaultTemplate("pipeline/confirmation.twig"),
+//        "template" => TemplateConfig::Template("pipeline/confirmation.twig"),
 //        "form" => "Blink\Form"
 //    );
 //

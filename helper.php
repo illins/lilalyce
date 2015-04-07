@@ -41,9 +41,9 @@ namespace Wp {
       );
       
       if($edit) {
-        return \Blink\render_get($context, ConfigTemplate::$Directory . "dashboard/sociallinks.twig");
+        return \Blink\render_get($context, TemplateConfig::$Directory . "dashboard/sociallinks.twig");
       } else {
-        return \Blink\render_get($context, ConfigTemplate::$Directory . "sociallinks.twig");
+        return \Blink\render_get($context, TemplateConfig::$Directory . "sociallinks.twig");
       }
     }
     
@@ -81,7 +81,7 @@ namespace Wp {
               "current"=>$current,
               "progress"=>$progress
       );
-      return \Blink\render_get($context, ConfigTemplate::Template("dashboard/progress.twig"));
+      return \Blink\render_get($context, TemplateConfig::Template("dashboard/progress.twig"));
     }
     
     public static function frontend_progress($request, $current) {
@@ -117,7 +117,7 @@ namespace Wp {
               "current"=>$current,
               "progress"=>$progress
       );
-      return \Blink\render_get($context, ConfigTemplate::Template("frontend/progress.twig"));
+      return \Blink\render_get($context, TemplateConfig::Template("frontend/progress.twig"));
     }
     
     public static function clear_cookies($cookie) {

@@ -58,7 +58,7 @@ namespace Wp {
     $definition = array(
         "modules" => array(
             "title" => "Modules",
-            "template" => ConfigTemplate::DefaultTemplate("wp/modules.twig"),
+            "template" => TemplateConfig::Template("wp/modules.twig"),
             "form" => "\Wp\WapoModuleForm"
         )
     );
@@ -73,7 +73,7 @@ namespace Wp {
       if ($request->user && $request->post->find("name")) {
         $definition["new_profile"] = array(
             "title" => "New Profile",
-            "template" => ConfigTemplate::DefaultTemplate("wp/new_profile.twig"),
+            "template" => TemplateConfig::Template("wp/new_profile.twig"),
             "form" => "\Wp\NewProfileForm"
         );
       } else if ($request->user) {
@@ -81,13 +81,13 @@ namespace Wp {
         if (Profile::exists(array("wapo_distributor.user" => $request->user))) {
           $definition["profiles"] = array(
               "title" => "Profile",
-              "template" => ConfigTemplate::DefaultTemplate("wp/profiles.twig"),
+              "template" => TemplateConfig::Template("wp/profiles.twig"),
               "form" => "\Wp\ProfilesForm"
           );
         } else {
           $definition["new_profile"] = array(
               "title" => "New Profile",
-              "template" => ConfigTemplate::DefaultTemplate("wp/new_profile.twig"),
+              "template" => TemplateConfig::Template("wp/new_profile.twig"),
               "form" => "\Wp\NewProfileForm"
           );
         }
@@ -95,7 +95,7 @@ namespace Wp {
         // If not logged in, then they are creating a new profile.
         $definition["new_profile"] = array(
             "title" => "New Profile",
-            "template" => ConfigTemplate::DefaultTemplate("wp/new_profile.twig"),
+            "template" => TemplateConfig::Template("wp/new_profile.twig"),
             "form" => "\Wp\NewProfileForm"
         );
       }
@@ -106,20 +106,20 @@ namespace Wp {
         if (Profile::exists(array("wapo_distributor.user" => $request->user))) {
           $definition["profiles"] = array(
               "title" => "Profile",
-              "template" => ConfigTemplate::DefaultTemplate("wp/profiles.twig"),
+              "template" => TemplateConfig::Template("wp/profiles.twig"),
               "form" => "\Wp\ProfilesForm"
           );
         } else {
           $definition["new_profile"] = array(
               "title" => "New Profile",
-              "template" => ConfigTemplate::DefaultTemplate("wp/new_profile.twig"),
+              "template" => TemplateConfig::Template("wp/new_profile.twig"),
               "form" => "\Wp\NewProfileForm"
           );
         }
       } else {// If not logged in, then they are creating a new profile.
         $definition["new_profile"] = array(
             "title" => "New Profile",
-            "template" => ConfigTemplate::DefaultTemplate("wp/new_profile.twig"),
+            "template" => TemplateConfig::Template("wp/new_profile.twig"),
             "form" => "\Wp\NewProfileForm"
         );
       }
@@ -132,7 +132,7 @@ namespace Wp {
     if (!in_array($module->tag, array("announcement"))) {
       $definition["marketplace"] = array(
           "title" => "Marketplace",
-          "template" => ConfigTemplate::DefaultTemplate("wp/marketplace.twig"),
+          "template" => TemplateConfig::Template("wp/marketplace.twig"),
           "form" => "\Blink\Form"
       );
 
@@ -165,17 +165,17 @@ namespace Wp {
       } else if ($promotioncategory->name == "Scalable Press") {
         $definition['scalable'] = array(
             "title" => "Scalable Press",
-            "template" => ConfigTemplate::DefaultTemplate("wp/marketplace/scalable.twig"),
+            "template" => TemplateConfig::Template("wp/marketplace/scalable.twig"),
             "form" => "\Wp\ScalableMarketplaceForm"
         );
         $definition["garment-pick"] = array(
             "title" => "Garments",
-            "template" => ConfigTemplate::DefaultTemplate("wp/garment-pick.twig"),
+            "template" => TemplateConfig::Template("wp/garment-pick.twig"),
             "form" => "\Wp\GarmentPickForm"
         );
         $definition["garment-quote"] = array(
             "title" => "Garments",
-            "template" => ConfigTemplate::DefaultTemplate("wp/garment-quote.twig"),
+            "template" => TemplateConfig::Template("wp/garment-quote.twig"),
             "form" => "\Wp\GarmentQuoteForm"
         );
         $definition['marketplace']['form'] = "\Wp\ScalableMarketplaceForm";
@@ -191,14 +191,14 @@ namespace Wp {
     if ($module->tag == "announcement") {
       $definition["announcement"] = array(
           "title" => "Announcement",
-          "template" => ConfigTemplate::DefaultTemplate("wp/announcement.twig"),
+          "template" => TemplateConfig::Template("wp/announcement.twig"),
           "form" => "\Wp\WapoAnnouncementForm"
       );
     } else {
       // Set the main delivery page.
       $definition["delivery"] = array(
           "title" => "Delivery",
-          "template" => ConfigTemplate::DefaultTemplate("wp/delivery.twig"),
+          "template" => TemplateConfig::Template("wp/delivery.twig"),
           "form" => "\Wp\DeliveryForm"
       );
 
@@ -212,73 +212,73 @@ namespace Wp {
       if ($delivery == "ffa") {
         $definition["ffa"] = array(
             "title" => "Free For All",
-            "template" => ConfigTemplate::DefaultTemplate("wp/free_for_all.twig"),
+            "template" => TemplateConfig::Template("wp/free_for_all.twig"),
             "form" => "\Wp\FreeForAllForm"
         );
       } else if ($delivery == "e") {
         $definition["e"] = array(
             "title" => "Email",
-            "template" => ConfigTemplate::DefaultTemplate("wp/email.twig"),
+            "template" => TemplateConfig::Template("wp/email.twig"),
             "form" => "\Blink\Form"
         );
       } else if ($delivery == "text") {
         $definition["text"] = array(
             "title" => "Text",
-            "template" => ConfigTemplate::DefaultTemplate("wp/text.twig"),
+            "template" => TemplateConfig::Template("wp/text.twig"),
             "form" => "\Wp\TextForm"
         );
       } else if ($delivery == "el") {
         $definition["el"] = array(
             "title" => "Email List",
-            "template" => ConfigTemplate::DefaultTemplate("wp/email_list.twig"),
+            "template" => TemplateConfig::Template("wp/email_list.twig"),
             "form" => "\Wp\EmailListForm"
         );
       } else if ($delivery == "mailchimp") {
         $definition["mailchimp"] = array(
             "title" => "MailChimp",
-            "template" => ConfigTemplate::DefaultTemplate("wp/mailchimp.twig"),
+            "template" => TemplateConfig::Template("wp/mailchimp.twig"),
             "form" => "\Wp\MailChimpForm"
         );
       } else if ($delivery == "aff") {
         $definition["aff"] = array(
             "title" => "Any Facebook Friend",
-            "template" => ConfigTemplate::DefaultTemplate("wp/any_facebook_friends.twig"),
+            "template" => TemplateConfig::Template("wp/any_facebook_friends.twig"),
             "form" => "\Wp\AnyFacebookFriendsForm"
         );
       } else if ($delivery == "sff") {
         $definition["sff"] = array(
             "title" => "Facebook Friends",
-            "template" => ConfigTemplate::DefaultTemplate("wp/select_facebook_friends.twig"),
+            "template" => TemplateConfig::Template("wp/select_facebook_friends.twig"),
             "form" => "\Wp\FacebookFriendsForm"
         );
       } else if ($delivery == "fp") {
         $definition["fp"] = array(
             "title" => "Facebook Page Followers",
-            "template" => ConfigTemplate::DefaultTemplate("wp/facebook_page.twig"),
+            "template" => TemplateConfig::Template("wp/facebook_page.twig"),
             "form" => "\Wp\FacebookPageForm"
         );
       } else if ($delivery == "atf") {
         $definition["atf"] = array(
             "title" => "Any Twitter Followers",
-            "template" => ConfigTemplate::DefaultTemplate("wp/any_twitter_followers.twig"),
+            "template" => TemplateConfig::Template("wp/any_twitter_followers.twig"),
             "form" => "\Wp\GenericQuantityForm"
         );
       } else if ($delivery == "stf") {
         $definition["stf"] = array(
             "title" => "Select Twitter Followers",
-            "template" => ConfigTemplate::DefaultTemplate("wp/select_twitter_followers.twig"),
+            "template" => TemplateConfig::Template("wp/select_twitter_followers.twig"),
             "form" => "\Wp\SelectTwitterFollowersForm"
         );
       } else if ($delivery == "aif") {
         $definition["aif"] = array(
             "title" => "Any Instagram Followers",
-            "template" => ConfigTemplate::DefaultTemplate("wp/any_instagram_followers.twig"),
+            "template" => TemplateConfig::Template("wp/any_instagram_followers.twig"),
             "form" => "\Wp\GenericQuantityForm"
         );
       } else if ($delivery == "sif") {
         $definition["sif"] = array(
             "title" => "Select Instagram Followers",
-            "template" => ConfigTemplate::DefaultTemplate("wp/select_instagram_followers.twig"),
+            "template" => TemplateConfig::Template("wp/select_instagram_followers.twig"),
             "form" => "\Wp\SelectInstagramFollowersForm"
         );
       }
@@ -287,7 +287,7 @@ namespace Wp {
     // DETAILS STEP.
 //    $definition["details"] = array(
 //        "title" => "Details",
-//        "template" => ConfigTemplate::DefaultTemplate("wp/details.twig"),
+//        "template" => TemplateConfig::Template("wp/details.twig"),
 //        "form" => "\Wp\DetailsForm"
 //    );
 
@@ -296,7 +296,7 @@ namespace Wp {
     // Checkout (ready to go pay).
     $definition["checkout"] = array(
         "title" => "Checkout",
-        "template" => ConfigTemplate::DefaultTemplate("wp/checkout.twig"),
+        "template" => TemplateConfig::Template("wp/checkout.twig"),
         "form" => "Wp\PaymentMethodForm"
     );
     
@@ -308,7 +308,7 @@ namespace Wp {
     // Create step (once they have paid).
     $definition["create"] = array(
         "title" => "Create",
-        "template" => ConfigTemplate::DefaultTemplate("wp/create.twig"),
+        "template" => TemplateConfig::Template("wp/create.twig"),
         "form" => "Blink\Form"
     );
 
@@ -317,7 +317,7 @@ namespace Wp {
       // Send step.
       $definition["send"] = array(
           "title" => "Send",
-          "template" => ConfigTemplate::DefaultTemplate("wp/send.twig"),
+          "template" => TemplateConfig::Template("wp/send.twig"),
           "form" => "Blink\Form"
       );
     }
@@ -325,7 +325,7 @@ namespace Wp {
     // Add the done step.
     $definition["done"] = array(
         "title" => "Confirmation",
-        "template" => ConfigTemplate::DefaultTemplate("wp/confirmation.twig"),
+        "template" => TemplateConfig::Template("wp/confirmation.twig"),
         "form" => "Blink\Form"
     );
 

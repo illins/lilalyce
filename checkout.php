@@ -26,8 +26,8 @@ namespace Wp {
    * - Promotion selected, delivery method, delivery message... 
    */
   class SideBarTemplateView extends \Blink\TemplateView {
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("pipeline/sidebar.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("pipeline/sidebar.twig");
     }
     
     public function get_context_data() {
@@ -125,8 +125,8 @@ namespace Wp {
    * - Display the summary of what is about to occur on the summary page.
    */
   class CheckoutFormView extends \Blink\FormView {
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("checkout/checkout.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("checkout/checkout.twig");
     }
   }
   

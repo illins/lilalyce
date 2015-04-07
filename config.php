@@ -10,8 +10,8 @@ namespace Wp {
   /**
    * Template Configuration sets the path for templates.
    */
-  class ConfigTemplate extends \Blink\ConfigTemplate {
-    public static $DefaultDirectory = "apps/wp/templates/";
+  class TemplateConfig extends \Blink\BaseTemplateConfig {
+    const TEMPLATE_PATH = "apps/wp/templates/";
   }
   
   /**

@@ -273,7 +273,7 @@ namespace Wp {
       $config = array(
           'apiKey'      => \Blink\ConfigInstagram::$AppKey,
           'apiSecret'   => \Blink\ConfigInstagram::$AppSecret,
-          'apiCallback' => sprintf("%s/user/login/instagram/callback/", \Blink\ConfigSite::$Site)
+          'apiCallback' => sprintf("%s/user/login/instagram/callback/", \Blink\SiteConfig::SITE)
       );
       $instagram = new \Instagram($config);
       $instagram->setAccessToken($this->request->session->nmsp("instagram")->find("access_token"));
@@ -298,7 +298,7 @@ namespace Wp {
         $config = array(
             'apiKey' => \Blink\ConfigInstagram::$AppKey,
             'apiSecret' => \Blink\ConfigInstagram::$AppSecret,
-            'apiCallback' => sprintf("%s/user/login/instagram/callback/", \Blink\ConfigSite::$Site)
+            'apiCallback' => sprintf("%s/user/login/instagram/callback/", \Blink\SiteConfig::SITE)
         );
         $instagram = new \Instagram($config);
         $instagram->setAccessToken($this->request->session->nmsp("instagram")->find("access_token"));

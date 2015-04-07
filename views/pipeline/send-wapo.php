@@ -55,10 +55,10 @@
 //
 //  function send_wapo_general($wapo, $request) {
 //    $bitlyapi = new \BlinkBitly\BlinkBitlyAPI();
-//    $base_url = sprintf("%s/wpd/", \Blink\SiteConfig::$Site);
+//    $base_url = sprintf("%s/wpd/", \Blink\SiteConfig::SITE);
 //    
 //    try {
-//      $site = \Blink\SiteConfig::$Site;
+//      $site = \Blink\SiteConfig::SITE;
 //      
 //      $delivery_message = $wapo->delivery_message;
 //      $delivery = $wapo->delivery_method_abbr;
@@ -73,7 +73,7 @@
 //          //          $mail->addReplyTo($this->form->get("email"));
 //          //          $mail->setTo(array("livedev1@yahoo.com" => "Wapo.co"));//creationandthings@gmail.com
 //          //          $mail->addCc(array("creationandthings@gmail.com" => "Wapo.co"));//
-//          //          $message = \Blink\render_get($context, ConfigTemplate::Template("frontend/contact_us.twig"));
+//          //          $message = \Blink\render_get($context, TemplateConfig::Template("frontend/contact_us.twig"));
 //          //          $mail->setBody($message, "text/html");
 //          //          $result = \Swift\Api::Send($mail);
 ////            $mail->setSubject("Subject");

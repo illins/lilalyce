@@ -28,8 +28,8 @@ namespace Wp {
     private $profile_list = array();
     private $profile = null;
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("pipeline/profile_list.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("pipeline/profile_list.twig");
     }
 
     public function get_context_data() {
@@ -73,8 +73,8 @@ namespace Wp {
     private $promotioncategory = null;
     private $promotioncategory_list = array();
     
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/marketplace.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/marketplace.twig");
     }
     public function get_queryset() {
       $this->promotioncategory_list = PromotionCategory::queryset()->all();

@@ -15,8 +15,8 @@ namespace Wp {
       return true;
     }
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("admin/admin.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("admin/admin.twig");
     }
 
   }
@@ -27,8 +27,8 @@ namespace Wp {
       return true;
     }
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("admin/promotioncategory_list.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("admin/promotioncategory_list.twig");
     }
 
     public function get_class() {
@@ -57,8 +57,8 @@ namespace Wp {
       parent::get_class();
     }
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("admin/promotioncategory_create.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("admin/promotioncategory_create.twig");
     }
 
     public function get_post_url() {
@@ -86,8 +86,8 @@ namespace Wp {
       parent::get_class();
     }
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("admin/promotioncategory_update.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("admin/promotioncategory_update.twig");
     }
 
     public function get_post_url() {
@@ -115,8 +115,8 @@ namespace Wp {
       parent::get_class();
     }
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("admin/promotioncategory_details.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("admin/promotioncategory_details.twig");
     }
 
     public function get_context_data() {
@@ -139,8 +139,8 @@ namespace Wp {
       parent::get_class();
     }
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("admin/promotion_create.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("admin/promotion_create.twig");
     }
 
     public function get_post_url() {
@@ -187,8 +187,8 @@ namespace Wp {
       parent::get_class();
     }
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("admin/promotion_update.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("admin/promotion_update.twig");
     }
 
     public function get_post_url() {
@@ -220,8 +220,8 @@ namespace Wp {
       parent::get_class();
     }
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("admin/promotion_details.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("admin/promotion_details.twig");
     }
 
   }

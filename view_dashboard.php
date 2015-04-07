@@ -27,8 +27,8 @@ namespace Wp {
       return true;
     }
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/dashboard.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/dashboard.twig");
     }
 
     public function get_context_data() {
@@ -57,8 +57,8 @@ namespace Wp {
    * Display the first time hints for a new profile.
    */
   class DashboardFirstTimeTemplateView extends \Blink\TemplateView {
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_first_time.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_first_time.twig");
     }
     
 //    public function get() {
@@ -80,8 +80,8 @@ namespace Wp {
   }
   
   class ProfilePreviewTemplateView extends \Blink\TemplateView {
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("/dashboard/profile_preview.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("/dashboard/profile_preview.twig");
     }
     
     public function get_context_data() {
@@ -147,8 +147,8 @@ namespace Wp {
       $this->class = Profile::class_name();
       parent::get_class();
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile.twig");
     }
     
     public function get_context_data() {
@@ -182,8 +182,8 @@ namespace Wp {
     public function get_success_url() {
       $this->success_url = sprintf("/wapo/dashboard/profile/%s/update/", $this->object->id);
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_update.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_update.twig");
     }
     
     public function form_valid() {
@@ -197,8 +197,8 @@ namespace Wp {
   }
   
   class ProfileUpdateFacebookLocationUpdateView extends \Blink\UpdateView {
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_update_facebook.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_update_facebook.twig");
     }
     public function get_class() {
       $this->class = Profile::class_name();
@@ -240,8 +240,8 @@ namespace Wp {
       return true;
     }
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_promotion_marketplace.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_promotion_marketplace.twig");
     }
 
     public function get_class() {
@@ -288,8 +288,8 @@ namespace Wp {
   
   // Get promotion to display in the right sidebar when sending the promotion.
   class ProfilePromotionXmlTemplateView extends \Blink\TemplateView {
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/promotion.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/promotion.twig");
     }
     public function get_context_data() {
       parent::get_context_data();
@@ -314,8 +314,8 @@ namespace Wp {
       $this->class = Profile::class_name();
       parent::get_class();
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_update_image.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_update_image.twig");
     }
 
     public function get_success_url() {
@@ -380,8 +380,8 @@ namespace Wp {
     private $profile = NULL;
     private $promotion = null;
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_promotion_delivery_method_email.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_promotion_delivery_method_email.twig");
     }
 
     public function get_success_url() {
@@ -587,8 +587,8 @@ namespace Wp {
     private $profile = NULL;
     private $promotion = null;
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_promotion_delivery_method_twitter.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_promotion_delivery_method_twitter.twig");
     }
 
     public function get_success_url() {
@@ -694,8 +694,8 @@ namespace Wp {
     private $profile = NULL;
     private $promotion = null;
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_promotion_delivery_method_text.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_promotion_delivery_method_text.twig");
     }
 
     public function get_success_url() {
@@ -800,8 +800,8 @@ namespace Wp {
 
     private $profile = NULL;
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_promotion_delivery_method_facebook.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_promotion_delivery_method_facebook.twig");
     }
 
     public function get_success_url() {
@@ -950,7 +950,7 @@ namespace Wp {
             //str_pad(0, 5, "0")
             
             // Get the email to send.
-            $message = \Blink\render_get(array("profile" => $profile, "promotion" => $promotion, "wapo" => $wapo, "recipient" => $create_recipient,"url"=>  \Blink\ConfigSite::$Site), ConfigTemplate::Template("dashboard/profile_promotion_email.twig"));
+            $message = \Blink\render_get(array("profile" => $profile, "promotion" => $promotion, "wapo" => $wapo, "recipient" => $create_recipient,"url"=>  \Blink\SiteConfig::SITE), TemplateConfig::Template("dashboard/profile_promotion_email.twig"));
             $mail_rec->setBody($message, "text/html");
 
             $result = \Swift\Api::Send($mail_rec);
@@ -1018,7 +1018,7 @@ namespace Wp {
         WapoRecipient::create_save($create_recipient, false);
       }
       
-      $post = \Blink\render_get(array("profile" => $profile, "promotion" => $promotion, "wapo" => $wapo, "code" => $create_recipient['code'],"url"=>\Blink\ConfigSite::$Site), ConfigTemplate::Template("promotion_facebook.twig"));
+      $post = \Blink\render_get(array("profile" => $profile, "promotion" => $promotion, "wapo" => $wapo, "code" => $create_recipient['code'],"url"=>\Blink\SiteConfig::SITE), TemplateConfig::Template("promotion_facebook.twig"));
       
       $response = array(
               "result" => "yes",
@@ -1029,7 +1029,7 @@ namespace Wp {
               "caption" => sprintf("%s has sent you a Wp", $profile->name),
               "description" => $wapo->delivery_message,
               "picture" => $promotion->icon->url,
-              "link" => sprintf("%s/wapo/download/?code=%s", \Blink\ConfigSite::$Site, $create_recipient['code']),
+              "link" => sprintf("%s/wapo/download/?code=%s", \Blink\SiteConfig::SITE, $create_recipient['code']),
               "post" => $post,
               "url" => sprintf("/wapo/dashboard/profile/%s/confirm/%s/", $profile->id, $wapo->id)
       );
@@ -1040,8 +1040,8 @@ namespace Wp {
 
   class ProfilePromotionFacebookSendTemplateView extends \Blink\TemplateView {
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_promotion_facebook_send.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_promotion_facebook_send.twig");
     }
 
     public function get_context_data() {
@@ -1159,7 +1159,7 @@ namespace Wp {
             );
 
             // Get the email to send.
-            $mail->message = \Blink\render_get(array("profile" => $profile, "promotion" => $promotion, "wapo" => $wapo, "code" => $create_recipient['code'],"url"=>\Blink\ConfigSite::$Site), ConfigTemplate::Template("dashboard/profile_promotion_email.twig"));
+            $mail->message = \Blink\render_get(array("profile" => $profile, "promotion" => $promotion, "wapo" => $wapo, "code" => $create_recipient['code'],"url"=>\Blink\SiteConfig::SITE), TemplateConfig::Template("dashboard/profile_promotion_email.twig"));
 
             if(!$mail->send()) {
               $create_recipient['sent'] = 0;
@@ -1188,8 +1188,8 @@ namespace Wp {
     private $profile = null;
     private $promotion = null;
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_promotion_profile.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_promotion_profile.twig");
     }
 
     public function get_success_url() {
@@ -1265,8 +1265,8 @@ namespace Wp {
     private $profile = null;
     private $promotion = null;
     
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_promotion_checkout.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_promotion_checkout.twig");
     }
 
     public function get_success_url() {
@@ -1369,7 +1369,7 @@ namespace Wp {
       
       $cost = $count * $promotion->price;
       try {
-        $response = \WePay\Api::checkout_create("00", $cost, "YOYO", "iframe", sprintf("%s/wapo/dashboard/profile/%s/send/", \Blink\ConfigSite::$Site, $profile->id));
+        $response = \WePay\Api::checkout_create("00", $cost, "YOYO", "iframe", sprintf("%s/wapo/dashboard/profile/%s/send/", \Blink\SiteConfig::SITE, $profile->id));
         $response->result = "yes";
       } catch(\Exception $e) {
         $response->result = "no";
@@ -1421,8 +1421,8 @@ namespace Wp {
     private $profile = null;
     private $wapo = null;
 
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_promotion_confirmation.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_promotion_confirmation.twig");
     }
 
     public function get_context_data() {
@@ -1457,8 +1457,8 @@ namespace Wp {
       $this->class = SocialLinks::class_name();
       parent::get_class();
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/sociallinks_list.twig");;
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/sociallinks_list.twig");;
     }
     public function get_context_data() {
       parent::get_context_data();
@@ -1500,8 +1500,8 @@ namespace Wp {
       $this->class = SocialLinks::class_name();
       parent::get_class();
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/sociallinks_create.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/sociallinks_create.twig");
     }
     public function get_exclude() {
       $this->exclude = array("profile");
@@ -1555,8 +1555,8 @@ namespace Wp {
       $this->object = SocialLinks::get_or_404(array("id"=>$this->request->param->param['pk'],"profile"=>$this->profile->id));
     }
     
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/sociallinks_delete.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/sociallinks_delete.twig");
     }
     public function get_success_url() {
       $this->success_url = sprintf("/wapo/dashboard/profile/%s/social/", $this->object->profile->id);
@@ -1579,8 +1579,8 @@ namespace Wp {
       $this->class = Product::class_name();
       parent::get_class();
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/product_create.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/product_create.twig");
     }
     public function get_exclude() {
       $this->exclude = array("profile", "description", "photo_url",  "status");
@@ -1642,8 +1642,8 @@ namespace Wp {
       $this->profile = Profile::get_or_404(array("id"=>$this->request->param->param['profile_id'],"distributor"=>$distributor->id));
       $this->object_list = Product::queryset()->filter(array("profile"=>$this->profile->id))->order_by(array("name"))->fetch();
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/product_list.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/product_list.twig");
     }
     public function get_context_data() {
       parent::get_context_data();
@@ -1664,8 +1664,8 @@ namespace Wp {
     public function get_exclude() {
       $this->exclude = array("profile", "description", "photo_url", "status");
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/product_update.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/product_update.twig");
     }
     public function get_post_url() {
       $this->post_url = sprintf("/wapo/dashboard/profile/%s/product/%s/update/", $this->request->param->param['profile_id'], $this->object->id);
@@ -1688,8 +1688,8 @@ namespace Wp {
   }
   
   class ProfileLocation extends \Blink\TemplateView {
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/profile_location.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/profile_location.twig");
     }
     public function get_context_data() {
       parent::get_context_data();
@@ -1708,7 +1708,7 @@ namespace Wp {
       $this->context['latitude'] = $latitude;
       $this->context['longitude'] = $longitude;
       $this->context['profile'] = $profile;
-      $this->context['site'] = \Blink\ConfigSite::$Site;
+      $this->context['site'] = \Blink\SiteConfig::SITE;
     }
   }
   
@@ -1727,8 +1727,8 @@ namespace Wp {
       $this->profile = Profile::get_or_404(array("id"=>$this->request->param->param['profile_id'],"distributor"=>$distributor->id));
       $this->object = Product::queryset()->get(array("id"=>$this->request->param->param['pk'],"profile"=>$this->profile->id));
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/product_details.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/product_details.twig");
     }
     public function get_context_data() {
       parent::get_context_data();
@@ -1749,8 +1749,8 @@ namespace Wp {
       $this->object = Product::get_or_404(array("id"=>$this->request->param->param['pk'],"profile"=>$this->profile->id));
     }
     
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/product_delete.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/product_delete.twig");
     }
     public function get_success_url() {
       $this->success_url = sprintf("/wapo/dashboard/profile/%s/product/", $this->object->profile->id);
@@ -1777,8 +1777,8 @@ namespace Wp {
       $this->profile = Profile::get_or_404(array("id"=>$this->request->param->param['profile_id'],"distributor"=>$distributor->id));
       $this->queryset = Wapo::queryset()->order_by(array("-date_sent"))->filter(array("profile"=>$this->profile->id));
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/promotion_send_list.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/promotion_send_list.twig");
     }
     public function get_context_data() {
       parent::get_context_data();
@@ -1798,8 +1798,8 @@ namespace Wp {
       $this->profile = Profile::get_or_404(array("id"=>$this->request->param->param['profile_id'],"distributor"=>$distributor->id));
       $this->object = Wapo::queryset()->get(array("id"=>$this->request->param->param['pk'],"profile"=>$this->profile->id));
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/promotion_send_details.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/promotion_send_details.twig");
     }
     public function get_context_data() {
       parent::get_context_data();
@@ -1821,8 +1821,8 @@ namespace Wp {
       $profile = Profile::get_or_404(array("id"=>$this->request->param->param['pk'],"dashboard"=>$distributor->id));
       $this->object_list = Contact::queryset()->filter(array("profile"=>$profile->id))->fetch();
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/contact_list.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/contact_list.twig");
     }
   }
   
@@ -1833,8 +1833,8 @@ namespace Wp {
       $this->class = Contact::class_name();
       parent::get_class();
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/contact_create.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/contact_create.twig");
     }
     public function get_context_data() {
       parent::get_context_data();
@@ -1858,8 +1858,8 @@ namespace Wp {
       $profile = Profile::get_or_404(array("id"=>$this->request->param->param['profile_id'],"dashboard"=>$distributor->id));
       $this->object = Contact::get_or_404(array("id"=>$this->request->param->param['pk'],"profile"=>$profile->id));
     }
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/contact_detail.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/contact_detail.twig");
     }
     public function get_context_data() {
       parent::get_context_data();
@@ -1869,8 +1869,8 @@ namespace Wp {
   }
   
   class ProfileContactItemCreateView extends \Blink\CreateView {
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/contact_item_create.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/contact_item_create.twig");
     }
     
     public function form_valid() {
@@ -1888,8 +1888,8 @@ namespace Wp {
   }
   
   class ProfileContactItemImportFormView extends \Blink\FormView {
-    public function get_template_name() {
-      $this->template_name = ConfigTemplate::Template("dashboard/contact_item_import.twig");
+    protected function get_template() {
+      $this->template_name = TemplateConfig::Template("dashboard/contact_item_import.twig");
     }
   }
   

@@ -31,8 +31,8 @@ namespace Wp {
    * Give the user options of how to send a wapo.
    */
   class DeliveryMethodTemplateView extends \Blink\TemplateView {
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("delivery-method/method.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("delivery-method/method.twig");
     }
     
     protected function get_context_data() {
@@ -72,8 +72,8 @@ namespace Wp {
     protected $cancel_url = "/wp/delivery-method/";
 
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("delivery-method/ffa.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("delivery-method/ffa.twig");
     }
     
     protected function get_request_data() {
@@ -104,8 +104,8 @@ namespace Wp {
     
     private $promotion = null;
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("delivery-method/email.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("delivery-method/email.twig");
     }
     
     protected function get_form_fields() {
@@ -201,8 +201,8 @@ namespace Wp {
     protected $form_class = "\Wp\DeliveryMethodSelectFacebookFriendsForm";
     protected $cancel_url = "/wp/delivery-method/";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("delivery-method/facebook.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("delivery-method/facebook.twig");
     }
     
     protected function form_valid() {
@@ -240,8 +240,8 @@ namespace Wp {
     protected $form_class = "\Wp\GenericQuantityForm";
     protected $cancel_url = "/wp/delivery-method/";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("delivery-method/facebook.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("delivery-method/facebook.twig");
     }
     
     protected function form_valid() {
@@ -260,8 +260,8 @@ namespace Wp {
     protected $form_class = "\Wp\GenericQuantityForm";
     protected $cancel_url = "/wp/delivery-method/";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("delivery-method/facebook.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("delivery-method/facebook.twig");
     }
     
     protected function form_valid() {
@@ -280,8 +280,8 @@ namespace Wp {
     protected $success_url = "/wp/profile/";
     protected $cancel_url = "/wp/delivery-method/";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("delivery-method/instagram.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("delivery-method/instagram.twig");
     }
     
     protected function form_valid() {
@@ -300,8 +300,8 @@ namespace Wp {
     protected $success_url = "/wp/profile/";
     protected $cancel_url = "/wp/delivery-method/";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("delivery-method/instagram.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("delivery-method/instagram.twig");
     }
     
     protected function form_valid() {
@@ -320,8 +320,8 @@ namespace Wp {
     protected $success_url = "/wp/profile/";
     protected $cancel_url = "/wp/delivery-method/";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("delivery-method/twitter.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("delivery-method/twitter.twig");
     }
     
     protected function form_valid() {
@@ -340,8 +340,8 @@ namespace Wp {
     protected $success_url = "/wp/profile/";
     protected $cancel_url = "/wp/delivery-method/";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("delivery-method/twitter.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("delivery-method/twitter.twig");
     }
     
     protected function form_valid() {

@@ -14,8 +14,8 @@ namespace Wp {
   require_once("apps/blink-user/api.php");
   
   class PreviewDownloadTemplateView extends \Blink\TemplateView {
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("download/preview.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("download/preview.twig");
     }
   }
   
@@ -184,8 +184,8 @@ namespace Wp {
   class CheckWapoView extends \Blink\FormView {
     protected $form_class = "\Wp\CheckWapoForm";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("download/code.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("download/code.twig");
     }
     
     protected function get_initial() {
@@ -236,7 +236,7 @@ namespace Wp {
       // Send the confirmation code.
       $recipient = $tresult['recipient'];
       $hash = hash("SHA512", $recipient->id . "2n3ialv" . $recipient->contact);
-      $url = sprintf("%s/wp/download/email/confirm/?email=%s&code=%s", \Blink\ConfigSite::$Site, $recipient->contact, $hash);
+      $url = sprintf("%s/wp/download/email/confirm/?email=%s&code=%s", \Blink\SiteConfig::SITE, $recipient->contact, $hash);
       $code = dechex(rand(1, 16777215));
       $message = sprintf("Follow url: [%s] \n Or enter code: %s to download Wapo.", $url, $code);
       
@@ -260,8 +260,8 @@ namespace Wp {
    * - If there is an error sending an email.
    */
   class EmailSendErrorView extends \Blink\TemplateView {
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("download/email_senderror.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("download/email_senderror.twig");
     }
   }
   
@@ -269,8 +269,8 @@ namespace Wp {
    * - If the user does not follow the Wapo user.
    */
   class TwitterNoFollowView extends \Blink\TemplateView {
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("download/twitter_nofollow.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("download/twitter_nofollow.twig");
     }
   }
   
@@ -278,8 +278,8 @@ namespace Wp {
    * - Display the page that the Wapo has expired.
    */
   class WapoExpiredView extends \Blink\TemplateView {
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("download/wapo_expired.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("download/wapo_expired.twig");
     }
   }
   
@@ -290,8 +290,8 @@ namespace Wp {
 
     protected $form_class = "Wp\WapoEmailForm";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("download/send_email_code.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("download/send_email_code.twig");
     }
 
     protected function form_valid() {
@@ -313,7 +313,7 @@ namespace Wp {
       
       // Send the confirmation code.
       $hash = hash("SHA512", $recipient->id . "2n3ialv" . $recipient->contact);
-      $url = sprintf("%s/wp/download/ffa/confirm/?email=%s&code=%s", \Blink\ConfigSite::$Site, $recipient->contact, $hash);
+      $url = sprintf("%s/wp/download/ffa/confirm/?email=%s&code=%s", \Blink\SiteConfig::SITE, $recipient->contact, $hash);
       $code = dechex(rand(1, 16777215));
       $message = sprintf("Follow url: [%s] \n Or enter code: %s to download Wapo.", $url, $code);
       
@@ -367,8 +367,8 @@ namespace Wp {
 
     protected $form_class = "Wp\ConfirmEmailCode";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("download/confirm_email_code.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("download/confirm_email_code.twig");
     }
 
     protected function form_valid() {
@@ -449,8 +449,8 @@ namespace Wp {
 
     protected $form_class = "Wp\ConfirmEmailCode";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("download/confirm_email_code.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("download/confirm_email_code.twig");
     }
 
     protected function form_valid() {
@@ -531,8 +531,8 @@ namespace Wp {
   class TwitterUserCanDownloadWapoView extends \Blink\FormView {
     protected $form_class = "Blink\Form";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("download/twitter.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("download/twitter.twig");
     }
     
     protected function form_valid() {
@@ -578,8 +578,8 @@ namespace Wp {
    * - Get the download that the user is dowloading. 
    */
   class WapoDownloadView extends \Blink\TemplateView {
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("download/download.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("download/download.twig");
     }
     
     protected function get_context_data() {
@@ -624,8 +624,8 @@ namespace Wp {
 
     protected $form_class = "Wp\FacebookUserIdForm";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("download/any_facebook_friend.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("download/any_facebook_friend.twig");
     }
     
     protected function get_context_data() {
@@ -668,8 +668,8 @@ namespace Wp {
 
     protected $form_class = "Wp\FacebookUserIdForm";
     
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("download/facebook_page.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("download/facebook_page.twig");
     }
     
     protected function get_context_data() {
@@ -770,7 +770,7 @@ namespace Wp {
 //      $definition = array(
 //          "process" => array(
 //              "title" => "Process",
-//              "template" => ConfigTemplate::DefaultTemplate("download/process.twig"),
+//              "template" => TemplateConfig::Template("download/process.twig"),
 //              "form" => "Wp\ProcessForm"
 //          )
 //      );
@@ -778,13 +778,13 @@ namespace Wp {
 //      if($this->error == "Wapo not found.") {
 //        $definition["wnf"]= array(
 //              "title" => "Wapo not found",
-//              "template" => ConfigTemplate::DefaultTemplate("download/wapo_not_found.twig"),
+//              "template" => TemplateConfig::Template("download/wapo_not_found.twig"),
 //              "form" => "Blink\Form"
 //          );
 //      } else if($this->error == "Wapo expired.") {
 //        $definition["we"]= array(
 //              "title" => "Wapo expired",
-//              "template" => ConfigTemplate::DefaultTemplate("download/wapo_expired.twig"),
+//              "template" => TemplateConfig::Template("download/wapo_expired.twig"),
 //              "form" => "Blink\Form"
 //          );
 //      } else if($this->error == "Wapo expired.") {// If download not found.
@@ -801,14 +801,14 @@ namespace Wp {
 //            // Send Email Code step.
 //            $definition["sec"] = array(
 //                "title" => "Send Code",
-//                "template" => ConfigTemplate::DefaultTemplate("download/send_email_code.twig"),
+//                "template" => TemplateConfig::Template("download/send_email_code.twig"),
 //                "form" => "Blink\Form"
 //            );
 //
 //            // Confirm email code step.
 //            $definition["cec"] = array(
 //                "title" => "Receive Code",
-//                "template" => ConfigTemplate::DefaultTemplate("download/confirm_email_code.twig"),
+//                "template" => TemplateConfig::Template("download/confirm_email_code.twig"),
 //                "form" => "Blink\Form"
 //            );
 //          }
@@ -816,42 +816,42 @@ namespace Wp {
 //          // Send Email Code step.
 //          $definition["sec"] = array(
 //              "title" => "Send Code",
-//              "template" => ConfigTemplate::DefaultTemplate("download/send_email_code.twig"),
+//              "template" => TemplateConfig::Template("download/send_email_code.twig"),
 //              "form" => "Blink\Form"
 //          );
 //          
 //          // Confirm email code step.
 //          $definition["cec"] = array(
 //              "title" => "Receive Code",
-//              "template" => ConfigTemplate::DefaultTemplate("download/confirm_email_code.twig"),
+//              "template" => TemplateConfig::Template("download/confirm_email_code.twig"),
 //              "form" => "Blink\Form"
 //          );
 //        } else if($this->wapo->delivery_method_abbr == "aff") {
 //          // Check Facebook Friendship (i.e. they log in to FB).
 //          $definition["aff"] = array(
 //              "title" => "Send Code",
-//              "template" => ConfigTemplate::DefaultTemplate("download/any_facebook_friend.twig"),
+//              "template" => TemplateConfig::Template("download/any_facebook_friend.twig"),
 //              "form" => "Blink\Form"
 //          );
 //        } else if($this->wapo->delivery_method_abbr == "fp") {
 //          // Check their Facebook Page likes (i.e. they log in to FB).
 //          $definition["fp"] = array(
 //              "title" => "Send Code",
-//              "template" => ConfigTemplate::DefaultTemplate("download/facebook_page.twig"),
+//              "template" => TemplateConfig::Template("download/facebook_page.twig"),
 //              "form" => "Blink\Form"
 //          );
 //        } else if($this->wapo->delivery_method_abbr == "atf") {
 //          // Check that they are following this person (i.e. log into twitter).
 //          $definition["atf"] = array(
 //              "title" => "Send Code",
-//              "template" => ConfigTemplate::DefaultTemplate("download/any_twitter_follower.twig"),
+//              "template" => TemplateConfig::Template("download/any_twitter_follower.twig"),
 //              "form" => "Blink\Form"
 //          );
 //        } else if($this->wapo->delivery_method_abbr == "stf") {
 //          // Once they log in, check that their twitter is one that this wapo is for.
 //          $definition["stf"] = array(
 //              "title" => "Send Code",
-//              "template" => ConfigTemplate::DefaultTemplate("download/select_twitter_follower.twig"),
+//              "template" => TemplateConfig::Template("download/select_twitter_follower.twig"),
 //              "form" => "Blink\Form"
 //          );
 //        }
@@ -859,14 +859,14 @@ namespace Wp {
 //        // Prepare the download link here.
 //        $definition["prepare"] = array(
 //            "title" => "Prepare Download",
-//            "template" => ConfigTemplate::DefaultTemplate("download/prepare.twig"),
+//            "template" => TemplateConfig::Template("download/prepare.twig"),
 //            "form" => "Blink\Form"
 //        );
 //        
 //        // Download/Confirmation page.
 //        $definition["done"] = array(
 //            "title" => "Download",
-//            "template" => ConfigTemplate::DefaultTemplate("download/done.twig"),
+//            "template" => TemplateConfig::Template("download/done.twig"),
 //            "form" => "Blink\Form"
 //        );
 //      }
@@ -927,8 +927,8 @@ namespace Wp {
 //  
 //  
 //  class ReceivedAWpTemplateView extends \Blink\TemplateView {
-//    public function get_template_name() {
-//      $this->template_name = ConfigTemplate::Template("/download/received_wapo.twig");
+//    protected function get_template() {
+//      $this->template_name = TemplateConfig::Template("/download/received_wapo.twig");
 //    }
 //    public function get() {
 //      if($this->request->get->is_set("code")) {
@@ -973,8 +973,8 @@ namespace Wp {
 //  class FacebookDownloadLoginTemplateView extends \Blink\TemplateView {
 //    private $promotionrecipient = null;
 //    
-//    public function get_template_name() {
-//      $this->template_name = ConfigTemplate::Template("/download/facebook.twig");
+//    protected function get_template() {
+//      $this->template_name = TemplateConfig::Template("/download/facebook.twig");
 //    }
 //    
 //    public function get_context_data() {
@@ -1064,8 +1064,8 @@ namespace Wp {
 //  }
 //  
 //  class EmailCodeFormView extends \Blink\FormView {
-//    public function get_template_name() {
-//      $this->template_name = ConfigTemplate::Template("/download/email.twig");
+//    protected function get_template() {
+//      $this->template_name = TemplateConfig::Template("/download/email.twig");
 //    }
 //    
 //    public function get_form() {
@@ -1123,7 +1123,7 @@ namespace Wp {
 //      $mail->setFrom(array(\Blink\Config::$EmailAccount=>"Wp.co"));
 //      $mail->setTo($promotion_recipient->contact);
 //      
-//      $message = \Blink\render_get(array("promotion" => $promotion, "promotionrecipient" => $promotion_recipient,"url"=>\Blink\Config::$Site), ConfigTemplate::Template("download/confirmation_email.twig"));
+//      $message = \Blink\render_get(array("promotion" => $promotion, "promotionrecipient" => $promotion_recipient,"url"=>\Blink\Config::$Site), TemplateConfig::Template("download/confirmation_email.twig"));
 //      
 //      $mail->setBody($message, "text/html");
 //      $result = \Swift\Api::Send($mail);
@@ -1144,8 +1144,8 @@ namespace Wp {
 //  }
 //  
 //  class EmailConfirmFormView extends \Blink\FormView {
-//    public function get_template_name() {
-//      $this->template_name = ConfigTemplate::Template("/download/email_confirm.twig");
+//    protected function get_template() {
+//      $this->template_name = TemplateConfig::Template("/download/email_confirm.twig");
 //    }
 //    
 //    public function get_form() {
@@ -1230,8 +1230,8 @@ namespace Wp {
 //  class EmailConfirmedTemplateView extends \Blink\TemplateView {
 //    private $promotionrecipient = null;
 //    
-//    public function get_template_name() {
-//      $this->template_name = ConfigTemplate::Template("/download/email_download.twig");
+//    protected function get_template() {
+//      $this->template_name = TemplateConfig::Template("/download/email_download.twig");
 //    }
 //    
 //    public function get_context_data() {
@@ -1267,20 +1267,20 @@ namespace Wp {
 //
 //  
 //  class TextCodeTemplateView extends \Blink\TemplateView {
-//    public function get_template_name() {
-//      $this->template_name = ConfigTemplate::Template("/download/text.twig");
+//    protected function get_template() {
+//      $this->template_name = TemplateConfig::Template("/download/text.twig");
 //    }
 //  }
 //  
 //  class TextConfirmFormView extends \Blink\FormView {
-//    public function get_template_name() {
-//      $this->template_name = ConfigTemplate::Template("/download/text_confirm.twig");
+//    protected function get_template() {
+//      $this->template_name = TemplateConfig::Template("/download/text_confirm.twig");
 //    }
 //  }
 //  
 //  class DownloadTextDownloadTemplateView extends \Blink\FormView {
-//    public function get_template_name() {
-//      $this->template_name = ConfigTemplate::Template("/download/text_download.twig");
+//    protected function get_template() {
+//      $this->template_name = TemplateConfig::Template("/download/text_download.twig");
 //    }
 //  }
   

@@ -8,8 +8,8 @@ namespace Wp {
     private $profile_list = array();
     private $profile = null;
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("pipeline/profile_list.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("pipeline/profile_list.twig");
     }
 
     public function get_context_data() {
@@ -62,8 +62,8 @@ namespace Wp {
     private $promotioncategory = null;
     private $promotioncategory_list = array();
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("pipeline/marketplace.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("pipeline/marketplace.twig");
     }
 
     public function get_queryset() {
@@ -135,8 +135,8 @@ namespace Wp {
   }
   
   class CheckoutTemplateView extends \Blink\TemplateView {
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("pipeline/checkout.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("pipeline/checkout.twig");
     }
 
     protected function get_context_data() {
@@ -153,8 +153,8 @@ namespace Wp {
   }
 
   class ProfileTemplateView extends \Blink\TemplateView {
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("pipeline/profile.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("pipeline/profile.twig");
     }
 
     protected function get() {
@@ -172,8 +172,8 @@ namespace Wp {
   class ProfileListView extends \Blink\ListView {
     protected $class = "\Wapo\Profile";
 
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("pipeline/profile_list.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("pipeline/profile_list.twig");
     }
 
     protected function get_queryset() {
@@ -208,8 +208,8 @@ namespace Wp {
     protected $form_class = "\Wp\NewProfileForm";
     protected $success_url = "/wp/confirmation/ffa/";
 
-    protected function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("pipeline/profile_create.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("pipeline/profile_create.twig");
     }
 
     protected function form_valid() {
@@ -229,8 +229,8 @@ namespace Wp {
    * - Also checks that Wapo is a Free For All.
    */
   class FreeForAllLinksTemplateView extends \Blink\TemplateView {
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("pipeline/confirm_ffa.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("pipeline/confirm_ffa.twig");
     }
 
     public function get_context_data() {
@@ -259,8 +259,8 @@ namespace Wp {
   class ProfileFormView extends \Blink\FormView {
     private $form_profile_info;
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("pipeline/profile.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("pipeline/profile.twig");
     }
 
     protected function get_request_data() {
@@ -358,8 +358,8 @@ namespace Wp {
   }
 
   class PromotionDeliveryMethodFormView extends \Blink\FormView {
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_delivery_method.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_delivery_method.twig");
     }
 
     public function get_success_url() {
@@ -431,8 +431,8 @@ namespace Wp {
     public function __destruct() {
       parent::__destruct();
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_preview.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_preview.twig");
     }
 
     public function get_context_data() {
@@ -453,8 +453,8 @@ namespace Wp {
   class PromotionCheckoutTemplateView extends \Blink\TemplateView {
     private $promotion;
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_checkout.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_checkout.twig");
     }
 
     public function get_context_data() {
@@ -539,7 +539,7 @@ namespace Wp {
 
       $cost = $count * $promotion->price;
       try {
-        $response = \WePay\Api::checkout_create("00", $cost, "YOYO", "iframe", sprintf("%s/wapo/send/", \Blink\ConfigSite::$Site));
+        $response = \WePay\Api::checkout_create("00", $cost, "YOYO", "iframe", sprintf("%s/wapo/send/", \Blink\SiteConfig::SITE));
         $response->result = "yes";
       } catch(\Exception $e) {
         $response->result = "no";
@@ -698,7 +698,7 @@ namespace Wp {
             //str_pad(0, 5, "0")
 
             // Get the email to send.
-            $message = \Blink\render_get(array("profile" => $profile, "promotion" => $promotion, "wapo" => $wapo, "code" => $create_recipient['code'],"url"=>  \Blink\ConfigSite::$Site), ConfigTemplate::Template("frontend/promotion_email.twig"));
+            $message = \Blink\render_get(array("profile" => $profile, "promotion" => $promotion, "wapo" => $wapo, "code" => $create_recipient['code'],"url"=>  \Blink\SiteConfig::SITE), TemplateConfig::Template("frontend/promotion_email.twig"));
             $mail_rec->setBody($message, "text/html");
 
             $result = \Swift\Api::Send($mail_rec);
@@ -729,8 +729,8 @@ namespace Wp {
   }
 
   class PromotionSendFacebookTemplateView extends \Blink\TemplateView {
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_send_facebook.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_send_facebook.twig");
     }
     public function get_context_data() {
       $context = parent::get_context_data();
@@ -806,7 +806,7 @@ namespace Wp {
         WapoRecipient::create_save($create_recipient, false);
       }
 
-      $post = \Blink\render_get(array("profile" => $profile, "promotion" => $promotion, "wapo" => $wapo, "code" => $create_recipient['code'],"url"=>  \Blink\ConfigSite::$Site), ConfigTemplate::Template("frontend/promotion_facebook.twig"));
+      $post = \Blink\render_get(array("profile" => $profile, "promotion" => $promotion, "wapo" => $wapo, "code" => $create_recipient['code'],"url"=>  \Blink\SiteConfig::SITE), TemplateConfig::Template("frontend/promotion_facebook.twig"));
 
       $response = array(
               "result" => "yes",
@@ -815,8 +815,8 @@ namespace Wp {
               "name" => $promotion->name,
               "caption" => sprintf("%s has sent you a Wp", $profile->name),
               "description" => $wapo->delivery_message,
-              "picture" => sprintf("%s%s", \Blink\ConfigSite::$Site, $promotion->icon->url),
-              "link" => sprintf("%s/wapo/download/?code=%s", \Blink\ConfigSite::$Site, $create_recipient['code']),
+              "picture" => sprintf("%s%s", \Blink\SiteConfig::SITE, $promotion->icon->url),
+              "link" => sprintf("%s/wapo/download/?code=%s", \Blink\SiteConfig::SITE, $create_recipient['code']),
               "post" => $post,
               "url" => sprintf("/wapo/confirm/%s/", $wapo->id)
       );
@@ -826,8 +826,8 @@ namespace Wp {
   }
 
   class PromotionConfirmTemplateView extends \Blink\TemplateView {
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_confirmation.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_confirmation.twig");
     }
 
     public function get_context_data() {
@@ -866,8 +866,8 @@ namespace Wp {
 
   // Output list of contacts the user has for that profile.
   class PromotionProfileSelectedTemplateview extends \Blink\TemplateView {
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_profile_selected.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_profile_selected.twig");
     }
 
     public function get_context_data() {
@@ -897,8 +897,8 @@ namespace Wp {
     public function __destruct() {
       parent::__destruct();
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_profile.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_profile.twig");
     }
 
     public function get_context_data() {
@@ -928,8 +928,8 @@ namespace Wp {
       $this->class = Profile::class_name();
       parent::get_class();
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_profile_create.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_profile_create.twig");
     }
     public function get_exclude() {
       $this->exclude = array("distributor");
@@ -978,8 +978,8 @@ namespace Wp {
     public function __destruct() {
       parent::__destruct();
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_checkout_contact.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_checkout_contact.twig");
     }
 
     public function get_context_data() {
@@ -1005,8 +1005,8 @@ namespace Wp {
 
     private $promotion = null;
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_delivery_method_email.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_delivery_method_email.twig");
     }
 
     public function get_success_url() {
@@ -1109,8 +1109,8 @@ namespace Wp {
     private $profile = NULL;
     private $promotion = null;
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_delivery_method_twitter.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_delivery_method_twitter.twig");
     }
 
     public function get_success_url() {
@@ -1215,8 +1215,8 @@ namespace Wp {
 
     private $promotion = null;
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_delivery_method_text.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_delivery_method_text.twig");
     }
 
     public function get_success_url() {
@@ -1295,8 +1295,8 @@ namespace Wp {
    */
   class PromotionDeliveryMethodFacebookFormView extends \Blink\FormView {
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_delivery_method_facebook.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_delivery_method_facebook.twig");
     }
 
     public function get_success_url() {
@@ -1397,8 +1397,8 @@ namespace Wp {
   class PromotionProfileFacebookFormView extends \Blink\FormView {
     private $promotion;
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_profile_facebook.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_profile_facebook.twig");
     }
 
     public function get_success_url() {
@@ -1460,8 +1460,8 @@ namespace Wp {
   class PromotionProfileEmailFormView extends \Blink\FormView {
     private $promotion;
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_profile_email.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_profile_email.twig");
     }
 
     public function get_success_url() {
@@ -1635,7 +1635,7 @@ namespace Wp {
             );
 
             // Get the email to send.
-            $mail->message = \Blink\render_get(array("profile" => $profile, "promotion" => $promotion, "wapo" => $wapo, "code" => $create_recipient['code'],"url"=>\Blink\Config::$Site), ConfigTemplate::Template("frontend/dashboard/profile_promotion_email.twig"));
+            $mail->message = \Blink\render_get(array("profile" => $profile, "promotion" => $promotion, "wapo" => $wapo, "code" => $create_recipient['code'],"url"=>\Blink\Config::$Site), TemplateConfig::Template("frontend/dashboard/profile_promotion_email.twig"));
 
             if(!$mail->send()) {
               $create_recipient['sent'] = 0;
@@ -1685,8 +1685,8 @@ namespace Wp {
       $this->post_url = sprintf("/wapo/profile/%s/promotion/%s/send/", $this->request->param->param['profile_id'], $this->request->param->param['promotion_id']);
     }
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_send.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_send.twig");
     }
     public function get_context_data() {
       $context['form'] = $this->form->Form($this->post_url,$this->cancel_url);
@@ -1768,8 +1768,8 @@ namespace Wp {
 //    public function get_queryset() {
 //      $this->queryset = Wapo::queryset()->filter(array("profile"=>$this->request->param->param['profile_id']))->order_by(array("-date_created"));
 //    }
-//    public function get_template_name() {
-//      return ConfigTemplate::DefaultTemplate("frontend/wapo_list.twig");
+//    protected function get_template() {
+//      return TemplateConfig::Template("frontend/wapo_list.twig");
 //    }
 //
 //    public function get_context_data() {
@@ -1805,8 +1805,8 @@ namespace Wp {
 //      $context['distributor'] = $distributor;
 //      $context['profile'] = $profile;
 //    }
-//    public function get_template_name() {
-//      return ConfigTemplate::DefaultTemplate("frontend/wapo.twig");
+//    protected function get_template() {
+//      return TemplateConfig::Template("frontend/wapo.twig");
 //    }
 //
 //    public function get_context_data() {
@@ -1821,8 +1821,8 @@ namespace Wp {
     public function require_login() {
       return TRUE;
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_code.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_code.twig");
     }
   }
 
@@ -1831,8 +1831,8 @@ namespace Wp {
     public function require_login() {
       return TRUE;
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/download/promotion_confirm.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/download/promotion_confirm.twig");
     }
     public function get_form() {
       $forms = new \Blink\FormFields();
@@ -1902,8 +1902,8 @@ namespace Wp {
     public function require_login() {
       return TRUE;
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_confirm.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_confirm.twig");
     }
     public function get_context_data() {
       $context = parent::get_context_data();
@@ -1936,8 +1936,8 @@ namespace Wp {
     public function require_login() {
       return TRUE;
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_download.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_download.twig");
     }
     public function get_context_data() {
       $context = parent::get_context_data();
@@ -1975,8 +1975,8 @@ namespace Wp {
     public function require_login() {
       return TRUE;
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/feature.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/feature.twig");
     }
   }
 
@@ -1990,8 +1990,8 @@ namespace Wp {
     public function require_login() {
       return TRUE;
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/import_email.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/import_email.twig");
     }
   }
 
@@ -2005,8 +2005,8 @@ namespace Wp {
     public function require_login() {
       return TRUE;
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/facebook_connect.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/facebook_connect.twig");
     }
   }
 
@@ -2020,8 +2020,8 @@ namespace Wp {
     public function require_login() {
       return TRUE;
     }
-//    public function get_template_name() {
-//      return ConfigTemplate::DefaultTemplate("frontend/twitter_connect.twig");
+//    protected function get_template() {
+//      return TemplateConfig::Template("frontend/twitter_connect.twig");
 //    }
   }
 
@@ -2035,8 +2035,8 @@ namespace Wp {
     public function require_login() {
       return TRUE;
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/social.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/social.twig");
     }
   }
 
@@ -2064,8 +2064,8 @@ namespace Wp {
       parent::get_class();
     }
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/profile.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/profile.twig");
     }
 
     public function get_context_data() {
@@ -2104,8 +2104,8 @@ namespace Wp {
       $this->class = CompanyProduct::class_name();
       parent::get_class();
     }
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/companyproduct_list.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/companyproduct_list.twig");
     }
   }
 
@@ -2115,8 +2115,8 @@ namespace Wp {
       parent::get_class();
     }
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_select.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_select.twig");
     }
 
     public function get_queryset() {
@@ -2170,8 +2170,8 @@ namespace Wp {
       $this->cancel_url = "/wapo/promotion/select/";
     }
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_brand.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_brand.twig");
     }
 
     public function get_context_data() {
@@ -2203,8 +2203,8 @@ namespace Wp {
       parent::get_class();
     }
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotionpackage_list.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotionpackage_list.twig");
     }
   }
 
@@ -2214,8 +2214,8 @@ namespace Wp {
       parent::get_class();
     }
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotionpackage.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotionpackage.twig");
     }
   }
 
@@ -2246,8 +2246,8 @@ namespace Wp {
       $this->cancel_url = "/wapo/promotionpackage/";
     }
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_delivery.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_delivery.twig");
     }
 
     public function form_valid() {
@@ -2268,8 +2268,8 @@ namespace Wp {
 
   class PromotionRetrieveTemplateView extends \Blink\TemplateView {
 
-    public function get_template_name() {
-      return ConfigTemplate::DefaultTemplate("frontend/promotion_retrieve.twig");
+    protected function get_template() {
+      return TemplateConfig::Template("frontend/promotion_retrieve.twig");
     }
     public function get_context_data() {
       if(!$this->request->get->is_set("code")) {
