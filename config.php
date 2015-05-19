@@ -14,6 +14,10 @@ namespace Wp {
     const TEMPLATE_PATH = "apps/wp/templates/";
   }
   
+  class WpTemplateConfig extends TemplateConfig {
+    
+  }
+  
   /**
    * General config stores information for general items.
    * @todoc Change references to '$LoggedInMaxEmailDeliveryCount' & '$NotLoggedInMaxEmailDeliveryCount' to their 'const' counterparts. 

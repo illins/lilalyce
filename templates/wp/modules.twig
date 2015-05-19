@@ -1,8 +1,8 @@
-{% extends "themes/blink/templates/bootstrap/base.twig" %}
+{% extends "apps/wp/templates/base.twig" %}
 
 {% block content %}
   <form class="form" method="POST" action="">
-    <div class="panel panel-default">
+    {#<div class="panel panel-default">
       <div class="panel-body">
         
         {% for module_group in module_list | batch(3)%}
@@ -20,7 +20,7 @@
           </div>
         {% endfor %}
       </div>
-    </div>
+    </div>#}
 
     {% for field in form.hidden %}
       {{ field.field|raw }}
@@ -30,6 +30,9 @@
     
     <script>
       $(function() {
+        $('#module_id').val(1);
+        $('form').submit();
+        
         $('.select-module').click(function(e) {
           $('#module_id').val($(e.target).data('id'));
           $('form').submit();

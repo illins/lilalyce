@@ -1,4 +1,4 @@
-<div id="reward-select-container"><select id="reward-select" class="form-control"></select></div>
+<div id="reward-select-container"><select id="reward-select" class="form-control" style="max-width: 35%;"></select></div>
 <hr />
 
 <div class="row" id="rewards-container" style="background-color: whitesmoke;">
@@ -10,9 +10,9 @@
 
   <br /><br />
 
-  {% for field in form.hidden %}
+  {#{% for field in form.hidden %}
     {{ field.field|raw }}
-  {% endfor %}
+  {% endfor %}#}
 
   <div class="row">  
     <div class="col-xs-6">
@@ -34,9 +34,21 @@
   <div class="thumbnails thumbnail-style">
   <img class="img-responsive" src="<%= reward.brand_image_url %>" alt="" />
   <div class="caption">
-  <p><%= reward.description %></p>
+{#  <p><%= reward.description %></p>#}
   <h3 class="hover-effect"><%= reward.unit_price %> <%= reward.currency_type %></h3>
-  <p><a href="#" data-sku="<%= reward.sku %>" class="btn-u btn-u-xs select-reward">Select <i class="fa fa-angle-right margin-left-5"></i></a></p>
+{#  <p><a href="#" data-sku="<%= reward.sku %>" class="btn-u btn-u-xs select-reward">Select <i class="fa fa-angle-right margin-left-5"></i></a></p>#}
+  
+  <p>
+    <div class="checkbox">
+      <label>
+        <input type="radio" class="select-reward" name="sku" value="<%= reward.sku %>" <% if (reward.sku == sku) { %>checked<% } %>>
+        <%= reward.description %>
+      </label>
+    </div>
+  </p>
+  
+{#  <p><a href="#" data-sku="<%= reward.sku %>" class="btn-u btn-u-xs select-reward">Select <i class="fa fa-angle-right margin-left-5"></i></a></p>#}
+  
   </div>
   </div>
   </div>
@@ -74,19 +86,20 @@
         var that = this;
         
         this.$el.html('');// Clear the items.
+        var sku = $.cookie('sku');
         
         // Render the items.
         _.each(this.collection.where({brand_description: this.selected_brand}), function (reward) {
           var json_reward = reward.toJSON();
           json_reward['unit_price'] = reward.get('unit_price') / 100;
-          that.$el.append(that.template({reward: json_reward}));
+          that.$el.append(that.template({reward: json_reward, sku: sku}));
         });
       },
       events: {
         'click .select-reward': 'selectReward'
       },
       selectReward: function (e) {
-        var e = e || null;
+        {#var e = e || null;
         var sku = null;
         
         if (e) {
@@ -97,7 +110,8 @@
         }
         
         $('#sku').val(sku);
-        $('#next_button').click();
+        $('#next_button').click();#}
+        $('#next_button').removeClass('disabled');
       }
     });
 
@@ -144,9 +158,9 @@
     brandListView.render();
 
     // If we have an sku value (i.e. submitted before).
-    if ($('#sku').val()) {
+    if ($.cookie('sku')) {
       // Search the reward collection.
-      var reward = rewardCollection.findWhere({sku: $('#sku').val()});
+      var reward = rewardCollection.findWhere({sku: $.cookie('sku')});
       
       // If we have a reward.
       if (reward) {
@@ -154,6 +168,7 @@
         brandListView.subview.selected_brand = reward.get('brand_description');
         // Render the list containing this brand.
         brandListView.subview.render();
+        $('#next_button').removeClass('disabled');
       }
     }
   });

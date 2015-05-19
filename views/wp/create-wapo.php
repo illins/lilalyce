@@ -64,9 +64,9 @@ namespace Wp {
           "cc_token" => \Blink\TangoCardConfig::CC_TOKEN
       );
     $fund = $tc->request("cc_fund", $cc_fund);
-    
+
     // Check success.
-    if($fund->success) {
+    if(!$fund->success) {
       \Blink\raise500("Order could not be completed.");
     }
     
@@ -202,36 +202,47 @@ namespace Wp {
       // Capture user's id for the various social media.
       
       // Get the external id.
-      $external = "";
-      switch($data['delivery']) {
-//        case "aff":
-//          $external = $data['facebook_id'];
-//          break;
-//        case "aff":
-//          $external = $data['facebook_id'];
-//          break;
-        case "fp":
-          $external = $data['facebook_page_id'];
-          break;
-        case "aif":
-          $external = $data['instagram_id'];
-          break;
-        case "sif":
-          $external = $data['instagram_id'];
-          break;
+      $sender = "";// Accound id of the person who sent the item based on service.
+      $extra = "";// Extra information about the sent wapo.
+      
+      if($data['delivery'] == "atf" || $data['delivery'] == "stf") {
+        $sender = $data['twitter_account']->id_str;
+      } else if($data['delivery'] == "aff") {
+        $sender = $data['facebook_account']->id;
+      } else if($data['delivery'] == "fp") {
+        $sender = $data['facebook_account']->id;
+        $extra = $data['facebook_page_id'];
       }
       
-      $extra = "";// Extra information about the marketplace.
+//      switch($data['delivery']) {
+////        case "aff":
+////          $external = $data['facebook_id'];
+////          break;
+////        case "aff":
+////          $external = $data['facebook_id'];
+////          break;
+//        case "fp":
+//          $external = $data['facebook_page_id'];
+//          break;
+//        case "aif":
+//          $external = $data['instagram_id'];
+//          break;
+//        case "sif":
+//          $external = $data['instagram_id'];
+//          break;
+//      }
+      
+      $sku = "";
       $marketplace = "";// Marketplace the user chose based on the promotion id. Default is wapo.
       $promotion = $data['promotion'];
       
       if($promotion) {
         // For ifeelgoods promotion, this is the sku.
         if($promotion->promotioncategory->name == "I Feel Goods") {
-          $extra = $data['sku']->sku;
+          $sku = $data['sku']->sku;
           $marketplace = "ifeelgoods";
         } else if($promotion->promotioncategory->name == "Tango Card") {
-          $extra = $data['sku']->sku;
+          $sku = $data['sku']->sku;
           $marketplace = "tangocard";
         }
       }
@@ -251,7 +262,7 @@ namespace Wp {
           "payment_method" => \Wapo\PaymentMethod::queryset()->get(array("name"=>"WePay")),
           "delivery_method_abbr" => $data['delivery'],
           "delivery_method" => Config::$DeliveryMethod[$data['delivery']],
-          "external" => $external,
+          "sender" => $sender,
           "delivery_message" => $data["delivery_message"],
           "expiring_date" => $data["expiring_date"],
           "status" => "p",
@@ -259,6 +270,7 @@ namespace Wp {
           "quantity" => $data['quantity'],
           "downloaded" => 0,
           "extra" => $extra,
+          "sku" => $sku,
           "email_confirmation"=> 1// Always to true.
           
       );
@@ -343,7 +355,7 @@ namespace Wp {
           $recipient = array(
               "wapo"      => $wapo,
               "targeturl" => $targeturl,
-              "contact"   => trim($sn),
+              "name"   => trim($sn),
           );
           
           // Check that we still have orders.

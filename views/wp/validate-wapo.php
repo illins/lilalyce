@@ -192,6 +192,22 @@ namespace Wp {
         throw new \Exception("Delivery method not found.");
       }
       
+      // Check that they are logged in.
+      $delivery = $request->cookie->find("delivery");
+      $twitter_account = "";
+      $facebook_account = "";
+      if($delivery == "atf" || $delivery == "stf") {
+        $twitter_account = (new \BlinkTwitter\BlinkTwitterAPI($request))->getTwitterProfile();
+        if(!$twitter_account) {
+          throw new \Exception("Please log in to Twitter.");
+        }
+      } else if($delivery == "aff" || $delivery == "fp") {
+        $facebook_account = (new \BlinkFacebook\BlinkFacebookApi($request))->getUserProfile();
+        if(!$facebook_account) {
+          throw new \Exception("Please log in to Facebook.");
+        }
+      }
+      
       // DELIVERY METHOD DETAILS.
       $delivery_message = $request->cookie->find("delivery_message");
 
@@ -348,6 +364,8 @@ namespace Wp {
         "profile" => $profile,
         "profile_name" => $profile_name,
         "profile_email" => $profile_email,
+        "facebook_account" => $facebook_account,
+        "twitter_account" => $twitter_account,
         "twitter_followers" => $twitter_followers,
         "facebook_page_id" => $facebook_page_id
     );

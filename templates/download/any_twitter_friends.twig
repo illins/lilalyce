@@ -1,0 +1,29 @@
+{% extends "apps/wp/templates/download/form.twig" %}
+
+{% block main %}
+
+  <div class="row">
+    <div class="col-xs-3"></div>
+    <div class="col-xs-6">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+    </div>
+    <div class="col-xs-3"></div>
+  </div>
+
+  <div id="facebook_friend">
+    <i class="fa fa-spinner fa-spin"></i> Loading
+  </div>
+  
+  <script>
+    $(function() {
+      facebook_id = "{{ targeturl.wapo.external }}";
+      facebook_ready(facebook_friend);
+    });
+  </script>
+{% endblock main %}

@@ -149,7 +149,7 @@ namespace Wp {
 
       // If none is set, use the default Wapo, otherwise get the requested promotion.
       if (!$promotioncategory_id) {
-        $promotioncategory = PromotionCategory::get_or_404(array("name" => "Wapo"), "Promotion Category not found.");
+        $promotioncategory = PromotionCategory::get_or_404(array("name" => "Tango Card"), "Promotion Category not found.");
       } else {
         $promotioncategory = PromotionCategory::get_or_404(array("id" => $promotioncategory_id), "Promotion Category not found.");
       }

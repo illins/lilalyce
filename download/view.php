@@ -13,6 +13,320 @@ namespace Wp {
 
   require_once("apps/blink-user/api.php");
   
+  /**
+   * Fail view, displays a fail view if a query fails.
+   */
+  class ExpiredView extends \Blink\BaseError500 {
+
+    protected function get_template() {
+      return WpTemplateConfig::Template("download/expired.twig");
+    }
+
+  }
+
+  function raiseExpired($message = "") {
+    global $request;
+    $class = new ExpiredView($request);
+    $message = ($message) ? $message : "Sorry, the Wapo you are looking for has already expired.";
+    $class->set_message($message);
+    $class->execute();
+  }
+  
+  /**
+   * - Check that Wapo is valid then redirect to appropriate view if it is.
+   * - If there is a code in the GET, pre-fill it.
+   */
+  class CheckWapoRedirectView extends \Blink\RedirectView {
+    protected function get_redirect_url() {
+      $wapo = \Wapo\Wapo::get_or_404(array("id"=>$this->request->get->find("wapo_id")), "Wapo not found.");
+      return sprintf("/wp/download/%s/?%s", $wapo->delivery_method_abbr, $this->request->query_string);
+    }
+  }
+  
+  /**
+   * Download base view to check if Wapo is valid.
+   */
+  class BaseDownloadTemplateView extends \Blink\TemplateView {
+    protected $wapo = null;
+    
+    protected function get_template() {
+      return WpTemplateConfig::Template("download/download.twig");
+    }
+    
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      $c['wapo'] = $this->wapo;
+      $c['promotion'] = $this->wapo->promotion;
+      $promotioncategory = \Wapo\PromotionCategory::get_or_null(array("id"=>$this->wapo->promotion->promotioncategory));
+      
+      $sku = null;
+      if($promotioncategory->name == "Tango Card") {
+        $sku = \Wapo\TangoCardRewards::get_or_null(array("sku"=>$this->wapo->sku));
+      }
+      
+      $c['promotioncategory'] = $promotioncategory;
+      $c['sku'] = $sku;
+      return $c;
+    }
+    
+    protected function is_expired() {
+      if(date('Y-m-d H:i:s') > $this->wapo->expiring_date->format('Y-m-d H:i:s')) {
+        return true;
+      }
+      
+      return false;
+    }
+
+
+    protected function dispatch() {
+      $this->wapo = \Wapo\Wapo::get_or_404(array("id"=>$this->request->get->find("wapo_id")), "Wapo not found.");
+      return parent::dispatch();
+    }
+  }
+  
+  /**
+   * Any Twitter Follower download.
+   */
+  class TwitterATFDownloadTemplateView extends BaseDownloadTemplateView {
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      
+      $tapi = new \BlinkTwitter\BlinkTwitterAPI($this->request);
+      $twitter_authenticated = $tapi->isLoggedIn();
+      $profile = $tapi->getProfile();
+      $recipient = null;
+      $reward = null;
+      
+      // Check if source is followed by target.
+      $relationship = null;
+      if($twitter_authenticated) {
+        $relationship = $tapi->getRelationship($this->wapo->sender, $profile->id_str);
+        
+        // If the target user follows the source user.
+        if($relationship->relationship->source->followed_by) {
+          $recipient = \Wapo\WapoRecipient::get_or_null(array("wapo"=>$this->wapo,"contact"=>$profile->id_str));
+          
+          // If not downloaded yet, check if Wapo has expired.
+          if(!$recipient && $this->is_expired()) {
+            raiseExpired();
+          } else if(!$recipient) {
+            // Get an empty one.
+            $recipient_list = \Wapo\WapoRecipient::queryset()->filter(array("wapo"=>$this->wapo,"contact"=>""))->fetch();
+            
+            if(!count($recipient_list)) {
+              raiseExpired("Sorry, maximum downloadable Wapos have been reached.");
+            }
+            $recipient = $recipient_list[0];
+            $recipient->contact = $profile->id_str;
+            $recipient->confirmed = true;
+            $recipient->open = true;
+            $recipient->downloaded = true;
+            $recipient->save(false);
+            $this->wapo->downloaded += 1;
+            $this->wapo->save(false);
+          }
+          
+          if($this->wapo->promotion->name == "Tango Card") {
+            $reward = (new \BlinkTangoCard\TangoCardAPI(array("request"=>$this->request)))->order($recipient->extra);
+          }
+        }
+      }
+      
+      $c['twitter_authenticated'] = $twitter_authenticated;
+      $c['recipient'] = $recipient;
+      $c['reward'] = $reward;
+      
+      return $c;
+    }
+  }
+  
+  /**
+   * Select Twitter Followers Download.
+   */
+  class TwitterSTFDownloadTemplateView extends BaseDownloadTemplateView {
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      
+      $tapi = new \BlinkTwitter\BlinkTwitterAPI($this->request);
+      $twitter_authenticated = $tapi->isLoggedIn();
+      $profile = $tapi->getProfile();
+      $recipient = null;
+      $reward = null;
+      
+      
+
+      // Check if source is followed by target.
+      if($twitter_authenticated) {
+        $recipient = \Wapo\WapoRecipient::get_or_null(array("wapo"=>$this->wapo,"name"=>$profile->screen_name));
+        if(!$recipient) {
+          raiseExpired("This Wapo was not sent to you.");
+        }
+        
+        // @todo - Consider how long to keep this open if it hasn't been downloaded.
+        if($this->is_expired()) {
+          raiseExpired();
+        }
+        
+        $recipient->name = $profile->screen_name;
+        $recipient->contact = $profile->id_str;
+        $recipient->confirmed = true;
+        $recipient->open = true;
+        $recipient->downloaded = true;
+        $recipient->save(false);
+        $this->wapo->downloaded += 1;
+        $this->wapo->save(false);
+
+        if ($this->wapo->promotion->name == "Tango Card") {
+          $reward = (new \BlinkTangoCard\TangoCardAPI(array("request" => $this->request)))->order($recipient->extra);
+        }
+      }
+      
+      $c['twitter_authenticated'] = $twitter_authenticated;
+      $c['recipient'] = $recipient;
+      $c['reward'] = $reward;
+      
+      return $c;
+    }
+  }
+  
+  /**
+   * Any Facebook Friends Download.
+   */
+  class FacebookAFFDownloadTemplateView extends BaseDownloadTemplateView {
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      
+      $fbapi = new \BlinkFacebook\BlinkFacebookApi($this->request);
+      $facebook_authenticated = $fbapi->isLoggedIn();
+      $profile = null;
+      $reward = null;
+      
+      // Check if they have the 'user_friends' permission.
+      $permission = false;
+      foreach($fbapi->getFacebookPermissions() as $p) {
+        if($p->permission == "user_friends") {
+          $permission = true;
+        }
+      }
+      $facebook_authenticated = $permission;
+      
+      if ($facebook_authenticated) {
+        $profile = $fbapi->getUserProfile();
+        $recipient = \Wapo\WapoRecipient::get_or_null(array("wapo" => $this->wapo, "contact" => $profile->id));
+
+        // If not downloaded yet, check if Wapo has expired.
+        if (!$recipient && $this->is_expired()) {
+          raiseExpired();
+        } else if(!$recipient) {
+          $relationship = $fbapi->getRelationship($this->wapo->sender);
+
+          if (count($relationship)) {
+            // Get an empty one.
+            $recipient_list = \Wapo\WapoRecipient::queryset()->filter(array("wapo" => $this->wapo, "contact" => ""))->fetch();
+
+            if (!count($recipient_list)) {
+              raiseExpired("Sorry, maximum downloadable Wapos have been reached.");
+            }
+
+            $recipient = $recipient_list[0];
+            $recipient->name = $profile->name;
+            $recipient->contact = $profile->id;
+            $recipient->confirmed = true;
+            $recipient->open = true;
+            $recipient->downloaded = true;
+            $recipient->save(false);
+            $this->wapo->downloaded += 1;
+            $this->wapo->save(false);
+          }
+        }
+
+        if ($this->wapo->promotion->name == "Tango Card") {
+          $reward = (new \BlinkTangoCard\TangoCardAPI(array("request" => $this->request)))->order($recipient->extra);
+        }
+      }
+
+      $c['profile'] = $profile;
+      $c['reward'] = $reward;
+      $c['facebook_authenticated'] = $facebook_authenticated;
+      return $c;
+    }
+  }
+  
+  /**
+   * Facebook Page Download.
+   * ref: if we want to add before when: https://developers.facebook.com/docs/graph-api/reference/user/likes
+   */
+  class FacebookFPDownloadTemplateView extends BaseDownloadTemplateView {
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      
+      $fbapi = new \BlinkFacebook\BlinkFacebookApi($this->request);
+      $facebook_authenticated = $fbapi->isLoggedIn();
+      $profile = null;
+      $reward = null;
+      
+      // Check if they have the 'user_friends' permission.
+      $permission = false;
+      foreach($fbapi->getFacebookPermissions() as $p) {
+        if($p->permission == "user_likes") {
+          $permission = true;
+        }
+      }
+      $facebook_authenticated = $permission;
+      
+      if ($facebook_authenticated) {
+        $profile = $fbapi->getUserProfile();
+        $recipient = \Wapo\WapoRecipient::get_or_null(array("wapo" => $this->wapo, "contact" => $profile->id));
+
+        // If not downloaded yet, check if Wapo has expired.
+        if (!$recipient && $this->is_expired()) {
+          raiseExpired();
+        } else if(!$recipient) {
+          $likes = $fbapi->getPageLikes();
+
+          foreach ($likes as $like) {
+            if ($like->id == $this->wapo->extra) {
+              // Get an empty one.
+              $recipient_list = \Wapo\WapoRecipient::queryset()->filter(array("wapo" => $this->wapo, "contact" => ""))->fetch();
+
+              if (!count($recipient_list)) {
+                raiseExpired("Sorry, maximum downloadable Wapos have been reached.");
+              }
+
+              $recipient = $recipient_list[0];
+              $recipient->name = $profile->name;
+              $recipient->contact = $profile->id;
+              $recipient->confirmed = true;
+              $recipient->open = true;
+              $recipient->downloaded = true;
+              $recipient->save(false);
+              $this->wapo->downloaded += 1;
+              $this->wapo->save(false);
+
+              break;
+            }
+          }
+        }
+
+        if ($this->wapo->promotion->name == "Tango Card") {
+          $reward = (new \BlinkTangoCard\TangoCardAPI(array("request" => $this->request)))->order($recipient->extra);
+        }
+      }
+
+      $c['profile'] = $profile;
+      $c['reward'] = $reward;
+      $c['facebook_authenticated'] = $facebook_authenticated;
+      return $c;
+    }
+  }
+  
+  /**
+   * Give the history of Facebook Downloaded Wapos.
+   */
+  class WapoFacebookHistoryTemplateView extends BaseDownloadTemplateView {
+    
+  }
+  
   class PreviewDownloadTemplateView extends \Blink\TemplateView {
     protected function get_template() {
       return TemplateConfig::Template("download/preview.twig");
@@ -175,37 +489,6 @@ namespace Wp {
         "error"=> false,
         "url" => sprintf("/wp/download/download/?download=%s", $recipient->download_code)
     );
-  }
-  
-  /**
-   * - Check that Wapo is valid then redirect to appropriate view if it is.
-   * - If there is a code in the GET, pre-fill it.
-   */
-  class CheckWapoView extends \Blink\FormView {
-    protected $form_class = "\Wp\CheckWapoForm";
-    
-    protected function get_template() {
-      return TemplateConfig::Template("download/code.twig");
-    }
-    
-    protected function get_initial() {
-      return array(
-          "code" => $this->request->get->find("code")
-      );
-    }
-
-    protected function form_valid() {
-      $result = check_code($this->form->get("code"));
-      
-      if($result['error']) {
-        \Blink\Messages::error($result['message']);
-        return \Blink\HttpResponseRedirect($result['url']);
-      }
-      
-      $this->request->session->set("code", $this->form->get("code"));
-      
-      return \Blink\HttpResponseRedirect($result['url']);
-    }
   }
   
   /**

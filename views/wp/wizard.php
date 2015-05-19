@@ -493,6 +493,14 @@ namespace Wp {
     
     protected function get() {
       $this->delivery = $this->request->cookie->find("delivery", "ffa");
+      
+      // Override profiles. If we have 'profiles' and they are not logged in, go to 'new_profile'.
+      if($this->request->param->is_set('step') && ($this->request->param->param['step'] == 'profiles')) {
+        if(!$this->request->user) {
+          return \Blink\HttpResponseRedirect('/wp/new_profile/');
+        }
+      }
+      
       return parent::get();
     }
   }

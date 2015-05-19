@@ -1,9 +1,11 @@
 <div class="row">
-  <div class="col-xs-4" id="filter_container">
+  {#<div class="col-xs-4" id="filter_container">
     <div class="panel panel-default">
       <div class="panel-body">
         <h3>Price</h3>
-        {#<div class="row">
+        
+        
+        <div class="row">
           <div class="col-xs-6">
             MIN
           </div>
@@ -19,7 +21,7 @@
           <div class="col-xs-6">
             <input type="int" value="5000" class="form-control" id="face_value_max" />
           </div>
-        </div>#}
+        </div>
 
         <h3>Categories</h3>
         <div id="category_container">
@@ -27,24 +29,36 @@
         </div>
       </div>
     </div>
-    
-  </div>
-  <div class="col-xs-8">
-    <div class="row" id="reward_container">
+  </div>#}
+        
+  <div class="col-xs-12">
+    <div class="row" id="reward-view">
       
     </div>
   </div>
 </div>
 
-<script id="template_reward" type="text/template">
-<div class="col-md-6">
+<script id="reward-template" type="text/template">
+<div class="col-xs-3">
   <div class="thumbnails thumbnail-style">
-    <img class="img-responsive" src="<%= catalog_badge_image_url %>" alt="" />
+    <img class="img-responsive" style="height: 200px;" src="<%= reward.catalog_badge_image_url %>" alt="" />
     <div class="caption">
-      <p><%= name %></p>
-      <div style="text-align: center;"><%= face_value %> <%= cost_currency %></div>
-      <br />
-      <p><a href="#" class="btn-u btn-u-xs select-reward" data-sku="<%= sku %>">Select <i class="fa fa-angle-right margin-left-5"></i></a></p>
+{#      <p><%= reward.name %></p>#}
+{#      <div style="text-align: center;"><%= reward.face_value %> <%= reward.cost_currency %></div>#}
+{#      <br />#}
+      
+      
+{#      <p><a href="#" class="btn-u btn-u-xs select-reward" data-sku="<%= sku %>">Select <i class="fa fa-angle-right margin-left-5"></i></a></p>#}
+      
+      <p>
+        <div class="checkbox">
+          <label>
+{#            <input type="radio" name="sku" class="select-reward" value="<%= sku %>">#}
+            <input type="radio" class="select-reward" name="sku" value="<%= reward.sku %>"  <% if (reward.sku == sku) { %>checked<% } %>> <%= reward.name %>
+{#            <%= reward.description %>#}
+          </label>
+        </div>
+      </p>
     </div>
   </div>
 </div>
@@ -53,7 +67,7 @@
 <script id="template_category" type="text/template">
 <div class="checkbox">
   <label>
-    <input type="checkbox" name="category" value="<%= category %>"> <%= category %>
+    <input type="checkbox" class="select-reward" name="category" value="<%= category %>"  <% if (reward.sku == sku) { %>checked<% } %>> <%= category %>
   </label>
 </div>
 </script>
@@ -63,9 +77,9 @@
 
   <br /><br />
 
-  {% for field in form.hidden %}
+  {#{% for field in form.hidden %}
     {{ field.field|raw }}
-  {% endfor %}
+  {% endfor %}#}
 
   {% for field in form.visible %}
     {{ field.field|raw }}
@@ -88,12 +102,12 @@
         this.collection.bind('reset add remove', this.render, this);
       },
       render: function() {
-        var that = this;
+        {#var that = this;
         
         this.$el.find('#category_container').html('');
         this.collection.each(function(category) {
           that.$el.find('#category_container').append(that.template(category.toJSON()));
-        });
+        });#}
       },
       events: {
         'click input[name=category]': 'renderRewardView',
@@ -107,9 +121,9 @@
     
     // View to display the marketplace.
     var RewardView = Backbone.View.extend({
-      el: '#reward_container',
+      el: '#reward-view',
       collection: rewardCollection,
-      template: _.template($('#template_reward').html()),
+      template: _.template($('#reward-template').html()),
       filterview: new FilterView,
       initialize: function() {
         this.collection.bind('reset add remove', this.render, this);
@@ -154,7 +168,11 @@
           
           // If they both pass, then we display it.
           if(fvpass && cpass) {
-            that.$el.append(that.template(reward.toJSON()));
+            that.$el.append(that.template({reward: reward.toJSON(), sku: $.cookie('sku')}));
+          }
+          
+          if($("input[type='radio']:checked").val()) {
+            $('#next_button').removeClass('disabled');
           }
         });
         
@@ -181,19 +199,16 @@
         'click .select-reward': 'selectReward'
       },
       selectReward: function(e) {
-        e.preventDefault();// Prevent from going to link.
-        var sku = $(e.target).data('sku');// Get the form from the data object.
-        $('#sku').val(sku);// Set the form sku.
+        //e.preventDefault();// Prevent from going to link.
+        //var sku = $(e.target).data('sku');// Get the form from the data object.
+       // $('#sku').val(sku);// Set the form sku.
         $('#next_button').removeClass('disabled');// Remove the disable button.
-        $('#next_button').click();// Submit the form.
+        //$('#next_button').click();// Submit the form.
       }
     });
-    
-    
     
     var rewardView = new RewardView();
 
     rewardCollection.reset({{ ifeelgoods |json_encode()|raw }});
-    console.log(rewardCollection.toJSON());
   });
 </script>

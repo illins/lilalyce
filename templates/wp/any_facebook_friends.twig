@@ -5,6 +5,16 @@
     <div class="panel-heading">
       &nbsp;
     </div>
+    
+    <div style="margin: 20px;">
+      <h3>You are logged in as</h3>
+    </div>
+    
+    <div class="panel panel-default" style="height: 150px; margin: 20px;">
+      <div class="panel-body" id="facebook-view">
+        <i class="fa fa-spinner fa-spin"></i> Loading
+      </div>
+    </div>
 
     <div class="panel-body">
       {% for field in form.visible %}
@@ -26,38 +36,25 @@
       </div>
     </div>
   </div>#}
-  
-  <div id="facebook-view">
-    <i class="fa fa-spinner fa-spin"></i> Loading
-  </div>
-      
+
   <script type="text/template" id="facebook-login-template">
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <a href="/facebook/?skip=1&return={{ blink.request.url|url_encode }}&scope=public_profile,publish_actions,manage_pages" class="btn btn-block btn-u btn-u-aqua">
-          <i class="fa fa-facebook"></i>
-          Facebook Login
-        </a>
-      </div>
-    </div>
+    <a href="/facebook/?skip=1&return={{ blink.request.url|url_encode }}&scope=public_profile,publish_actions,manage_pages" class="btn btn-block btn-u btn-u-aqua">
+      <i class="fa fa-facebook"></i>
+      Facebook Login
+    </a>
   </script>
   
   <script type="text/template" id="facebook-template">
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <h3>You are logged in as</h3>
-        <div class="media">
-          <div class="media-left">
-            <a href="#">
-              <% if(picture.url) { %>
-                <img class="media-object" src="<%= picture.url %>" alt="...">
-              <% } %>
-            </a>
-          </div>
-          <div class="media-body">
-            <h4 class="media-heading"><%= profile.name %></h4>
-          </div>
-        </div>
+    <div class="media">
+      <div class="media-left">
+        <a href="#">
+          <% if(picture.url) { %>
+            <img class="media-object" src="<%= picture.url %>" alt="...">
+          <% } %>
+        </a>
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading"><%= profile.name %></h4>
       </div>
     </div>
   </script>

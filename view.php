@@ -39,12 +39,76 @@ namespace Wp {
   use Wapo\ContactItem;
   use Wapo\Member;
   
-  class TestView extends \Blink\TemplateView {
+  class TestView extends \Blink\JSONView {
     protected function get_context_data() {
       $c = parent::get_context_data();
       
-//      echo phpinfo();
-      exit();
+//      $tango = new \BlinkTangoCard\TangoCardAPI(array("request"=>$this->request));
+//      $tango->order(1);
+//      $c['wapo_list'] = Wapo::queryset()->filter(array("promotion"=>7))->fetch();
+//      
+//      $c['waporecepient_list'] = WapoRecipient::queryset()->filter(array("wapo"=>314))->fetch();
+//      $c['wapo'] = Wapo::get_or_null(array("id"=>321));
+//      $c['rec'] = WapoRecipient::queryset()->order_by(array("-id"))->limit(0, 1)->fetch();
+      
+      
+      $ifg = new \BlinkIfeelGoods\IfeelGoodsAPI(array("request"=>$this->request));
+      
+      $sku = "TAR-TGT-5USD-US";
+      $ifginfo = array(
+          "data" => array(
+              "order_id" => "XYZ123-01",
+              "user" => array(
+                  "email" => "livedev1@yahoo.com",
+                  "phone_number"=> 11234567890,
+                  "first_name" => "Wapo",
+                  "last_name" => "Wapo"
+              )
+          )
+      );
+      
+//      $ifginfo['data']['order_id'] = "myorder-1";
+//      $c['redeem'] = $ifg->redeem(\Blink\IfeelGoodsConfig::PROMOTION_ID, $sku, $ifginfo);
+//      $c['redemption'] = $ifg->redeem2($sku, array("user"=>"livedev1@yahoo.com"));
+      
+      
+      
+//      $c['promotions'] = $ifg->promotions(\Blink\IfeelGoodsConfig::PROMOTION_ID);
+      
+//      $values = array("data" => array("order_id" => "boysandgirls-1"));
+//      $endpoint = sprintf("promotions/%s/redemptions", \Blink\IfeelGoodsConfig::PROMOTION_ID);
+//      $c['redemption'] = $ifg->request($endpoint, $values);
+//      return $c;
+      
+      $values = array(
+          "data" => array(
+              "order_id" => "boysandgirls-3",
+              "user" => array(
+                  "email" => "livedev1@yahoo.com",
+                  "phone_number"=> "+16502899294",
+                  "first_name" => "James",
+                  "last_name" => "Brown"
+              )
+          )
+      );
+      
+//      $values = array("data"=> array(
+//    "order_id"=> "TEST-01",
+//    "user"=> array(
+//      "email"=> "apisupport@ifeelgoods.com",
+//      "phone_number"=> "+16502899294",
+//      "first_name"=> "James",
+//      "last_name"=> "Brown"
+//    )
+//  ));
+//      
+      $endpoint = sprintf("promotions/%s/rewards/%s/redemptions/redeem", \Blink\IfeelGoodsConfig::PROMOTION_ID, $sku);
+////      exit($endpoint);
+      $c['redemption'] = $ifg->request($endpoint, $values);
+//      $c['redemption'] = $ifg->redeem(\Blink\IfeelGoodsConfig::PROMOTION_ID, $sku, $values);
+
+//      $c['order'] = $tango->order("115-04700046-24");
+      
       return $c;
     }
   }

@@ -1,19 +1,26 @@
 {% extends "apps/wp/templates/wp/form.twig" %}
 
 {% block main %}
-  
-  {% if not blink.request.user %}
-    <p>
-      If you have used Wapo before, please <a href="/user/login/?return=/wp/profiles/">login</a> to get your profiles. Cart will be preserved.
-    </p>
-  {% endif %}
 
-  {% for field in form.visible %}
-    {{ field.field|raw }}
-  {% endfor %}
-  
-  {% for field in form.hidden %}
-    {{ field.field|raw }}
-  {% endfor %}
-  
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <p>
+        If you have used Wapo before, please <a href="/user/login/?return=/wp/profiles/">login</a> to get your profiles. Cart will be preserved.
+      </p>
+    </div>
+    <div class="panel-body">
+      {% if not blink.request.user %}
+
+      {% endif %}
+
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
+
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+    </div>
+  </div>
+
 {% endblock main %}

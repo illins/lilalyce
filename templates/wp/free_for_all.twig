@@ -1,11 +1,18 @@
 {% extends "apps/wp/templates/wp/form.twig" %}
 
 {% block main %}
-  {% for field in form.visible %}
-    {{ field.field|raw }}
-  {% endfor %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      &nbsp;
+    </div>
+    <div class="panel-body">
+      {% for field in form.visible %}
+        {{ field.field|raw }}
+      {% endfor %}
 
-  {% for field in form.hidden %}
-    {{ field.field|raw }}
-  {% endfor %}
+      {% for field in form.hidden %}
+        {{ field.field|raw }}
+      {% endfor %}
+    </div>
+  </div>
 {% endblock main %}

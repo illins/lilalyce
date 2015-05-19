@@ -10,7 +10,7 @@ namespace Wp {
   require_once 'apps/wp/views/wp/progress.php';
   
   // WP download.
-  require_once("apps/wp/download/view.php");
+  require_once("apps/wp/download/url.php");
   
   // API access urls.
   require_once("apps/wp/views/mailchimp.php");
@@ -36,6 +36,10 @@ namespace Wp {
       array(
           "uri" => '/tangocard',
           "url_patterns" => \Blink\include_url_patters($wp_tangocard_url_patterns)
+      ),
+      array(
+          "uri" => '/download',
+          "url_patterns" => \Blink\include_url_patters($wp_download_url_patterns)
       ),
       array(
           "uri" => "/order/$",
@@ -132,91 +136,8 @@ namespace Wp {
           "name" => "FacebookUpdateResourceView",
           "title" => "FacebookUpdateResourceView"
       ),
-      array(
-          "uri" => "/download/$",
-          "view" => CheckWapoView::as_view(),
-          "name" => "CheckWapoView",
-          "title" => "Check Wapo"
-      ),
-      array(
-          "uri" => "/download/email/$",
-          "view" => WapoEmailView::as_view(),
-          "name" => "WapoEmailView",
-          "title" => "Wapo Email"
-      ),
-      array(
-          "uri" => "/download/email/senderror/$",
-          "view" => EmailSendErrorView::as_view(),
-          "name" => "EmailSendErrorView",
-          "title" => "Wapo Email"
-      ),
-      array(
-          "uri" => "/download/email/confirm/$",
-          "view" => WapoConfirmEmailCodeUrlView::as_view(),
-          "name" => "WapoConfirmEmailCodeUrlView",
-          "title" => "Wapo Confirm Url Email"
-      ),
-      array(
-          "uri" => "/download/email/code/confirm/$",
-          "view" => WapoConfirmEmailCodeView::as_view(),
-          "name" => "WapoConfirmEmailCodeView",
-          "title" => "Wapo Confirm Email"
-      ),
-      array(
-          "uri" => "/download/ffa/$",
-          "view" => WapoFreeForAllEmailView::as_view(),
-          "name" => "WapoFreeForAllEmailView",
-          "title" => "Wapo Confirm Email"
-      ),
-      array(
-          "uri" => "/download/ffa/confirm/$",
-          "view" => WapoFreeForAllConfirmEmailCodeUrlView::as_view(),
-          "name" => "WapoFreeForAllConfirmEmailCodeUrlView",
-          "title" => "Wapo Confirm Url Email"
-      ),
-      array(
-          "uri" => "/download/ffa/code/confirm/$",
-          "view" => WapoFreeForAllConfirmEmailCodeView::as_view(),
-          "name" => "WapoFreeForAllConfirmEmailCodeView",
-          "title" => "Wapo Confirm Email Code"
-      ),
-      array(
-          "uri" => "/download/twitter/$",
-          "view" => TwitterUserCanDownloadWapoView::as_view(),
-          "name" => "WapoConfirmEmailCodeView",
-          "title" => "Wapo Confirm Email"
-      ),
-      array(
-          "uri" => "/download/twitter/nofollow/$",
-          "view" => TwitterNoFollowView::as_view(),
-          "name" => "TwitterNoFollowView",
-          "title" => "Twitter Follow Error"
-      ),
-      array(
-          "uri" => "/download/expired/$",
-          "view" => WapoExpiredView::as_view(),
-          "name" => "WapoExpiredView",
-          "title" => "Wapo Expired"
-      ),
-      array(
-          "uri" => "/download/aff/$",
-          "view" => WapoAnyFacebookFriendsView::as_view(),
-          "name" => "WapoAnyFacebookFriendsView",
-          "title" => "Facebook Friend"
-      ),
-      array(
-          "uri" => "/download/fp/$",
-          "view" => WapoFacebookPageView::as_view(),
-          "name" => "WapoFacebookPageView",
-          "title" => "Facebook Page"
-      ),
-      array(
-          "uri" => "/download/download/$",
-          "view" => WapoDownloadView::as_view(),
-          "name" => "WapoDownloadView",
-          "title" => "Download"
-      ),
       
+      // Pipeline step wizard.
       array(
           "uri" => "/$",
           "view" => WpCookieWizardView::as_view(),

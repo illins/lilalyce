@@ -35,9 +35,10 @@ namespace Wp {
     try {
       // Validate the Wapo.
       $wapo = \Wapo\Wapo::get_or_null(array("id" => $request->session->find("wapo_id")));
-      if (!$wapo) {
-        throw new \Exception("Wapo error: Wapo not found.");
-      }
+//      $wapo = \Wapo\Wapo::queryset()->depth(2)->get(array("id" => $request->session->find("wapo_id")));
+//      if (!$wapo) {
+//        throw new \Exception("Wapo error: Wapo not found.");
+//      }
 
       // Determine which Wapo type we're sending and call the appropriate function.
       if ($wapo->module->tag == "gift") {
@@ -54,7 +55,7 @@ namespace Wp {
 
   function send_wapo_general($wapo, $request) {
     $bitlyapi = new \BlinkBitly\BlinkBitlyAPI();
-    $base_url = sprintf("%s/wpd/", \Blink\SiteConfig::SITE);
+    $base_url = sprintf("%s/wp/download/?wapo_id=%s", \Blink\SiteConfig::SITE, $wapo->id);
     
     try {
       $site = \Blink\SiteConfig::SITE;
@@ -62,7 +63,12 @@ namespace Wp {
       $delivery_message = $wapo->delivery_message;
       $delivery = $wapo->delivery_method_abbr;
       $message = "";
-
+      
+      $tangoapi = null;
+      if($wapo->promotion->name == "Tango Card") {
+        $tangoapi = new \BlinkTangoCard\TangoCardAPI(array("request"=>$request));
+      }
+      
       if ($delivery == "e" || $delivery == "el" || $delivery == "mailchimp") {
         $mail = \Swift\Api::Message();
 
@@ -84,24 +90,39 @@ namespace Wp {
 //            $result = \Swift\Api::Send($mail);
 
           // Create the url and shorten it. If the shorten didn't work, use original url.
-          $url = sprintf("%s?code=%s", $base_url, $recipient->targeturl->code);
-          $shortened = $bitlyapi->shorten($url);
-          $shortened = ($shortened) ? $shortened : $url;
+//          $url = sprintf("%s&code=%s", $base_url, $recipient->targeturl->code);
+//          $shortened = $bitlyapi->shorten($url);
+//          $shortened = ($shortened) ? $shortened : $url;
+//          
+//          if ($delivery_message) {
+//            $message = $delivery_message . " " . $shortened;
+//          } else {
+//            $message = sprintf("Click here '%s' to download your Wapo.", $shortened);
+//          }
           
-          if ($delivery_message) {
-            $message = $delivery_message . " " . $shortened;
-          } else {
-            $message = sprintf("Click here '%s' to download your Wapo.", $shortened);
+          $recipient->sent = false;
+          if($wapo->promotion->name == "Tango Card") {
+            // If we have extra.
+            if ($recipient->extra != "-") {
+              $order = $tangoapi->order($recipient->extra);
+              
+              // If we retrieved it correctly, then continue.
+              if($order->success) {
+                $message = sprintf("%s\nNUMBER: %s\nPIN: %s", $delivery_message, $order->order->reward->number, $order->order->reward->pin);
+                $recipient->sent = @mail($recipient->contact, "You have been sent a Wapo.", $message);
+              }
+            }
+          } else if($wapo->promotion->name == "I Feel Goods") {
+            
           }
-
-          $recipient->sent = @mail($recipient->contact, "You have been sent a Wapo.", $message);
+          
           $recipient->save(false);
         }
       } else if ($delivery == "aff") {
         $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo" => $wapo));
         
         // Create the url and shorten it. If the shorten didn't work, use original url.
-        $url = sprintf("%s?code=%s", $base_url, $targeturl->code);
+        $url = sprintf("%s&code=%s", $base_url, $targeturl->code);
         $shortened = $bitlyapi->shorten($url);
         $shortened = ($shortened) ? $shortened : $url;
         
@@ -120,7 +141,7 @@ namespace Wp {
         $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo" => $wapo));
         
         // Create the url and shorten it. If the shorten didn't work, use original url.
-        $url = sprintf("%s?code=%s", $base_url, $targeturl->code);
+        $url = sprintf("%s&code=%s", $base_url, $targeturl->code);
         $shortened = $bitlyapi->shorten($url);
         $shortened = ($shortened) ? $shortened : $url;
         
@@ -140,7 +161,7 @@ namespace Wp {
         $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo" => $wapo));
         
         // Create the url and shorten it. If the shorten didn't work, use original url.
-        $url = sprintf("%s?code=%s", $base_url, $targeturl->code);
+        $url = sprintf("%s&code=%s", $base_url, $targeturl->code);
         $shortened = $bitlyapi->shorten($url);
         $shortened = ($shortened) ? $shortened : $url;
         
@@ -163,7 +184,7 @@ namespace Wp {
           $recipient_list = \Wapo\WapoRecipient::queryset()->depth(1)->filter(array("wapo" => $wapo))->fetch();
           foreach ($recipient_list as $recipient) {
             $info = array(
-                "status" => sprintf("@%s %s", $recipient->contact, $message)
+                "status" => sprintf("@%s %s", $recipient->name, $message)
             );
             $tweet = tweet($info, $request);
             if($tweet) {

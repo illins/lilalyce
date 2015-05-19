@@ -5,6 +5,16 @@
     <div class="panel-heading">
       &nbsp;
     </div>
+    
+    <div style="margin: 20px;">
+      <h3>You are logged in as</h3>
+    </div>
+    
+    <div class="panel panel-default" style="margin: 20px;">
+      <div class="panel-body" id="twitter-view" style="height: 150px;">
+        <i class="fa fa-spinner fa-spin"></i> Loading
+      </div>
+    </div>
 
     <div class="panel-body">
       {% for field in form.visible %}
@@ -16,27 +26,16 @@
       {% endfor %}
     </div>
   </div>
-    
-  <div id="twitter-view">
-    <i class="fa fa-spinner fa-spin"></i> Loading
-  </div>
 
   <script type="text/template" id="twitter-login-template">
-    <div class="row">
-      <div class="col-xs-12">
-        <a href="/twitter/?skip=1&return={{ blink.request.url }}" class="btn btn-block btn-u btn-u-aqua">
-          <i class="fa fa-twitter"></i>
-          Twitter Login
-        </a>
-      </div>
-    </div>
+    <a href="/twitter/?skip=1&return={{ blink.request.url }}" class="btn btn-block btn-u btn-u-aqua">
+      <i class="fa fa-twitter"></i>
+      Twitter Login
+    </a>
   </script>
   
   <script type="text/template" id="twitter-template">
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <h3>You are logged in as</h3>
-        <div class="media">
+    <div class="media">
           <div class="media-left">
             <a href="#">
               <img class="media-object" src="<%= account.profile_image_url %>" alt="...">
@@ -47,8 +46,6 @@
             <%= account.description %>
           </div>
         </div>
-      </div>
-    </div>
   </script>
   
   <script>
@@ -84,6 +81,7 @@
         account: null,
         template: _.template($('#twitter-template').html()),
         render: function() {
+          console.log(this.account);
           this.$el.html(this.template({account: this.account}));
           
           // They can click the next button.

@@ -1,57 +1,92 @@
-{% extends "apps/wapo/templates/dashboard/base.twig" %}
-
-{% block extra_javascript %}
-{#  <script src="/wapo/templates/static/js/facebook.js"></script>#}
-{% endblock %}
+{% extends "apps/wp/templates/base.twig" %}
 
 {% block breadcrumbs %}{% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="col-xs-12">
-      <div class="panel panel-default">
-        <div class="panel-body text-center">
-          {% if profile.image.name %}
-            <img src="http://placehold.it/1040x200" alt="..." class="img">
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-8">
+
+          <div class="row">
+            <div class="col-xs-2"></div>
+            <div class="col-xs-6">
+              {% if wapo.delivery_method_abbr == "atf" or wapo.delivery_method_abbr == "stf" %}
+                {% if twitter_authenticated %}
+                  <h3>You are logged in as <strong>{{profile.screen_name}}</strong></h3>
+                {% else %}
+                  <a href="/twitter/?skip=1&return={{ blink.request.request_url|url_encode }}" class="btn btn-block btn-u btn-u-aqua">
+                    <i class="fa fa-twitter"></i>
+                    Twitter Login
+                  </a>
+                {% endif %}
+              {% endif %}
+
+              {% if wapo.delivery_method_abbr == "aff" or wapo.delivery_method_abbr == "fp" %}
+                {% if facebook_authenticated %}
+                  <h3>You are logged in as <strong>{{profile.name}}</strong></h3>
+                {% elseif wapo.delivery_method_abbr == "aff"%}
+                  Permissions required (user_friends): We need to verify that you are a friend to the user who posted the Wapo.<br />
+                  <a href="/facebook/?scope=public_profile,user_friends&skip=1&return={{ blink.request.request_url|url_encode }}" class="btn btn-block btn-u btn-u-aqua">
+                    <i class="fa fa-facebook"></i>
+                    Facebook Login
+                  </a>
+                {% elseif wapo.delivery_method_abbr == "fp"%}
+                  Permissions required (user_friends): We need to verify that you you have liked the page the Wapo was posted on.<br />
+                  <a href="/facebook/?scope=public_profile,user_likes&skip=1&return={{ blink.request.request_url|url_encode }}" class="btn btn-block btn-u btn-u-aqua">
+                    <i class="fa fa-facebook"></i>
+                    Facebook Login
+                  </a>
+                {% endif %}
+              {% endif %}
+            </div>
+          </div>
+
+          {% if reward %}
+            <br /><br />
+            {% if wapo.promotion.name == "Tango Card" %}
+              <div class="row">
+                <div class="col-xs-2"></div>
+                <div class="col-xs-8">
+                  <h4>Your reward is here.</h4>
+                  {% if reward.success %}
+                    <div class="list-group">
+                      <div class="list-group-item">
+                        <strong>Number:</strong> {{ reward.order.reward.number }}
+                      </div>
+                      <div class="list-group-item">
+                        <strong>pin:</strong> {{ reward.order.reward.pin }}
+                      </div>
+                    </div>
+                  {% else %}
+                    <strong>Ooops! Error retrieving reward.</strong>
+                  {% endif %}
+                </div>
+                <div class="col-xs-2"></div>
+              </div>
+            {% endif %}
+          {% endif %}
+          
+        </div>
+        <div class="col-xs-4">
+          {% if promotioncategory.name == "Tango Card" %}
+            <img class="img-responsive" src="{{ sku.brand_image_url }}" alt="..." style="width: 100%;">
+          {% elseif promotioncategory.name == "I Feel Goods" %}
+            <img class="img-responsive" src="{{ sku.catalog_badge_image_url }}" alt="..." style="width: 100%;">
           {% else %}
-            <img src="http://placehold.it/1040x200" alt="..." class="img">
+            <img class="img-responsive" src="{{ promotion.icon.url }}" alt="..." style="width: 100%;">
+          {% endif %}
+
+          {% if promotioncategory.name == "Tango Card" %}
+            <h4 class="media-heading">{{ sku.description }}</h4>
+          {% elseif promotioncategory.name == "I Feel Goods" %}
+            <h4 class="media-heading">{{ sku.name }}</h4>
+          {% else %}
+            <h4 class="media-heading">{{ promotion.name }}</h4>
+            <p>${{ promotion.price }}</p>
           {% endif %}
         </div>
       </div>
     </div>
   </div>
-        <h2>{{ profile.name }}</h2>
-  
-        <div class="row">
-          <div class="col-xs-4">
-            <div class="panel panel-default">
-              <div class="panel-body text-center">
-                <h3>{{ promotion.name }}</h3>
-                <p style="text-align: justify;">{{ promotion.description }} Rise of Incarnates is set in a world suffering from a catastrophic event dubbed as the "cube phenomena": meteorites falling from the sky and massive cold fronts sweeping across the land have led the people in the planet to live in a state of perpetual fear. Among the people are those known as "Incarnates"-- humans who can draw powers from daimones; spirit manifestations of the gods, demons, and monsters from all of the world's mythologies. General public fear incarnates for their supernatural powers, while the authorities attempt to harness their powers for their own deeds. A battle of dominance between each Incarnates is triggered when one day, an enigmatic voice speaks in the mind of every incarnates, requiring them to defeat the "Sovereign of this era" to avoid a certain destruction.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-xs-4">
-            <div class="panel panel-default">
-              <div class="panel-body text-center">
-                <button class="btn btn-primary btn-lg btn-block" type="button">Download!</button>
-              </div>
-            </div>
-          </div>
-          <div class="col-xs-4">
-            <div class="panel panel-default">
-              <div class="panel-body text-center">
-                Social Links
-                <br /><br /><br />
-              </div>
-            </div>
-            
-            <div class="panel panel-default">
-              <div class="panel-body text-center">
-                Products???
-                <br /><br /><br /><br />
-              </div>
-            </div>
-          </div>
-        </div>
 {% endblock %}
