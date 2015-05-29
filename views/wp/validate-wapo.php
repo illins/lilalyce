@@ -167,7 +167,7 @@ namespace Wp {
         $profile_email = $request->cookie->find("email", "");
         
         if($request->user) {
-          $profile = \Wapo\Profile::get_or_null(array("email"=>$profile_email));
+          $profile = \Wapo\Profile::get_or_null(array("name"=>$profile_name));
           
           // Clear the profile name/email if this is filled in.
           if($profile) {
@@ -284,15 +284,28 @@ namespace Wp {
         }
         
         $quantity = count($email_list);
-      } else if ($delivery == "el") {
-        // Check that they are logged in.
-        if (!$this->request->user) {
-          throw new \Exception("Please log in to use this delivery method.");
+      } else if ($delivery == "el") { // email list section.
+        $email_list = explode(",", $request->cookie->find("emails", ""));
+        $quantity = count($email_list);
+        
+        // Validate that this is an email.
+        $invalid_email_list = array();
+        foreach($email_list as $email) {
+          $email = trim($email);
+          
+          if(filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            $invalid_email_list[] = $email;
+          }
         }
-
-        // Check that the contact is theirs and that it is an email list.
-        if (!count(Contact::queryset()->depth(2)->filter(array("id" => $request->cookie->find('contact_id'), "wapo_distributor.user" => $this->request->user, "type" => "e"))->fetch())) {
-          throw new \Exception("Please select a valid email list.");
+        
+        // If they have exceeded the maximum emails they can send using this method.
+        if($quantity > WpConfig::MAX_EL_EMAIL_COUNT) {
+          throw new \Exception(sprintf("You can only send a maximum of '%s' emails using this method", WpConfig::MAX_EL_EMAIL_COUNT));
+        }
+        
+        // If there are invalid emails, set an error.
+        if(count($invalid_email_list)) {
+          throw new \Exception(sprintf("There is one or more invalid emails in your list (%s).", implode(",", $invalid_email_list)));
         }
       } else if ($delivery == "aff") {
         $quantity = $request->cookie->find('quantity', 0);
@@ -350,6 +363,12 @@ namespace Wp {
     } catch (\Exception $ex) {
       return array(true, $ex->getMessage(), null);
     }
+    
+    // Calculate total price.
+    $total = 0;
+    if($sku instanceof \Wapo\TangoCardRewards) {
+      $total = $sku->unit_price * $quantity;
+    }
 
     $data = array(
         "module" => $module,
@@ -360,6 +379,7 @@ namespace Wp {
         "delivery_message" => $delivery_message,
         "expiring_date" => $request->cookie->get('expiring_date'),
         "quantity" => $quantity,
+        "total" => $total,
         "email_list" => $email_list,
         "profile" => $profile,
         "profile_name" => $profile_name,

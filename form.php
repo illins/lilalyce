@@ -286,11 +286,11 @@ namespace Wp {
    * - Get the id of an email list.
    */
   class EmailListForm extends BaseForm {
-    public $contact_id;
+    public $emails;
     
     public function Fields() {
       $form_fields = parent::Fields();
-      $this->contact_id = $form_fields->IntegerField(array("verbose_name"=>"Email List","name"=>"contact_id","blank"=>false));
+      $this->emails = $form_fields->TextField(array("verbose_name"=>"Email List","name"=>"emails","blank"=>false,"help_text"=>"Please enter a comma ',' seperated list of emails. (Maximum 25)."));
       return $form_fields;
     }
   }
@@ -450,7 +450,7 @@ namespace Wp {
     
     public function Fields() {
       $form_fields = parent::Fields();
-      $this->payment_method_id = $form_fields->IntegerField(array("verbose_name"=>"Payment Method","name"=>"payment_method_id","choices"=>\Wapo\PaymentMethod::queryset()->all()));
+      $this->payment_method_id = $form_fields->IntegerField(array("verbose_name"=>"Payment Method","name"=>"payment_method_id","choices"=>\Wapo\PaymentMethod::queryset()->filter(array("name"=>"WePay"))));
       return $form_fields;
     }
   }

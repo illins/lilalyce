@@ -166,9 +166,9 @@ namespace Wp {
     try {
       $module = $data['module'];
       
-      // Check that checkoutid is set.
-      $request->session->set('checkoutid', 1411015);// @todo - remove.
-      if(!$request->session->is_set("checkoutid")) {
+      // Check that 'checkout_id' is set.
+//      $request->session->set('checkout_id', 1411015);// @todo - remove.
+      if(!$request->session->is_set("checkout_id")) {
         throw new \Exception("Checkout error. Payment transaction did not complete.");
       }
       
@@ -181,7 +181,7 @@ namespace Wp {
         } else {
           // Create a new profile.
           $distributor = Distributor::get_or_create_save(array("user"=>$request->user), false);
-          $profile = Profile::create_save(array("distributor" => $distributor, "name" => $data['name']), false);
+          $profile = Profile::create_save(array("distributor" => $distributor, "name" => $data['profile_name']), false);
         }
       } else {
         // Check if the user exists.
@@ -266,7 +266,7 @@ namespace Wp {
           "delivery_message" => $data["delivery_message"],
           "expiring_date" => $data["expiring_date"],
           "status" => "p",
-          "checkoutid" => $request->session->get_delete("checkoutid"),
+          "checkoutid" => $request->session->get_delete("checkout_id"),
           "quantity" => $data['quantity'],
           "downloaded" => 0,
           "extra" => $extra,
@@ -310,8 +310,8 @@ namespace Wp {
           WapoRecipient::create_save($recipient, false);
         }
         
-      } else if ($data['delivery'] == "e") { // E - Email
-        $targeturl = \Wapo\WapoTargetUrl::new_code($wapo, "e");
+      } else if (in_array($data['delivery'], array("e", "el"))) { // E - Email or EL - Email List
+        $targeturl = \Wapo\WapoTargetUrl::new_code($wapo, $data['delivery']);
         
         // Go through each email and crate a recipient.
         foreach($data['email_list'] as $email) {
@@ -413,30 +413,6 @@ namespace Wp {
           WapoRecipient::create_save($recipient, false);
         }
         $wapo->quantity = count($instagram_followers);
-        $wapo->save(false);
-      } else if ($data['delivery'] == "el") { // EL - Email List *** REMOVE
-        $targeturl = \Wapo\WapoTargetUrl::new_code($wapo, "el");
-        $email_list = \Wapo\ContactItem::queryset()->select(array("item"))->filter(array("contact"=>$data['contact_id']));
-        
-        $counter = 0;
-        foreach($email_list as $email) {
-          $recipient = array(
-              "wapo"      => $wapo,
-              "targeturl" => $targeturl,
-              "contact"   => trim($email->email),
-          );
-          
-          // If ifeelgoods marketplace, add an order id to this.
-          if($marketplace == "ifeelgoods") {
-            $recipient['extra'] = array_pop($order_list);
-          } else if($marketplace == "ifeelgoods") {
-            $recipient['extra'] = array_pop($order_list);
-          }
-          
-          WapoRecipient::create_save($recipient, false);
-        }
-        
-        $wapo->quantity = count($email_list);
         $wapo->save(false);
       } else if ($data['delivery'] == "aff") { // AFF - Any Facebook Friends
         $targeturl = \Wapo\WapoTargetUrl::new_code($wapo, "f");

@@ -202,52 +202,81 @@ namespace Wp {
       } else if($this->current_step == "profile") {
         
       } else if($this->current_step == "el") {
-        // Check the contact list.
-        $filter = array("id"=>$this->form->get("contact_id"),"wapo_profile.wapo_distributor.user"=>$this->request->user,"type"=>"e");
+        $emails = $this->request->post->find("emails", "");
+        $error = true;
+        $invalid_email_list = array();
+        $email_list = array();
+        $email_count = 0;
         
-        try {
-          $contact = \Wapo\Contact::queryset()->depth(2)->get($filter, "Email List not found.");
-        } catch (\Exception $ex) {
-          return $this->get();
+        // For each of the entered emails, 
+        foreach(explode(",", $emails) as $email) {
+          $email = trim($email);
+          if(!$email) {
+            continue;
+          }
+          
+          // Validate that this is an email.
+          if(filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            $invalid_email_list[] = $email;
+          } else if(!in_array($email, $email_list)) {// Remove duplicates.            
+            $email_list[] = $email;
+            $email_count += 1;
+          }
         }
         
-        $this->request->cookie->set("profile_id", $contact->profile->id);
+        // If they have exceeded the maximum emails they can send using this method.
+        if($email_count > WpConfig::MAX_EL_EMAIL_COUNT) {
+          $this->set_error(sprintf("You can only send a maximum of '%s' emails using this method", WpConfig::MAX_EL_EMAIL_COUNT));
+          return $this->form_invalid();
+        }
+        
+        // If there are invalid emails, set an error.
+        if(count($invalid_email_list)) {
+          $this->set_error(sprintf("There is one or more invalid emails in your list (%s).", implode(",", $invalid_email_list)));
+          return $this->form_invalid();
+        }
+        
+        // Set the quantity. 
+        $this->request->cookie->set("quantity", $email_count);
       } else if($this->current_step == "e") {
-        $emails = Config::MAX_EMAIL_DELIVERY_COUNT_GUEST;
+        $email_count = Config::MAX_EMAIL_DELIVERY_COUNT_GUEST;
         if($this->request->user) {
-          $emails = Config::MAX_EMAIL_DELIVERY_COUNT_USER;
+          $email_count = Config::MAX_EMAIL_DELIVERY_COUNT_USER;
         }
         
         $quantity = 0;
-        for($i = 1; $i <= $emails; $i++) {
+        for($i = 1; $i <= $email_count; $i++) {
           if($this->request->post->find("email-$i", null)) {
             $quantity++;
           }
         }
         $this->request->cookie->set("quantity", $quantity);
       } else if($this->current_step == "checkout") {
+        // Validate the checkout.
         list($error, $message, $data) = validate_wapo($this->request);
         
+        // Check if there was an error in the validation.
         if($error) {
           \Blink\Messages::error($message);
           return $this->get();
         }
         
         // For announcement, skip the payment step.
-        if($data['module']->tag != "announcement") {
-          // Redirect to fake pay and then come back to the create.
-          return \Blink\HttpResponseRedirect("/wp/pay/", false);
-        }
+//        if($data['module']->tag != "announcement") {
+//          // Redirect to fake pay and then come back to the create.
+//          return \Blink\HttpResponseRedirect("/wp/pay/", false);
+//        }
+      } else if($this->current_step == "wepay") {
+        
       } else if($this->current_step == "create") {
 //        list($error, $message, $wapo) = create_wapo($this->request->cookie->all(), $this->request);
 
-        } else if($this->current_step == "send") {
+      } else if($this->current_step == "send") {
         
       }
       
       // Reload the step definition list to get the right next step.
       $this->step_list = $this->get_step_list();
-      
 
       return parent::process_step();
     }
@@ -401,11 +430,8 @@ namespace Wp {
         $sidebar = true;
         $quantity = $this->request->cookie->find("quantity", 0);
       } else if ($this->current_step == "el") {
-        $contact_id = $this->request->cookie->find("contact_id");
-        $filter = array("wapo_profile.wapo_distributor.user"=>$this->request->user,"type"=>"e");
-        $contact_list = \Wapo\Contact::queryset()->depth(2)->filter($filter)->fetch();
-        $context['contact_id'] = $contact_id;
-        $context['contact_list'] = $contact_list;
+        $sidebar = true;
+        $quantity = $this->request->cookie->find("quantity", 0);
       } else if($this->current_step == "checkout") {
         if($this->module->tag == "announcement") {
           $context['announcement'] = $this->request->cookie->find("announcement");
@@ -414,6 +440,8 @@ namespace Wp {
             $quantity = $this->request->cookie->find("quantity", 0);
           } else if($delivery == "e") {
             $quantity = count(get_email_list($this->request));
+          } else if($delivery == "el") {
+            $quantity = count(explode(",", $this->request->cookie->find("emails", "")));
           } else if($delivery == "mailchimp") {
             $quantity = count(explode(",", $this->request->cookie->find("emails", "")));
           } else if($delivery == "atf") {
@@ -427,8 +455,36 @@ namespace Wp {
           } 
           
         }
+      } else if($this->current_step == "wepay") {
+        $amount = 0;
+        $short_description = "";
+        $redirect_uri = sprintf("%s/wp/create/", \Blink\SiteConfig::SITE);
+        
+        // If this is 'Tango Card', calculate the 'amount'.
+        if($sku instanceof \Wapo\TangoCardRewards) {
+          // Devide 'unit_price' by 100 because it is listed in cents.
+          $amount = ($sku->unit_price / 100) * $this->request->cookie->find("quantity", 1);
+          $short_description = $sku->sku;
+        }
+        
+        // Create the checkout.
+        // @todo - Validate that it was created.
+        $wepay = new \WePay\WepayAPI(array("staging"=>\Blink\WePayConfig::STAGIN));
+        $checkout = $wepay->checkout_create($amount, $short_description, $redirect_uri);
+        
+//        \Blink\blink_log($checkout);
+//        exit();
+        // Add to context.
+        $context['checkout'] = $checkout;
       } else if($this->current_step == "create") {
-        $this->request->session->set("checkoutid", $this->request->get->find("checkoutid"));
+        $wepay = new \WePay\WepayAPI(array("staging"=>\Blink\WePayConfig::STAGIN));
+        $checkout = $wepay->checkout($this->request->get->find("checkout_id"));
+        
+        if(!in_array($checkout->state, array("authorized", "reserved", "captured"))) {
+          \Blink\raise500("There was a payment transaction error.");
+        }
+        
+        $this->request->session->set("checkout_id", $this->request->get->find("checkout_id"));
       } else if($this->current_step == "done") {
         // Check if we still have the promotion send id. If we do, get the info.
         $wapo = \Wapo\Wapo::get_or_404(array("id"=>$this->request->session->find("wapo_id", 0)));

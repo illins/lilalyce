@@ -230,7 +230,7 @@ namespace Wp {
       } else if ($delivery == "el") {
         $definition["el"] = array(
             "title" => "Email List",
-            "template" => TemplateConfig::Template("wp/email_list.twig"),
+            "template" => TemplateConfig::Template("wp/el.twig"),
             "form" => "\Wp\EmailListForm"
         );
       } else if ($delivery == "mailchimp") {
@@ -299,6 +299,17 @@ namespace Wp {
         "template" => TemplateConfig::Template("wp/checkout.twig"),
         "form" => "Wp\PaymentMethodForm"
     );
+    
+    // Get the payment method. Default is WePay.
+    $cookie_payment_method_id = $request->cookie->find("payment_method_id", 1);
+    $payment_method_id = $request->post->find("payment_method_id", $cookie_payment_method_id);
+    if((string)$payment_method_id == "1") {
+      $definition["wepay"] = array(
+          "title" => "Wepay",
+          "template" => TemplateConfig::Template("wp/wepay.twig"),
+          "form" => "Blink\Form"
+      );
+    }
     
     // If this is an announcement, then we put a blank form.
     if($module->tag == "announcement") {
