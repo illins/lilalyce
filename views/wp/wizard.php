@@ -136,7 +136,24 @@ namespace Wp {
         if($this->module->tag == "announcement") {
           $this->request->cookie->set("twitter_announcement", $this->request->post->is_set("twitter_announcement"));
         } else {
+          $deliveries = array("e", "stf", "aff");
+        
+          // If they are logged in, check that they have an active package 'paid'.
+          if ($this->request->user) {
+            $today = date("Y-m-d");
+            if (\Wapo\DistributorPackage::exists(array("wapo_distributor.user" => $this->request->user, "start_date__lte" => $today, "end_date__gte" => $today))) {
+              $deliveries = array_merge($deliveries, array("ffa", "el", "mailchimp", "text", "fp", "atf"));
+            }
+          }
+
+          // Get the posted delivery.
           $this->delivery = $this->form->get("delivery");
+          
+          // Check that the delivery is there.
+          if(!in_array($this->delivery, $deliveries)) {
+            $this->set_error("Delivery error!");
+            return $this->form_invalid();
+          }
         }
       } else if($this->current_step == "ffa") {
         
@@ -407,7 +424,17 @@ namespace Wp {
       } else if($this->current_step == "announcement") { // ANNOUNCEMENT STEP.
         
       } else if($this->current_step == "delivery") { // DELIVERY STEP
+        $deliveries = array("e", "stf", "aff");
         
+        // If they are logged in, check that they have an active package 'paid'.
+        if($this->request->user) {
+          $today = date("Y-m-d");
+          if (\Wapo\DistributorPackage::exists(array("wapo_distributor.user" => $this->request->user, "start_date__lte" => $today, "end_date__gte" => $today))) {
+            $deliveries = array_merge($deliveries, array("ffa", "el", "mailchimp", "text", "fp", "atf"));
+          }
+        }
+        
+        $context['deliveries'] = $deliveries;
       } else if($this->current_step == "ffa") {
         $sidebar = true;
         $quantity = $this->request->cookie->find("quantity", 0);
@@ -469,7 +496,7 @@ namespace Wp {
         
         // Create the checkout.
         // @todo - Validate that it was created.
-        $wepay = new \WePay\WepayAPI(array("staging"=>\Blink\WePayConfig::STAGIN));
+        $wepay = new \WePay\WepayAPI();
         $checkout = $wepay->checkout_create($amount, $short_description, $redirect_uri);
         
 //        \Blink\blink_log($checkout);
@@ -477,7 +504,7 @@ namespace Wp {
         // Add to context.
         $context['checkout'] = $checkout;
       } else if($this->current_step == "create") {
-        $wepay = new \WePay\WepayAPI(array("staging"=>\Blink\WePayConfig::STAGIN));
+        $wepay = new \WePay\WepayAPI();
         $checkout = $wepay->checkout($this->request->get->find("checkout_id"));
         
         if(!in_array($checkout->state, array("authorized", "reserved", "captured"))) {

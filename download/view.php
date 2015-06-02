@@ -240,7 +240,8 @@ namespace Wp {
           }
         }
 
-        if ($this->wapo->promotion->name == "Tango Card") {
+        // If we have a recipient.
+        if ($recipient && $this->wapo->promotion->name == "Tango Card") {
           $reward = (new \BlinkTangoCard\TangoCardAPI(array("request" => $this->request)))->order($recipient->extra);
         }
       }

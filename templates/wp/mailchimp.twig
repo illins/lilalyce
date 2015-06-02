@@ -3,33 +3,29 @@
 {% block main %}
   <div class="panel panel-default">
     <div class="panel-heading">
-      &nbsp;
+      <h3>MailChimp</h3>
     </div>
 
-    <div class="panel-body">
-      
-      <div style="margin: 20px;">
-        <h3>MailChimp</h3>
-      </div>
-      
+    <div>
+
       <div class="panel panel-default" style="margin: 20px;" id="mailchimp-login" style="display: none;">
-      <div class="panel-body" style="height: 250px;">
-        <a href="/mailchimp/?skip=1&return=/wp/mailchimp/" class="btn btn-primary btn-block">MailChimp Login</a>
+        <div class="panel-body" style="height: 250px;">
+          <a id="mailchimp-login" href="/mailchimp/?skip=1&return=/wp/mailchimp/" class="btn btn-primary btn-block" style="display: none;">MailChimp Login</a>
+
+          <select class="form-control" id="lists-list" name="list_id" style="display: block;">
+            <option value="" data-url="">Select list to continue.</option>
+          </select>
+          <br class="divider divider-db" />
+
+          <div id="emails-list" style="display: block;">No list selected.</div>
+        </div>
       </div>
-    </div>
 
       {{ form.visible.delivery_message.field|raw }}
 
       {{ form.visible.expiring_date.field|raw }}
 
       {{ form.hidden.emails.field|raw }}
-
-      <select class="form-control" id="lists-list" name="list_id" style="display: block;">
-        <option value="" data-url="">Select list to continue.</option>
-      </select>
-      <br class="divider divider-db" />
-
-      <div id="emails-list" style="display: block;">No list selected.</div>
 
     </div>
   </div>
