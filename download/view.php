@@ -202,15 +202,14 @@ namespace Wp {
       $reward = null;
       
       // Check if they have the 'user_friends' permission.
-      $permission = false;
+      $user_friends_permission = false;
       foreach($fbapi->getFacebookPermissions() as $p) {
-        if($p->permission == "user_friends") {
-          $permission = true;
+        if($p->permission == "user_friends" && $p->status == "granted") {
+          $user_friends_permission = true;
         }
       }
-      $facebook_authenticated = $permission;
       
-      if ($facebook_authenticated) {
+      if ($facebook_authenticated && $user_friends_permission) {
         $profile = $fbapi->getUserProfile();
         $recipient = \Wapo\WapoRecipient::get_or_null(array("wapo" => $this->wapo, "contact" => $profile->id));
 
@@ -220,6 +219,7 @@ namespace Wp {
         } else if(!$recipient) {
           $relationship = $fbapi->getRelationship($this->wapo->sender);
 
+          // If there is a relationship.
           if (count($relationship)) {
             // Get an empty one.
             $recipient_list = \Wapo\WapoRecipient::queryset()->filter(array("wapo" => $this->wapo, "contact" => ""))->fetch();
@@ -228,6 +228,7 @@ namespace Wp {
               raiseExpired("Sorry, maximum downloadable Wapos have been reached.");
             }
 
+            // Reserve the empty slot.
             $recipient = $recipient_list[0];
             $recipient->name = $profile->name;
             $recipient->contact = $profile->id;
@@ -249,6 +250,7 @@ namespace Wp {
       $c['profile'] = $profile;
       $c['reward'] = $reward;
       $c['facebook_authenticated'] = $facebook_authenticated;
+      $c['user_friends_permission'] = $user_friends_permission;
       return $c;
     }
   }
@@ -267,17 +269,18 @@ namespace Wp {
       $reward = null;
       
       // Check if they have the 'user_friends' permission.
-      $permission = false;
+      $user_likes_permission = false;
       foreach($fbapi->getFacebookPermissions() as $p) {
         if($p->permission == "user_likes") {
-          $permission = true;
+          $user_likes_permission = true;
         }
       }
-      $facebook_authenticated = $permission;
       
-      if ($facebook_authenticated) {
+      if ($facebook_authenticated && $user_likes_permission) {
         $profile = $fbapi->getUserProfile();
         $recipient = \Wapo\WapoRecipient::get_or_null(array("wapo" => $this->wapo, "contact" => $profile->id));
+
+        $likes = $fbapi->getPageLikes();
 
         // If not downloaded yet, check if Wapo has expired.
         if (!$recipient && $this->is_expired()) {
@@ -317,6 +320,7 @@ namespace Wp {
       $c['profile'] = $profile;
       $c['reward'] = $reward;
       $c['facebook_authenticated'] = $facebook_authenticated;
+      $c['user_likes_permission'] = $user_likes_permission;
       return $c;
     }
   }

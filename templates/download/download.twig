@@ -25,6 +25,15 @@
               {% if wapo.delivery_method_abbr == "aff" or wapo.delivery_method_abbr == "fp" %}
                 {% if facebook_authenticated %}
                   <h3>You are logged in as <strong>{{profile.name}}</strong></h3>
+                  
+{#                  Check that they are allowing 'user friends permission' so we can check#}
+                  {% if wapo.delivery_method_abbr == "aff" and not user_friends_permission %}
+                    <p>
+                      You have not allowed app to use your Facebook Information. Click 
+                      <a href="/facebook/?scope=public_profile,user_friends&skip=1&return={{ blink.request.request_url|url_encode }}" class="btn btn-block btn-u btn-u-aqua">here</a> to allow.
+                    </p>
+                  {% endif %}
+                  
                 {% elseif wapo.delivery_method_abbr == "aff"%}
                   Permissions required (user_friends): We need to verify that you are a friend to the user who posted the Wapo.<br />
                   <a href="/facebook/?scope=public_profile,user_friends&skip=1&return={{ blink.request.request_url|url_encode }}" class="btn btn-block btn-u btn-u-aqua">
@@ -32,7 +41,7 @@
                     Facebook Login
                   </a>
                 {% elseif wapo.delivery_method_abbr == "fp"%}
-                  Permissions required (user_friends): We need to verify that you you have liked the page the Wapo was posted on.<br />
+                  Permissions required (user_likes): We need to verify that you you have liked the page the Wapo was posted on.<br />
                   <a href="/facebook/?scope=public_profile,user_likes&skip=1&return={{ blink.request.request_url|url_encode }}" class="btn btn-block btn-u btn-u-aqua">
                     <i class="fa fa-facebook"></i>
                     Facebook Login
