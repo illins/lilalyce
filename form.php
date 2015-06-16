@@ -300,12 +300,12 @@ namespace Wp {
    */
   class MailChimpForm extends BaseForm {
     public $list_id;
-    public $emails;
+    public $mailchimps;
     
     public function Fields() {
       $form_fields = parent::Fields();
       $this->list_id = $form_fields->HiddenCharField(array("verbose_name"=>"List","name"=>"list_id","max_length"=>100,"blank"=>false));
-      $this->emails = $form_fields->HiddenCharField(array("verbose_name"=>"Email List","name"=>"emails","max_length"=>1000,"blank"=>true));
+      $this->mailchimps = $form_fields->HiddenCharField(array("verbose_name"=>"Email List","name"=>"mailchimps","max_length"=>1000,"blank"=>true));
       return $form_fields;
     }
   }

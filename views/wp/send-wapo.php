@@ -108,7 +108,19 @@ namespace Wp {
               
               // If we retrieved it correctly, then continue.
               if($order->success) {
-                $message = sprintf("%s\nNUMBER: %s\nPIN: %s", $delivery_message, $order->order->reward->number, $order->order->reward->pin);
+                $tc = \Wapo\TangoCardRewards::get_or_404(array("sku"=>$wapo->sku), "Tango Card not found.");
+                
+                $message = sprintf("You have been sent a giftcard from %s\n\n", $tc->brand_description);
+                $message .= $delivery_message . "\n\n";
+                $message .= sprintf("Your number is: %s\n", $order->order->reward->number);
+                
+                if(isset($order->order->reward->pin)) {
+                  $message .= sprintf("Your pin number is: %s\n\n", $order->order->reward->pin);
+                } else {
+                  $message .= sprintf("Redemption url is: %s\n\n", $order->order->reward->redemption_url);
+                }
+                
+                $message .= "Enjoy your gift.\nWapo Team.";
                 $recipient->sent = @mail($recipient->contact, "You have been sent a Wapo.", $message);
               }
             }

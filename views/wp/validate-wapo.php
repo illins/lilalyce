@@ -256,7 +256,7 @@ namespace Wp {
         );
         
         // If there are emails, get the emails for validation.
-        $emails = $request->cookie->find("emails", null);
+        $emails = $request->cookie->find("mailchimps", null);
         if(trim($emails)) {
           $query['emails'] = array();
           foreach(explode(",", $emails) as $e) {

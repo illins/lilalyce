@@ -6,27 +6,28 @@
       <h3>MailChimp</h3>
     </div>
 
-    <div>
+    <div class="panel-body">
 
-      <div class="panel panel-default" style="margin: 20px;" id="mailchimp-login" style="display: none;">
+      <div class="panel panel-default" style="margin: 20px;">
         <div class="panel-body" style="height: 250px;">
           <a id="mailchimp-login" href="/mailchimp/?skip=1&return=/wp/mailchimp/" class="btn btn-primary btn-block" style="display: none;">MailChimp Login</a>
 
-          <select class="form-control" id="lists-list" name="list_id" style="display: block;">
+          <select id="lists-list" class="form-control" name="list_id" style="display: none;">
             <option value="" data-url="">Select list to continue.</option>
           </select>
           <br class="divider divider-db" />
 
-          <div id="emails-list" style="display: block;">No list selected.</div>
+          <div id="emails-list" style="display: none;">No list selected.</div>
+          
+          
         </div>
       </div>
-
+      
       {{ form.visible.delivery_message.field|raw }}
 
       {{ form.visible.expiring_date.field|raw }}
 
-      {{ form.hidden.emails.field|raw }}
-
+      {{ form.hidden.mailchimps.field|raw }}
     </div>
   </div>
 
@@ -114,8 +115,8 @@
         render: function () {
           var emails = [];
           var email_list = [];
-          if ($('#emails').val()) {
-            email_list = $('#emails').val().split(',');
+          if ($('#mailchimps').val()) {
+            email_list = $('#mailchimps').val().split(',');
           }
 
           // Iterate through the return emails.
@@ -136,8 +137,8 @@
           //e.preventDefault();
 
           var email_list = [];
-          if ($('#emails').val()) {
-            email_list = $('#emails').val().split(',');
+          if ($('#mailchimps').val()) {
+            email_list = $('#mailchimps').val().split(',');
           }
 
           var email_id = $(e.target).val();
@@ -148,7 +149,7 @@
             email_list.splice(email_list.indexOf(email_id), 1);
           }
 
-          $("#emails").val(email_list.join(','));
+          $('#mailchimps').val(email_list.join(','));
         }
       });
 
@@ -163,6 +164,8 @@
             $("#lists-list").hide();
           } else {
             listsView = new ListsView();
+            $("#emails-list").show();
+            $("#lists-list").show();
           }
         },
         error: function (error) {

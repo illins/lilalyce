@@ -163,7 +163,7 @@ namespace Wp {
         );
         
         // If there are emails, get the emails for validation.
-        $emails = $this->form->get("emails", null);
+        $emails = $this->form->get("mailchimps", null);
         if(trim($emails)) {
           $query['emails'] = array();
           foreach(explode(",", $emails) as $e) {
@@ -443,7 +443,7 @@ namespace Wp {
         $quantity = count(get_email_list($this->request));
       } else if($this->current_step == "mailchimp") {
         $sidebar = true;
-        $quantity = count(explode(",", $this->request->cookie->find("emails", "")));
+        $quantity = count(explode(",", $this->request->cookie->find("mailchimps", "")));
       } else if($this->current_step == "atf") {
         $sidebar = true;
         $quantity = $this->request->cookie->find("quantity", 0);
@@ -470,7 +470,7 @@ namespace Wp {
           } else if($delivery == "el") {
             $quantity = count(explode(",", $this->request->cookie->find("emails", "")));
           } else if($delivery == "mailchimp") {
-            $quantity = count(explode(",", $this->request->cookie->find("emails", "")));
+            $quantity = count(explode(",", $this->request->cookie->find("mailchimps", "")));
           } else if($delivery == "atf") {
             $quantity = $this->request->cookie->find("quantity", 0);
           } else if($delivery == "stf") {
@@ -519,6 +519,13 @@ namespace Wp {
         $context['targeturl_list'] = \Wapo\WapoTargetUrl::queryset()->filter(array("wapo"=>$wapo))->fetch();
         $context['wapo'] = $wapo;
         $context['not_sent'] = \Wapo\WapoRecipient::queryset()->filter(array("wapo"=>$wapo,"sent"=>false))->total();
+        
+        // Get the checkout information based on API.
+        if($wapo->payment_method->name == "WePay") {
+          $wepay = new \WePay\WepayAPI();
+          $checkout = $wepay->checkout($wapo->checkoutid); 
+          $context['checkout'] = $checkout;
+        }
       }
       
       // Get the main steps rather than the current_steps to display the form progress.

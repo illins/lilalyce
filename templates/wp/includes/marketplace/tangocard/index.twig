@@ -54,9 +54,7 @@
   </div>
 </script>
 
-<script type="text/template" id="reward-template">
-
-</script>
+<script type="text/template" id="reward-template"></script>
 
 <script>
   $(function () {
@@ -166,6 +164,9 @@
       if (reward) {
         // Set the brandListView subview (rewardListView)
         brandListView.subview.selected_brand = reward.get('brand_description');
+        
+        // Select the value in the 'brand' in the 'select' dropdown.
+        $('#reward-select option[value="' + reward.get('brand_description') + '"]').prop('selected', true);
         // Render the list containing this brand.
         brandListView.subview.render();
         $('#next_button').removeClass('disabled');
