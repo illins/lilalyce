@@ -34,6 +34,24 @@ namespace Wp {
           "view" => FacebookFPDownloadTemplateView::as_view(),
           "name" => "FacebookFPDownloadTemplateView",
           "title" => "Facebook Page"
+      ),
+      array(
+          "uri" => "/text/$",
+          "view" => TextSendCodeFormView::as_view(),
+          "name" => "TextSendCodeFormView",
+          "title" => "Text Send Code"
+      ),
+      array(
+          "uri" => "/text/confirm/$",
+          "view" => TextConfirmCodeFormView::as_view(),
+          "name" => "TextConfirmCodeFormView",
+          "title" => "Verify Confirmation Code"
+      ),
+      array(
+          "uri" => "/text/download/$",
+          "view" => TextPrepareDownloadTemplateView::as_view(),
+          "name" => "TextPrepareDownloadTemplateView",
+          "title" => "Download"
       )
   );
 }

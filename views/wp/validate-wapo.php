@@ -187,7 +187,7 @@ namespace Wp {
       // DELIVERY METHOD STEP.
       
       // Check that delivery method is valid.
-      $delivery_methods = array("ffa", "e", "mailchimp", "el", "aff", "fp", "atf", "stf", "aif", "sif");
+      $delivery_methods = array("ffa", "e", "mailchimp", "el", "text", "aff", "fp", "atf", "stf", "aif", "sif");
       if (!in_array($request->cookie->find('delivery'), $delivery_methods)) {
         throw new \Exception("Delivery method not found.");
       }
@@ -235,6 +235,7 @@ namespace Wp {
       $delivery = $request->cookie->find('delivery');
       $quantity = 0;
       $email_list = array();
+      $phone_number_list = array();
       $twitter_followers = array();
       $facebook_page_id = '';
       if ($delivery == "ffa") {// FREE FOR ALL SECTION.
@@ -348,17 +349,19 @@ namespace Wp {
           throw new \Exception("Please select at least one Instagram Follower.");
         }
       } else if($delivery == "text") {
-        $number_list = explode(",", $request->cookie->find("numbers"));
+        $phone_number_list = explode(",", $request->cookie->find("phone_numbers"));
         
-        if(!count($number_list)) {
-          throw new \Exception("You did not enter phone numbers. Please enter 10-digit phone numbers");
+        if(!count($phone_number_list)) {
+          throw new \Exception("You did not enter phone numbers.");
         }
         
-        foreach($number_list as $number) {
-          if(strlen($number) != 10 || !is_int((int) $number)) {
-            throw new \Exception("You have some invalid phone numbers. Please enter 10-digit phone numbers");
+        foreach($phone_number_list as $number) {
+          if(!is_int((int) $number)) {
+            throw new \Exception("You have some invalid phone numbers.");
           }
         }
+        
+        $quantity = count($phone_number_list);
       }
     } catch (\Exception $ex) {
       return array(true, $ex->getMessage(), null);
@@ -381,6 +384,7 @@ namespace Wp {
         "quantity" => $quantity,
         "total" => $total,
         "email_list" => $email_list,
+        "phone_number_list" => $phone_number_list,
         "profile" => $profile,
         "profile_name" => $profile_name,
         "profile_email" => $profile_email,

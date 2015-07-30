@@ -52,6 +52,8 @@ namespace Wp {
     
     // Maximum number of emails that can be sent in the 'el' delivery method.
     const MAX_EL_EMAIL_COUNT = 2;
+    
+    const MAX_TEXT_PHONE_NUMBER_COUNT = 2;
   }
   
   class WpConfig extends Config {

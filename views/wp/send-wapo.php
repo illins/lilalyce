@@ -24,6 +24,8 @@ namespace Wp {
   require_once("apps/blink-tangocard/tangocard/tangocard.php");
 
   require_once 'apps/blink-bitly/bitly/bitly.php';
+  
+  require_once 'apps/blink-bulksms/api.php';
 
 
   /**
@@ -209,13 +211,26 @@ namespace Wp {
           throw new \Exception("Invalid send designation.");
         }
       } else if ($delivery == "text") {
+        $bulksms = new \BlinkBulkSMS\BulkSMSAPI();
         $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo" => $wapo));
+        
+        // Create the url and shorten it. If the shorten didn't work, use original url.
+        $url = sprintf("%s&code=%s", $base_url, $targeturl->code);
+        $shortened = $bitlyapi->shorten($url);
+        $shortened = ($shortened) ? $shortened : $url;
+        
         $recipient_list = \Wapo\WapoRecipient::queryset()->depth(1)->filter(array("wapo" => $wapo))->fetch();
-        $message = sprintf("%s has sent you a Wapo. Follow %s/%s to download.", $wapo->profile, $site, $targeturl->code);
+        $message = sprintf("%s has sent you a Wapo. Follow %s to download.", $wapo->profile, $shortened);
         foreach ($recipient_list as $recipient) {
-          $result = \BlinkTwilio\Api::send_sms($recipient->contact, $message);
-          $recipient->resource = $result->sid;
-          $recipient->sent = 1;
+          $result = $bulksms->send_seven_bit_sms($message, $recipient->contact);
+          
+          if($result[0]) {
+            $recipient->resource = $result[1];
+            $recipient->sent = 1;
+          } else {
+            $recipient->sent = 0;
+          }
+          
           $recipient->save(false);
         }
       }

@@ -225,7 +225,7 @@ namespace Wp {
         $definition["text"] = array(
             "title" => "Text",
             "template" => TemplateConfig::Template("wp/text.twig"),
-            "form" => "\Wp\TextForm"
+            "form" => "\Wp\PhoneNumberListForm"
         );
       } else if ($delivery == "el") {
         $definition["el"] = array(

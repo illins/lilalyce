@@ -296,6 +296,19 @@ namespace Wp {
   }
   
   /**
+   * - Get the text numbers.
+   */
+  class PhoneNumberListForm extends BaseForm {
+    public $phone_numbers;
+    
+    public function Fields() {
+      $form_fields = parent::Fields();
+      $this->phone_numbers = $form_fields->TextField(array("verbose_name"=>"Phone numbers","name"=>"phone_numbers","blank"=>false,"help_text"=>"Please enter a comma ',' seperated list of phone numbers (include country code and zip-code along with each phone number). (Maximum 25)."));
+      return $form_fields;
+    }
+  }
+  
+  /**
    * - 
    */
   class MailChimpForm extends BaseForm {

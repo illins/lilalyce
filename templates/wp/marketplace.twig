@@ -10,7 +10,7 @@
         </button>
         <ul class="dropdown-menu" role="menu">
           {% for mypromotioncategory in promotioncategory_list %}
-            {% if mypromotioncategory == "Tango Card" %}
+            {% if mypromotioncategory == "Tango Card" or mypromotioncategory == "Wapo" %}
               <li><a href="/wp/marketplace/?promotioncategory_id={{ mypromotioncategory.id }}">Wapos</a></li>
             {% endif %}
           {% endfor %}

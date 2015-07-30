@@ -202,20 +202,30 @@ namespace Wp {
         
         $this->request->cookie->set("quantity", $result['data']['success_count']);
       } else if($this->current_step == "text") {
-        $number_list = explode(",", $this->form->get("numbers"));
+        $phone_numbers = explode(",", $this->form->get("phone_numbers"));
         
-        if(!count($number_list)) {
-          throw new \Exception("You have some invalid phone numbers. Please enter 10-digit phone numbers");
+        // Check that there is at least one phone number.
+        if(!count($phone_numbers)) {
+          throw new \Exception("Please enter at least one phone number.");
         }
         
-        foreach($number_list as $number) {
-          if(strlen($number) != 10 || !is_int((int) $number)) {
-            \Blink\Messages::error("You have some invalid phone numbers. Please enter 10-digit phone numbers");
+        // Check that each phone number is an integer.
+        foreach($phone_numbers as $number) {
+          if(!is_int((int) $number)) {
+            \Blink\Messages::error("You have some invalid phone numbers. Please enter digits for phone numbers");
             return $this->form_invalid();
           }
         }
         
-        $this->request->cookie->set("quantity", count($number_list));
+        // If they have exceeded the maximum 'phone numbers they can send using this method.
+        if(count($phone_numbers) > WpConfig::MAX_TEXT_PHONE_NUMBER_COUNT) {
+          $this->set_error(sprintf("You can only send a maximum of '%s' text using this method.", WpConfig::MAX_TEXT_PHONE_NUMBER_COUNT));
+          return $this->form_invalid();
+        }
+        
+        // Set the cookies.
+        $this->request->cookie->set("quantity", count($phone_numbers));
+        $this->request->cookie->set("phone_numbers", $phone_numbers);
       } else if($this->current_step == "profile") {
         
       } else if($this->current_step == "el") {
@@ -243,7 +253,7 @@ namespace Wp {
         
         // If they have exceeded the maximum emails they can send using this method.
         if($email_count > WpConfig::MAX_EL_EMAIL_COUNT) {
-          $this->set_error(sprintf("You can only send a maximum of '%s' emails using this method", WpConfig::MAX_EL_EMAIL_COUNT));
+          $this->set_error(sprintf("You can only send a maximum of '%s' emails using this method.", WpConfig::MAX_EL_EMAIL_COUNT));
           return $this->form_invalid();
         }
         
@@ -459,6 +469,9 @@ namespace Wp {
       } else if ($this->current_step == "el") {
         $sidebar = true;
         $quantity = $this->request->cookie->find("quantity", 0);
+      } else if ($this->current_step == "text") {
+        $sidebar = true;
+        $quantity = $this->request->cookie->find("quantity", 0);
       } else if($this->current_step == "checkout") {
         if($this->module->tag == "announcement") {
           $context['announcement'] = $this->request->cookie->find("announcement");
@@ -469,6 +482,8 @@ namespace Wp {
             $quantity = count(get_email_list($this->request));
           } else if($delivery == "el") {
             $quantity = count(explode(",", $this->request->cookie->find("emails", "")));
+          } else if($delivery == "text") {
+            $quantity = count(explode(",", $this->request->cookie->find("phone_numbers", "")));
           } else if($delivery == "mailchimp") {
             $quantity = count(explode(",", $this->request->cookie->find("mailchimps", "")));
           } else if($delivery == "atf") {

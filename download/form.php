@@ -47,5 +47,31 @@ namespace Wp {
       return $form_fields;
     }
   }
+  
+  /**
+   * Request the phone number that the message was sent to.
+   */
+  class TextPhoneNumberForm extends \Blink\Form {
+    public $phone_number;
+
+    public function Fields() {
+      $form_fields = parent::Fields();
+      $this->phone_number = $form_fields->DecimalField(array("name" => "phone_number", "help_text"=>"Enter phone number that the code was sent to. We will be send a confirmation code to verify. Please include the country code for your number.","min_length"=>3,"max_length"=>20,"decimal_places"=>0));
+      return $form_fields;
+    }
+  }
+  
+  /**
+   * Enter the confirmation code sent to the phone nyumber.
+   */
+  class TextConfirmCodeForm extends \Blink\Form {
+    public $confirm;
+
+    public function Fields() {
+      $form_fields = parent::Fields();
+      $this->confirm = $form_fields->CharField(array("verbose_name"=>"Confirmation Code","name" => "confirm","min_length"=>3,"max_length"=>20));
+      return $form_fields;
+    }
+  }
 
 }

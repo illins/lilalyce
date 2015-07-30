@@ -53,6 +53,11 @@ namespace Wp {
     // Get the total cost of the product.
     $reward = \Wapo\TangoCardRewards::get_or_404(array("sku"=>$sku), "Reward not found.");
     $total_cost = $reward->unit_price * $quantity;
+
+    // Make sure that we are requesting at least $100.
+    if($total_cost < 100) {
+      $total_cost = 100;
+    }
     
     // Create information to fund account.
     $cc_fund = array(
@@ -449,38 +454,22 @@ namespace Wp {
           WapoRecipient::create_save($recipient, false);
         }
       } else if($data['delivery'] == "text") { // Text - Text
-        $number_list = explode(",", $request->cookie->find("numbers"));
-        
         $targeturl = \Wapo\WapoTargetUrl::new_code($wapo, "t");
         
-        // If ifeelgoods marketplace.
-        if($marketplace == "ifeelgoods") {
-          // Create the number of items needed based on actual emails being sent out.
-          $order_list = create_ifeelgoods_reward($request, $wapo, $data['sku'], count($number_list));  
-        } else if($marketplace == "tangocard") {
-          $order_list = create_tangocard_reward($data['sku'], count($number_list));
-        }
-        
-        $counter = 0;
-        foreach($number_list as $number) {
+        foreach ($data['phone_number_list'] as $phone_number) {
           $recipient = array(
-              "wapo"      => $wapo,
+              "wapo" => $wapo,
               "targeturl" => $targeturl,
-              "contact"   => $number,
+              "contact" => $phone_number,
           );
           
-          // If ifeelgoods marketplace, add an order id to this.
-          if($marketplace == "ifeelgoods") {
-            $recipient['extra'] = array_pop($order_list);
-          } else if($marketplace == "tangocard") {
+          // Check that we still have orders.
+          if(count($order_list)) {
             $recipient['extra'] = array_pop($order_list);
           }
-          
+
           WapoRecipient::create_save($recipient, false);
         }
-        
-        $wapo->quantity = count($number_list);
-        $wapo->save(false);
       }
     } catch (\Exception $ex) {
       return array(true, $ex->getMessage(), null);
