@@ -3,6 +3,8 @@
 namespace Wp {
   // WP download.
   require_once("apps/wp/download/view.php");
+  
+  require_once 'apps/wp/download/views/download.email.text.view.php';
 
   $wp_download_url_patterns = array(
       array(
@@ -10,6 +12,12 @@ namespace Wp {
           "view" => CheckWapoRedirectView::as_view(),
           "name" => "CheckWapoRedirectView",
           "title" => "Check Wapo"
+      ),
+      array(
+          "uri" => "/file/$",
+          "view" => DigitalDownloadTemplateView::as_view(),
+          "name" => "DigitalDownloadTemplateView",
+          "title" => "File Download"
       ),
       array(
           "uri" => "/atf/$",
@@ -42,15 +50,21 @@ namespace Wp {
           "title" => "Text Send Code"
       ),
       array(
-          "uri" => "/text/confirm/$",
-          "view" => TextConfirmCodeFormView::as_view(),
-          "name" => "TextConfirmCodeFormView",
-          "title" => "Verify Confirmation Code"
+          "uri" => "/(e|el|email|mailchimp)/$",
+          "view" => EmailSendCodeFormView::as_view(),
+          "name" => "EmailSendCodeFormView",
+          "title" => "Email Send Code"
       ),
       array(
-          "uri" => "/text/download/$",
-          "view" => TextPrepareDownloadTemplateView::as_view(),
-          "name" => "TextPrepareDownloadTemplateView",
+          "uri" => "/(e|el|email|text|mailchimp)/confirm/$",
+          "view" => EmailTextConfirmCodeFormView::as_view(),
+          "name" => "EmailTextConfirmCodeFormView",
+          "title" => "Confirm Code"
+      ),
+      array(
+          "uri" => "/(e|el|email|text|mailchimp)/download/$",
+          "view" => EmailTextPrepareDownloadTemplateView::as_view(),
+          "name" => "EmailTextPrepareDownloadTemplateView",
           "title" => "Download"
       )
   );

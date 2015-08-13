@@ -56,7 +56,7 @@ namespace Wp {
 
     public function Fields() {
       $form_fields = parent::Fields();
-      $this->phone_number = $form_fields->DecimalField(array("name" => "phone_number", "help_text"=>"Enter phone number that the code was sent to. We will be send a confirmation code to verify. Please include the country code for your number.","min_length"=>3,"max_length"=>20,"decimal_places"=>0));
+      $this->phone_number = $form_fields->DecimalField(array("name" => "phone_number", "help_text"=>"Enter phone number that the code was sent to. We will send a confirmation code to verify. Please include the country code for your number.","min_length"=>3,"max_length"=>20,"decimal_places"=>0));
       return $form_fields;
     }
   }
@@ -65,6 +65,32 @@ namespace Wp {
    * Enter the confirmation code sent to the phone nyumber.
    */
   class TextConfirmCodeForm extends \Blink\Form {
+    public $confirm;
+
+    public function Fields() {
+      $form_fields = parent::Fields();
+      $this->confirm = $form_fields->CharField(array("verbose_name"=>"Confirmation Code","name" => "confirm","min_length"=>3,"max_length"=>20));
+      return $form_fields;
+    }
+  }
+  
+  /**
+   * Get the email to send the confirmation code to.
+   */
+  class EmailConfirmForm extends \Blink\Form {
+    public $email;
+
+    public function Fields() {
+      $form_fields = parent::Fields();
+      $this->email = $form_fields->EmailField(array("name" => "email", "help_text"=>"Please enter the email the Wapo was sent to. A confirmation code/url will be sent to the account."));
+      return $form_fields;
+    }
+  }
+  
+  /**
+   * Confirm the code sent to the email.
+   */
+  class EmailConfirmCodeForm extends \Blink\Form {
     public $confirm;
 
     public function Fields() {

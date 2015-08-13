@@ -15,6 +15,41 @@ namespace Wp {
   
   require_once 'apps/blink-bulksms/api.php';
   
+  class DigitalDownloadTemplateView extends \Blink\TemplateView {
+    protected function get() {
+      // Check that the download code is valid.
+      $recipient = \Wapo\WapoRecipient::get_or_404(array("id"=>$this->request->get->find("id"),"download_code"=>$this->request->get->find("hash")), "Download not found.");
+      
+      // Get the promotion.
+      $promotion = \Wapo\Promotion::get_or_404(array("id"=>$recipient->wapo->promotion), "Download not found.");
+      
+      // Check that the file has not expired.
+      $now = \DateTime::createFromFormat("m/d/Y H:i A", date("m/d/Y H:i A"));
+      $expire_date = new \DateTime($recipient->expire_date);
+      $diff = $now->diff($expire_date);
+      
+      // If time difference > 1 hour, exit.
+      if($diff->h > 1) {
+        \Blink\raise404("Download not found or has expired.");
+      }
+      
+      // Set the number of times they have downloaded.
+      $recipient->downloads += 1;
+      
+      // If time difference > 1 hour, exit.
+      if($recipient->downloads > WpConfig::PROMOTION_MAX_DOWNLOADS) {
+        \Blink\raise404("Download limit reached.");
+      }
+      
+      $recipient->save(false);
+      
+      // Set the file response.
+      $response = new \Blink\Response();
+      $response->file = $promotion->download;
+      return $response;
+    }
+  }
+  
   /**
    * Fail view, displays a fail view if a query fails.
    */
@@ -83,108 +118,6 @@ namespace Wp {
     protected function dispatch() {
       $this->wapo = \Wapo\Wapo::get_or_404(array("id"=>$this->request->get->find("wapo_id")), "Wapo not found.");
       return parent::dispatch();
-    }
-  }
-  
-  /**
-   * Text page to go download the code.
-   */
-  class TextSendCodeFormView extends \Blink\FormView {
-    protected $form_class = "\Wp\TextPhoneNumberForm";
-    
-    protected function get_template() {
-      return WpTemplateConfig::Template("/download/text.code.send.form.twig");
-    }
-    
-    protected function form_valid() {
-      $wapo = \Wapo\Wapo::get_or_404(array("id"=>$this->request->get->find("wapo_id")), "Wapo not found.");
-      $recipient = \Wapo\WapoRecipient::get_or_404(array("wapo"=>$wapo,"wapo_wapotargeturl.code"=>$this->request->get->find("code"),"contact"=>$this->form->get("phone_number")), "Phone Number not found.");
-      
-//      // Check that phone number entered matches the phone number of the account.
-//      if($recipient->contact != $this->form->get("phone_number")) {
-//        $this->set_error("Phone number entered does not match the phone number code was sent to.");
-//        return $this->form_invalid();
-//      }
-      
-      // Create the confirmation code.
-      $recipient->confirm = dechex(rand(1, 16777215));
-      $recipient->save(false);
-      
-      $bulksms = new \BlinkBulkSMS\BulkSMSAPI();
-      $result = $bulksms->send_seven_bit_sms(sprintf("Use this code '%s' to confirm your phone number.", $recipient->confirm), $this->form->get("phone_number"));
-      
-      if(!$result[0]) {
-        $this->set_error("Could not send the confirmation code.");
-        return $this->form_invalid();
-      }
-      
-      return \Blink\HttpResponseRedirect("/wp/download/text/confirm/?" . $this->request->query_string);
-    }
-  }
-  
-  /**
-   * Confirm the code sent to the phone number.
-   */
-  class TextConfirmCodeFormView extends \Blink\FormView {
-    protected $form_class = "\Wp\TextConfirmCodeForm";
-    
-    protected function get_template() {
-      return WpTemplateConfig::Template("/download/text.code.confirm.form.twig");
-    }
-    
-    protected function form_valid() {
-      $wapo = \Wapo\Wapo::get_or_404(array("id"=>$this->request->get->find("wapo_id")), "Wapo not found.");
-      $recipient = \Wapo\WapoRecipient::get_or_404(array("wapo"=>$wapo,"wapo_wapotargeturl.code"=>$this->request->get->find("code"),"confirm"=>$this->form->get("confirm")), "Confirm Code is not valid.");
-      
-//      // Check that phone number entered matches the phone number of the account.
-//      if($recipient->confirm != $this->form->get("confirm")) {
-//        $this->set_error("Confirmation code doesn't match confirmation code in our records.");
-//        return $this->form_invalid();
-//      }
-      
-      // Create the confirmation code.
-      $recipient->confirmed = true;
-      $recipient->save(false);
-      
-      $url = sprintf("/wp/download/text/download/?confirm=%s&%s", $recipient->confirm, $this->request->query_string);
-      return \Blink\HttpResponseRedirect($url);
-    }
-  }
-  
-  /**
-   * Prepare the download.
-   * - If card, get the number.
-   * - If downloadable item, prepare the link.
-   */
-  class TextPrepareDownloadTemplateView extends \Blink\TemplateView {
-    
-    protected function get_template() {
-      return WpTemplateConfig::Template("/download/text.download.twig");
-    }
-    
-    protected function get_context_data() {
-      $c = parent::get_context_data();
-      
-      $wapo = \Wapo\Wapo::get_or_404(array("id"=>$this->request->get->find("wapo_id")), "Wapo not found.");
-      $recipient = \Wapo\WapoRecipient::get_or_404(array("wapo"=>$wapo,"wapo_wapotargeturl.code"=>$this->request->get->find("code"),"confirm"=>$this->request->get->find("confirm")), "Download error.");
-      
-      // Get the reward if this is a 'Tango Card'.
-      $reward = null;
-      $sku = null;
-      if ($wapo->promotion->name == "Tango Card") {
-        $reward = (new \BlinkTangoCard\TangoCardAPI(array("request" => $this->request)))->order($recipient->extra);
-        $sku = \Wapo\TangoCardRewards::get_or_null(array("sku"=>$wapo->sku));
-      }
-      
-      $promotion = \Wapo\Promotion::get_or_404(array("id"=>$wapo->promotion));
-      
-      $c['reward'] = $reward;
-      $c['wapo'] = $wapo;
-      $c['promotion'] = $promotion;
-      $c['promotioncategory'] = $promotion->promotioncategory;
-      $c['sku'] = $sku;
-      
-      return $c;
     }
   }
   

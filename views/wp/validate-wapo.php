@@ -110,13 +110,20 @@ namespace Wp {
     try {
       // PROMOTION STEP.
       
-      $promotion = null;
+      
       $promotioncategory = PromotionCategory::get_or_null(array("id"=>$request->cookie->find("promotioncategory_id", null)));
+      $sku = null;
+      $promotion = null;
+      $quantity = 0;
+      $total = 0;
+      
       if($promotioncategory) {
-        if($promotioncategory->name == "I Feel Goods") {
+        if($promotioncategory->tag == "i-feel-goods") {
           $promotion = Promotion::get_or_null(array("promotioncategory"=>$promotioncategory));
-        } else if($promotioncategory->name == "Tango Card") {
+        } else if($promotioncategory->tag == "tango-card") {
           $promotion = Promotion::get_or_null(array("promotioncategory"=>$promotioncategory));
+        } else if($promotioncategory->tag == "wapo") {
+          $promotion = Promotion::get_or_null(array("id"=>$request->cookie->find("promotion_id")));
         }
       } else {
         $promotion = Promotion::get_or_null(array("id"=>$request->cookie->find("promotion_id")));
@@ -135,7 +142,7 @@ namespace Wp {
       }
       
       // If this promotioncategory is 'Tango Card', do some checks.
-      if($promotioncategory->name == "Tango Card") {
+      if($promotioncategory->tag == "tango-card") {
         // Check that the sku exists.
         $sku = \Wapo\TangoCardRewards::get_or_null(array("sku"=>$request->cookie->find("sku")));
         if(!$sku) {
@@ -149,7 +156,7 @@ namespace Wp {
 //            throw new \Exception("'Card' amount must be within range.");
 //          }
 //        }
-      } else if($promotioncategory->name == "I Feel Goods") {
+      } else if($promotioncategory->tag == "i-feel-goods") {
         $sku = \Wapo\IFeelGoodsRewards::get_or_null(array("sku"=>$request->cookie->find("sku")));
         if(!$sku) {
           throw new \Exception("Reward Error: Please select a valid reward.");
@@ -233,7 +240,6 @@ namespace Wp {
 
       // For each delivery method, check that we have all variables set.
       $delivery = $request->cookie->find('delivery');
-      $quantity = 0;
       $email_list = array();
       $phone_number_list = array();
       $twitter_followers = array();
@@ -368,9 +374,11 @@ namespace Wp {
     }
     
     // Calculate total price.
-    $total = 0;
-    if($sku instanceof \Wapo\TangoCardRewards) {
-      $total = $sku->unit_price * $quantity;
+    if ($promotioncategory->tag == "tango-card") {
+      // Devide 'unit_price' by 100 because it is listed in cents.
+      $total = ($sku->unit_price / 100) * $quantity;
+    } else if ($promotioncategory->tag == "wapo") {
+      $total = $promotion->price * $quantity;
     }
 
     $data = array(

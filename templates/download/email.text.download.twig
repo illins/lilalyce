@@ -1,0 +1,40 @@
+{% extends "apps/wp/templates/base.twig" %}
+
+{% block content %}
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-8">
+
+          <h3>Congratulations!!! <small>Your wapo is ready for download.</small></h3>
+          <br><br>
+          
+          <div class="row">
+            <div class="col-xs-offset-4 col-xs-4">
+              <a class="btn btn-primary btn-block btn-lg" href="/wp/download/file/?id={{recipient.id}}&hash={{recipient.download_code}}" >Download</a>
+            </div>
+          </div>
+
+        </div>
+        <div class="col-xs-4">
+          {% if promotioncategory.name == "Tango Card" %}
+            <img class="img-responsive" src="{{ sku.brand_image_url }}" alt="..." style="width: 100%;">
+          {% elseif promotioncategory.name == "I Feel Goods" %}
+            <img class="img-responsive" src="{{ sku.catalog_badge_image_url }}" alt="..." style="width: 100%;">
+          {% else %}
+            <img class="img-responsive" src="{{ promotion.icon.url }}" alt="..." style="width: 100%;">
+          {% endif %}
+
+          {% if promotioncategory.name == "Tango Card" %}
+            <h4 class="media-heading">{{ sku.description }}</h4>
+          {% elseif promotioncategory.name == "I Feel Goods" %}
+            <h4 class="media-heading">{{ sku.name }}</h4>
+          {% else %}
+            <h4 class="media-heading">{{ promotion.name }}</h4>
+            <p>${{ promotion.price }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

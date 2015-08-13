@@ -19,13 +19,16 @@
           <div style="font-weight: bold;">
             {{ mypromotion.name }}
           </div>
-          <p class="promotion-description" style="height: 100px; font-size: small; overflow: hidden;">{{ mypromotion.description }}</p>
+          <p class="promotion-description" style="height: 50px; font-size: small; overflow: hidden;">{{ mypromotion.description }}</p>
           <hr />
           <div class="row">
             <div class="col-xs-8">
-              <button class="btn btn-default btn-block disabled">
+              {#<button class="btn btn-default btn-block disabled">
                 $ {{ mypromotion.price }}
-              </button>
+              </button>#}
+              <label class="btn btn-block btn-default" style="width: 100%;">
+                $ {{ mypromotion.price }}
+              </label>
             </div>
             <div class="col-xs-4">
               <label class="btn btn-block btn-default">

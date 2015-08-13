@@ -54,6 +54,9 @@ namespace Wp {
     const MAX_EL_EMAIL_COUNT = 2;
     
     const MAX_TEXT_PHONE_NUMBER_COUNT = 2;
+    
+    // Maximum number of times a 'digital promotion' can be downloaded.
+    const PROMOTION_MAX_DOWNLOADS = 2;
   }
   
   class WpConfig extends Config {

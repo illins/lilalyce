@@ -56,18 +56,30 @@ namespace Wp {
   }
 
   function send_wapo_general($wapo, $request) {
+    // Set the bitly api for urls and the base url for anything that needs it.
     $bitlyapi = new \BlinkBitly\BlinkBitlyAPI();
     $base_url = sprintf("%s/wp/download/?wapo_id=%s", \Blink\SiteConfig::SITE, $wapo->id);
     
     try {
       $site = \Blink\SiteConfig::SITE;
       
+      // Get the promotion category.
+      $promotioncategory = \Wapo\PromotionCategory::get_or_404(array("id"=>$wapo->promotion->promotioncategory));
+      
+      // General data.
       $delivery_message = $wapo->delivery_message;
       $delivery = $wapo->delivery_method_abbr;
       $message = "";
       
+      // Get the target url to be used later.
+      $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo" => $wapo));
+      $url = sprintf("%s&code=%s", $base_url, $targeturl->code);
+      $shortened = $bitlyapi->shorten($url);
+      $bitly_url = ($shortened) ? $shortened : $url;
+      
+      // Get the tango card api if this is a tango delivery.
       $tangoapi = null;
-      if($wapo->promotion->name == "Tango Card") {
+      if($promotioncategory->tag == "tango-card") {
         $tangoapi = new \BlinkTangoCard\TangoCardAPI(array("request"=>$request));
       }
       
@@ -103,7 +115,7 @@ namespace Wp {
 //          }
           
           $recipient->sent = false;
-          if($wapo->promotion->name == "Tango Card") {
+          if($promotioncategory->tag == "tango-card") {
             // If we have extra.
             if ($recipient->extra != "-") {
               $order = $tangoapi->order($recipient->extra);
@@ -126,63 +138,50 @@ namespace Wp {
                 $recipient->sent = @mail($recipient->contact, "You have been sent a Wapo.", $message);
               }
             }
-          } else if($wapo->promotion->name == "I Feel Goods") {
+          } else if($promotioncategory->tag == "i-feel-goods") {
             
+          } else if($promotioncategory->tag == "wapo") {
+            if ($delivery_message) {
+              $message = sprintf("%s Click here '%s' to download your Wapo. ", $delivery_message, $bitly_url);
+            } else {
+              $message = sprintf("You have been sent a Wapo. Click here '%s' to download your Wapo. ", $bitly_url);
+            }
+            
+            $recipient->sent = @mail($recipient->contact, "You have been sent a Wapo.", $message);
           }
           
           $recipient->save(false);
         }
       } else if ($delivery == "aff") {
-        $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo" => $wapo));
-        
-        // Create the url and shorten it. If the shorten didn't work, use original url.
-        $url = sprintf("%s&code=%s", $base_url, $targeturl->code);
-        $shortened = $bitlyapi->shorten($url);
-        $shortened = ($shortened) ? $shortened : $url;
-        
         if ($delivery_message) {
           $message = $delivery_message;
         } else {
           $message = "You have been sent a Wapo. Click below to download.";
         }
         
-        $facebook = fb_post_feed($request, $message, $shortened);
+        $facebook = fb_post_feed($request, $message, $bitly_url);
         if ($facebook) {
           $wapo->resource = $facebook->getProperty('id');
           $wapo->save(false);
         }
-      } else if ($delivery == "fp") {
-        $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo" => $wapo));
-        
-        // Create the url and shorten it. If the shorten didn't work, use original url.
-        $url = sprintf("%s&code=%s", $base_url, $targeturl->code);
-        $shortened = $bitlyapi->shorten($url);
-        $shortened = ($shortened) ? $shortened : $url;
-        
+      } else if ($delivery == "fp") {        
         if ($delivery_message) {
           $message = $delivery_message;
         } else {
           $message = "You have been sent a Wapo. Click below to download.";
         }
         
-        $facebook = fb_page_post_feed($request, $wapo->external, $message, $shortened);
+        $facebook = fb_page_post_feed($request, $wapo->external, $message, $bitly_url);
         if ($facebook) {
           $wapo->resource = $facebook->getProperty('id');
           $wapo->save(false);
         }
         
-      } else if (in_array($delivery, array("stf", "atf"))) {
-        $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo" => $wapo));
-        
-        // Create the url and shorten it. If the shorten didn't work, use original url.
-        $url = sprintf("%s&code=%s", $base_url, $targeturl->code);
-        $shortened = $bitlyapi->shorten($url);
-        $shortened = ($shortened) ? $shortened : $url;
-        
+      } else if (in_array($delivery, array("stf", "atf"))) {        
         if ($delivery_message) {
-          $message = $delivery_message . " " . $shortened;
+          $message = $delivery_message . " " . $bitly_url;
         } else {
-          $message = sprintf("Click here '%s' to download your Wapo. ", $shortened);
+          $message = sprintf("Click here '%s' to download your Wapo. ", $bitly_url);
         }
 
         if ($wapo->delivery_method_abbr == "atf") {
@@ -212,15 +211,9 @@ namespace Wp {
         }
       } else if ($delivery == "text") {
         $bulksms = new \BlinkBulkSMS\BulkSMSAPI();
-        $targeturl = \Wapo\WapoTargetUrl::queryset()->get(array("wapo" => $wapo));
-        
-        // Create the url and shorten it. If the shorten didn't work, use original url.
-        $url = sprintf("%s&code=%s", $base_url, $targeturl->code);
-        $shortened = $bitlyapi->shorten($url);
-        $shortened = ($shortened) ? $shortened : $url;
         
         $recipient_list = \Wapo\WapoRecipient::queryset()->depth(1)->filter(array("wapo" => $wapo))->fetch();
-        $message = sprintf("%s has sent you a Wapo. Follow %s to download.", $wapo->profile, $shortened);
+        $message = sprintf("%s has sent you a Wapo. Follow %s to download.", $wapo->profile, $bitly_url);
         foreach ($recipient_list as $recipient) {
           $result = $bulksms->send_seven_bit_sms($message, $recipient->contact);
           

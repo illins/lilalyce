@@ -281,6 +281,15 @@ namespace Wp {
         );
       }
     }
-
+    
+    /**
+     * 
+     * @param \Wapo\WapoRecipient $recipient
+     * @return string
+     */
+    public static function DigitalDownloadHash($recipient) {
+      $extra = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      return hash('ripemd160', str_shuffle($recipient->id . $recipient->contact . $extra));
+    }
   }
 }

@@ -109,14 +109,20 @@ namespace Wp {
       
       // Check that the promotion is valid.
       if($this->current_step == "marketplace") {
-//        if(!count(Promotion::queryset()->filter(array("id"=>$this->form->get("promotion_id")))->fetch())) {
-//          \Blink\Messages::error("Promotion not found.");
-//          return $this->form_invalid();
-//        }
-        
         $this->request->cookie->set("promotioncategory_id", $this->promotioncategory->id);
-        $this->request->cookie->set("promotion_id", $this->promotion->id);
         
+        // If: promotioncategory is a wapo, then check that the promotion exists.
+        // Else: Delete it from the cookie.
+        if($this->promotioncategory->tag == "wapo") {
+          $this->promotion = \Wapo\Promotion::get_or_null(array("id"=>$this->form->get("promotion_id")));
+          if(!$this->promotion) {
+            $this->set_error("Promotion not found.");
+            return $this->form_invalid();
+          }
+          $this->request->cookie->set("promotion_id", $this->promotion->id);
+        } else {
+          $this->request->cookie->delete("promotion_id");
+        }
       } else if($this->current_step == "announcement") { // ANNOUNCEMENT STEP.
         // If we are sending a Twitter account announcement.
         $this->request->cookie->set("twitter_announcement", $this->request->post->find("twitter_announcement", 0));
@@ -344,8 +350,10 @@ namespace Wp {
       
       // Get general data for sidebar and templates.
       $module = $this->module;
-      $promotion = $this->promotion;
       $promotioncategory = $this->promotioncategory;
+      $promotioncategory_list = array();
+      $promotion = null;
+      $promotion_list = array();
       $sku = null;
       $announcement = $this->request->cookie->find("announcement");
       $delivery_message = $this->request->cookie->find("delivery_message");
@@ -367,11 +375,16 @@ namespace Wp {
       
       // Get the sku from one of the card holders.
       if($this->request->cookie->is_set("sku")) {
-        if($promotioncategory && $promotioncategory->name == "I Feel Goods") {
+        if($promotioncategory && $promotioncategory->tag == "i-feel-goods") {
           $sku = \Wapo\IFeelGoodsRewards::get_or_null(array("sku"=>$this->request->cookie->get("sku")));
-        } else if($promotioncategory && $promotioncategory->name == "Tango Card") {
+        } else if($promotioncategory && $promotioncategory->tag == "tango-card") {
           $sku = \Wapo\TangoCardRewards::get_or_null(array("sku"=>$this->request->cookie->get("sku")));
         }
+      }
+      
+      // Get the promotion information.
+      if($this->promotioncategory->tag == "wapo" && $this->request->cookie->is_set("promotion_id")) {
+        $promotion = \Wapo\Promotion::get_or_null(array("id"=>$this->request->cookie->get("promotion_id")));
       }
       
       $sidebar = false;// If we are going to display the sidebar.
@@ -417,20 +430,16 @@ namespace Wp {
         $promotioncategory_list = \Wapo\PromotionCategory::queryset()->order_by(array("name"))->all();
         
         // Depending on which promotioncategory we are looking at, get the api.
-        if ($this->promotioncategory->name == "Tango Card") {
+        if ($this->promotioncategory->tag == "tango-card") {
           // Get only tangos whose price is fixed.
           $context['tangocard'] = \Wapo\TangoCardRewards::queryset()->filter(array("unit_price__gt"=>0,"currency_type"=>"USD"))->fetch();
-        } else if ($this->promotioncategory->name == "I Feel Goods") {
+        } else if ($this->promotioncategory->tag == "i-feel-goods") {
           $context['ifeelgoods'] = \Wapo\IFeelGoodsRewards::queryset()->all();
-        } else if ($this->promotioncategory->name == "Scalable Press") {
+        } else if ($this->promotioncategory->tag == "scalable-press") {
           
         } else {
-          $context['promotion_list'] = \Wapo\Promotion::queryset()->filter(array("promotioncategory"=>$this->promotioncategory))->fetch();
-          $context['promotion'] = \Wapo\Promotion::get_or_null(array("id"=>$this->request->cookie->find("promotion_id", null)));
+          $promotion_list = \Wapo\Promotion::queryset()->filter(array("promotioncategory"=>$this->promotioncategory))->fetch();
         }
-
-        $context['promotioncategory'] = $this->promotioncategory;
-        $context['promotioncategory_list'] = $promotioncategory_list;
       } else if($this->current_step == "announcement") { // ANNOUNCEMENT STEP.
         
       } else if($this->current_step == "delivery") { // DELIVERY STEP
@@ -501,21 +510,22 @@ namespace Wp {
         $amount = 0;
         $short_description = "";
         $redirect_uri = sprintf("%s/wp/create/", \Blink\SiteConfig::SITE);
+        list($error, $message, $data) = validate_wapo($this->request);
         
-        // If this is 'Tango Card', calculate the 'amount'.
-        if($sku instanceof \Wapo\TangoCardRewards) {
-          // Devide 'unit_price' by 100 because it is listed in cents.
-          $amount = ($sku->unit_price / 100) * $this->request->cookie->find("quantity", 1);
-          $short_description = $sku->sku;
+        
+        // If: tango-card - Set the 'sku' as the 'short_description'.
+        // Else: wapo - Set the 'promotion category name' as the 'short_description'.
+        if($this->promotioncategory->tag == "tango-card") {
+          $short_description = $data['sku']->sku;
+        } else if($this->promotioncategory->tag == "wapo") {
+          $short_description = $data['promotioncategory']->name;
         }
         
         // Create the checkout.
         // @todo - Validate that it was created.
         $wepay = new \WePay\WepayAPI();
-        $checkout = $wepay->checkout_create($amount, $short_description, $redirect_uri);
+        $checkout = $wepay->checkout_create($data['total'], $short_description, $redirect_uri);
         
-//        \Blink\blink_log($checkout);
-//        exit();
         // Add to context.
         $context['checkout'] = $checkout;
       } else if($this->current_step == "create") {
@@ -572,7 +582,9 @@ namespace Wp {
       // Add the common data for all the steps to the context.
       $context['module'] = $module;
       $context['promotioncategory'] = $promotioncategory;
+      $context['promotioncategory_list'] = $promotioncategory_list;
       $context['promotion'] = $promotion;
+      $context['promotion_list'] = $promotion_list;
       $context['sku'] = $sku;
       $context['announcement'] = $announcement;
       $context['delivery_message'] = $delivery_message;

@@ -243,12 +243,14 @@ namespace Wp {
       
       if($promotion) {
         // For ifeelgoods promotion, this is the sku.
-        if($promotion->promotioncategory->name == "I Feel Goods") {
+        if($promotion->promotioncategory->tag == "i-feel-goods") {
           $sku = $data['sku']->sku;
           $marketplace = "ifeelgoods";
-        } else if($promotion->promotioncategory->name == "Tango Card") {
+        } else if($promotion->promotioncategory->tag == "tango-card") {
           $sku = $data['sku']->sku;
           $marketplace = "tangocard";
+        } else if($promotion->promotioncategory->tag == "wapo") {
+          $marketplace == "wapo";
         }
       }
       

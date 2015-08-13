@@ -10,13 +10,23 @@
         </button>
         <ul class="dropdown-menu" role="menu">
           {% for mypromotioncategory in promotioncategory_list %}
-            {% if mypromotioncategory == "Tango Card" or mypromotioncategory == "Wapo" %}
-              <li><a href="/wp/marketplace/?promotioncategory_id={{ mypromotioncategory.id }}">Wapos</a></li>
+            {% if mypromotioncategory == "Tango Card" %}
+              <li><a href="/wp/marketplace/?promotioncategory_id={{ mypromotioncategory.id }}">Gift Cards</a></li>
+            {% elseif mypromotioncategory == "Wapo" %}
+              <li><a href="/wp/marketplace/?promotioncategory_id={{ mypromotioncategory.id }}">Digital Goods</a></li>
             {% endif %}
           {% endfor %}
         </ul>
         &nbsp;&nbsp;
-        <h3 style="display: inline;"><span class="label label-info">{% if promotioncategory.name == "Tango Card" %}Wapos{% endif %}</span></h3>
+        <h3 style="display: inline;">
+          <span class="label label-info">
+            {% if promotioncategory.name == "Tango Card" %}
+              Gift Cards
+            {% elseif promotioncategory.name == "Wapo" %}
+              Digital Goods
+            {% endif %}
+          </span>
+        </h3>
       </div>
     </div>
   </div>
