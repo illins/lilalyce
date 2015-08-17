@@ -116,6 +116,7 @@ namespace Wp {
       $promotion = null;
       $quantity = 0;
       $total = 0;
+      $text_total = 0;
       
       if($promotioncategory) {
         if($promotioncategory->tag == "i-feel-goods") {
@@ -368,6 +369,7 @@ namespace Wp {
         }
         
         $quantity = count($phone_number_list);
+        $text_total = $quantity * WpConfig::TEXT_RATE;
       }
     } catch (\Exception $ex) {
       return array(true, $ex->getMessage(), null);
@@ -390,7 +392,7 @@ namespace Wp {
         "delivery_message" => $delivery_message,
         "expiring_date" => $request->cookie->get('expiring_date'),
         "quantity" => $quantity,
-        "total" => $total,
+        "total" => $total + $text_total,
         "email_list" => $email_list,
         "phone_number_list" => $phone_number_list,
         "profile" => $profile,

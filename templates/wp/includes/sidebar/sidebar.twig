@@ -91,6 +91,17 @@
         </div>
       </div>
 
+      {% if delivery == "text" %}
+        <div class="list-group">
+          <div class="list-group-item">
+            <h4 class="list-group-item-heading">Text Cost</h4>
+            <div class="list-group-item-text">
+              {{ text_cost }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      
       {% if expiring_date %}
         <div class="list-group">
           <div class="list-group-item">

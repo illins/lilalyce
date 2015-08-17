@@ -19,7 +19,7 @@
     <div id="wepay_checkout" class="col-xs-12"></div>
   </div>
 
-  <script type="text/javascript" src="https://www.wepay.com/min/js/iframe.wepay.js"></script>
+  {#<script type="text/javascript" src="https://www.wepay.com/min/js/iframe.wepay.js"></script>
   <script>
     $(function () {
       $('#next_button').addClass('disabled');
@@ -27,6 +27,12 @@
 
       // Set the wepay.
       WePay.iframe_checkout("wepay_checkout", "{{checkout.checkout_uri}}");
+    });
+  </script>#}
+  
+  <script>
+    $(function() {
+      location.href = '{{checkout.checkout_uri}}';
     });
   </script>
 

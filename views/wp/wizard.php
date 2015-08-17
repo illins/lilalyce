@@ -82,7 +82,9 @@ namespace Wp {
         $form_fields = new \Blink\FormFields();
         $field_list = array();
         $field_list[] = $form_fields->TextField(array("name"=>"delivery_message","blank"=>true));
-        $field_list[] = $form_fields->DateTimeField(array("name"=>"expiring_date","format"=>"m/d/Y H:i A","min_value"=>date("m/d/Y H:i A")));
+        
+//        $field_list[] = $form_fields->DateTimeField(array("name"=>"expiring_date","format"=>"m/d/Y H:i A","min_value"=>date("m/d/Y H:i A")));
+        
         for($i = 1; $i <= $emails; $i++) {
           $blank = ($i == 1) ? false : true;
           $field_list[] = $form_fields->EmailField(array("verbose_name"=>"Email $i","name"=>"email-$i","blank"=>$blank));
@@ -364,6 +366,7 @@ namespace Wp {
       $profile_name = null;
       $profile_email = null;
       $quantity = 0;
+      $text_cost = 0;
       
       // Calculat the profile information.
       if ($this->request->cookie->is_set('profile_id') && $this->request->user) {
@@ -493,6 +496,8 @@ namespace Wp {
             $quantity = count(explode(",", $this->request->cookie->find("emails", "")));
           } else if($delivery == "text") {
             $quantity = count(explode(",", $this->request->cookie->find("phone_numbers", "")));
+            $text_cost = $quantity * WpConfig::TEXT_RATE;
+            
           } else if($delivery == "mailchimp") {
             $quantity = count(explode(",", $this->request->cookie->find("mailchimps", "")));
           } else if($delivery == "atf") {
@@ -597,6 +602,8 @@ namespace Wp {
       $context['profile'] = $profile;
       $context['profile_name'] = $profile_name;
       $context['profile_email'] = $profile_email;
+      
+      $context['text_cost'] = $text_cost;
       
       $context['sidebar'] = $sidebar;
       

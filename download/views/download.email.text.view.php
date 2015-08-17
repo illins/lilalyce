@@ -35,6 +35,11 @@ namespace Wp {
           "wapo" => $this->request->get->find("wapo_id"),
           "wapo_wapotargeturl.code" => $this->request->get->find("code"),
           "contact" => $this->form->get("phone_number")), "Phone Number not found.");
+      
+      // If the text confirmation has been sent more than 2 or more times, go to the confirmation.
+      if($recipient->text_confirm_count >= 2) {
+        \Blink\raise500("You can only send the text confirmation 2 times.");
+      }
 
       // Create the confirmation code.
       $recipient->confirm = dechex(rand(1, 16777215));

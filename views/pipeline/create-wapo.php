@@ -245,7 +245,7 @@
 //          "module" => $module,
 //          "profile" => $profile,
 //          "promotion" => $cookies["promotion_id"],
-//          "payment_method" => \Wapo\PaymentMethod::queryset()->get(array("name"=>"WePay")),
+//          "payment_method" => \Wapo\PaymentMethod::queryset()->get(array("tag"=>"wepay")),
 //          "delivery_method_abbr" => $cookies['delivery'],
 //          "delivery_method" => Config::$DeliveryMethod[$cookies['delivery']],
 //          "external" => $external,
@@ -614,7 +614,7 @@
 //      $create = array(
 //          "module" => $data['module'],
 //          "profile" => $data['profile'],
-////          "payment_method" => \Wapo\PaymentMethod::queryset()->get(array("name"=>"WePay")),
+////          "payment_method" => \Wapo\PaymentMethod::queryset()->get(array("tag"=>"wepay")),
 //          "delivery_message" => $request->cookie->find("announcement"),
 //          "status" => "p",
 //      );

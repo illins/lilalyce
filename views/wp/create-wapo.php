@@ -266,7 +266,7 @@ namespace Wp {
           "module" => $module,
           "profile" => $profile,
           "promotion" => $promotion,
-          "payment_method" => \Wapo\PaymentMethod::queryset()->get(array("name"=>"WePay")),
+          "payment_method" => \Wapo\PaymentMethod::queryset()->get(array("tag"=>"wepay")),
           "delivery_method_abbr" => $data['delivery'],
           "delivery_method" => Config::$DeliveryMethod[$data['delivery']],
           "sender" => $sender,
@@ -520,7 +520,7 @@ namespace Wp {
       $create = array(
           "module" => $data['module'],
           "profile" => $profile,
-//          "payment_method" => \Wapo\PaymentMethod::queryset()->get(array("name"=>"WePay")),
+//          "payment_method" => \Wapo\PaymentMethod::queryset()->get(array("tag"=>"wepay")),
           "delivery_message" => $request->cookie->find("announcement"),
           "status" => "p",
       );

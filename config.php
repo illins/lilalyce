@@ -57,6 +57,9 @@ namespace Wp {
     
     // Maximum number of times a 'digital promotion' can be downloaded.
     const PROMOTION_MAX_DOWNLOADS = 2;
+    
+    // Rate to charge customer for sending using the 'text' method.
+    const TEXT_RATE = 0.5;
   }
   
   class WpConfig extends Config {
