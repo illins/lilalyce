@@ -271,7 +271,7 @@ namespace Wp {
           "delivery_method" => Config::$DeliveryMethod[$data['delivery']],
           "sender" => $sender,
           "delivery_message" => $data["delivery_message"],
-          "expiring_date" => $data["expiring_date"],
+//          "expiring_date" => $data["expiring_date"],
           "status" => "p",
           "checkoutid" => $request->session->get_delete("checkout_id"),
           "quantity" => $data['quantity'],

@@ -361,7 +361,7 @@ namespace Wp {
       $delivery_message = $this->request->cookie->find("delivery_message");
       $delivery = $this->request->cookie->find("delivery", null);
       $delivery_name = isset(Config::$DeliveryMethod[$delivery]) ? Config::$DeliveryMethod[$delivery] : "";
-      $expiring_date = $this->request->cookie->find("expiring_date", null);
+//      $expiring_date = $this->request->cookie->find("expiring_date", null);
       $profile = null;
       $profile_name = null;
       $profile_email = null;
@@ -551,11 +551,29 @@ namespace Wp {
         $context['not_sent'] = \Wapo\WapoRecipient::queryset()->filter(array("wapo"=>$wapo,"sent"=>false))->total();
         
         // Get the checkout information based on API.
-        if($wapo->payment_method->name == "WePay") {
+        if($wapo->payment_method->tag == "wepay") {
           $wepay = new \WePay\WepayAPI();
-          $checkout = $wepay->checkout($wapo->checkoutid); 
+          $checkout = $wepay->checkout($wapo->checkoutid);
           $context['checkout'] = $checkout;
         }
+        
+        $this->request->session->delete("delivery");
+        $this->request->session->delete("delivery_message");
+        $this->request->session->delete("email-1");
+        $this->request->session->delete("email-2");
+        $this->request->session->delete("email-3");
+        $this->request->session->delete("emails");
+//        $this->request->session->delete("expiring_date");
+        $this->request->session->delete("module_id");
+        $this->request->session->delete("profile_id");
+        $this->request->session->delete("promotioncategory_id");
+        $this->request->session->delete("quantity");
+        $this->request->session->delete("sku");
+        $this->request->session->delete("name");
+        $this->request->session->delete("email");
+        $this->request->session->delete("facebook_ids");
+//        $this->request->session->delete("facebook_page_id");
+//        $this->request->session->delete("");
       }
       
       // Get the main steps rather than the current_steps to display the form progress.
@@ -597,7 +615,7 @@ namespace Wp {
       $context['step_list'] = $step_list;
       $context['delivery'] = $delivery;
       $context['delivery_name'] = $delivery_name;
-      $context['expiring_date'] = $expiring_date;
+//      $context['expiring_date'] = $expiring_date;
       
       $context['profile'] = $profile;
       $context['profile_name'] = $profile_name;

@@ -75,12 +75,12 @@ namespace Wp {
    */
   class DetailsForm extends \Blink\Form {
     public $delivery_message;
-    public $expiring_date;
+//    public $expiring_date;
     
     public function Fields() {
       $form_fields = parent::Fields();
       $this->delivery_message = $form_fields->TextField(array("name"=>"delivery_message","blank"=>true,"help_text"=>"Message sent or seen by the Wapo recipient."));
-      $this->expiring_date = $form_fields->DateTimeField(array("name"=>"expiring_date","format"=>"m/d/Y H:i A","min_value"=>date("m/d/Y H:i A"), "help_text"=>"Date Wapo will expire (regardless of how many downloaded)."));
+//      $this->expiring_date = $form_fields->DateTimeField(array("name"=>"expiring_date","format"=>"m/d/Y H:i A","min_value"=>date("m/d/Y H:i A"), "help_text"=>"Date Wapo will expire (regardless of how many downloaded)."));
       
       return $form_fields;
     }
@@ -271,12 +271,12 @@ namespace Wp {
    */
   class BaseForm extends \Blink\Form {
     public $delivery_message;
-    public $expiring_date;
+//    public $expiring_date;
     
     public function Fields() {
       $form_fields = parent::Fields();
       $this->delivery_message = $form_fields->TextField(array("name"=>"delivery_message","blank"=>true,"help_text"=>"Message sent or seen by the Wapo recipient."));
-      $this->expiring_date = $form_fields->DateTimeField(array("name"=>"expiring_date","format"=>"m/d/Y H:i A","min_value"=>date("m/d/Y H:i A"), "help_text"=>"Date Wapo will expire (regardless of how many downloaded)."));
+//      $this->expiring_date = $form_fields->DateTimeField(array("name"=>"expiring_date","format"=>"m/d/Y H:i A","min_value"=>date("m/d/Y H:i A"), "help_text"=>"Date Wapo will expire (regardless of how many downloaded)."));
       
       return $form_fields;
     }
@@ -539,14 +539,14 @@ namespace Wp {
     public $name;
     public $email;
     public $delivery_message;
-    public $expiring_date;
+//    public $expiring_date;
     
     public function Fields() {
       $form_fields = parent::Fields();
       $this->name = $form_fields->CharField(array("name"=>"name","verbose_name"=>"Name / Company Name"));
       $this->email = $form_fields->EmailField(array("name"=>"email","verbose_name"=>"Your email.", "blank"=>True));
       $this->delivery_message = $form_fields->TextField(array("name"=>"delivery_message"));
-      $this->expiring_date = $form_fields->DateField(array("name"=>"expiring_date"));
+//      $this->expiring_date = $form_fields->DateField(array("name"=>"expiring_date"));
       return $form_fields;
     }
   }
@@ -649,7 +649,7 @@ namespace Wp {
     public $email;
     public $delivery_message;
     public $delivery_date;
-    public $expiring_date;
+//    public $expiring_date;
 
     public function Fields() {
       parent::Fields();
@@ -659,14 +659,14 @@ namespace Wp {
       $this->email = $form->EmailField(array("verbose_name"=>"My Email","name"=>"email","min_length"=>3,"max_length"=>100));
       $this->delivery_message = $form->TextField(array("name"=>"delivery_message","blank"=>true));
       $this->delivery_date = $form->DateField(array("name"=>"delivery_date","blank"=>true,"min_value"=>date("m/d/Y")));
-      $this->expiring_date = $form->DateField(array("name"=>"expiring_date","blank"=>true,"null"=>true,"default"=>NULL,"min_value"=>date("m/d/Y")));
+//      $this->expiring_date = $form->DateField(array("name"=>"expiring_date","blank"=>true,"null"=>true,"default"=>NULL,"min_value"=>date("m/d/Y")));
     }
   }
   
   class PromotionProfileFacebookForm extends \Blink\Form {
     public $name;
     public $delivery_message;
-    public $expiring_date;
+//    public $expiring_date;
     public $facebook_id;
 
     public function Fields() {
@@ -675,7 +675,7 @@ namespace Wp {
       $form = new \Blink\FormFields();
       $this->name = $form->CharField(array("verbose_name"=>"Name / Company Name","name"=>"name","min_length"=>0,"max_length"=>50,"blank"=>true));
       $this->delivery_message = $form->TextField(array("name"=>"delivery_message","blank"=>true));
-      $this->expiring_date = $form->DateField(array("name"=>"expiring_date","blank"=>true,"null"=>true,"default"=>NULL));
+//      $this->expiring_date = $form->DateField(array("name"=>"expiring_date","blank"=>true,"null"=>true,"default"=>NULL));
       $this->facebook_id = $form->HiddenCharField(array("name"=>"facebook_id","max_length"=>20));
     }
   }

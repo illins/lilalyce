@@ -28,6 +28,8 @@
       {{ form.visible.expiring_date.field|raw }}
 
       {{ form.hidden.mailchimps.field|raw }}
+      
+      <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token}}" />
     </div>
   </div>
 

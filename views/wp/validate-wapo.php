@@ -219,25 +219,25 @@ namespace Wp {
       // DELIVERY METHOD DETAILS.
       $delivery_message = $request->cookie->find("delivery_message");
 
-      // Check that we have an expiration date.
-      if (!$request->cookie->find('expiring_date')) {
-        throw new \Exception("Please set the promotion expiring date.");
-      }
+//      // Check that we have an expiration date.
+//      if (!$request->cookie->find('expiring_date')) {
+//        throw new \Exception("Please set the promotion expiring date.");
+//      }
 
-      // Check that the date is valid and that it is greater than today.
-      $expiring_date = \DateTime::createFromFormat("m/d/Y H:i A", $request->cookie->find('expiring_date'));
-      $error = \DateTime::getLastErrors();
-      if ($error['error_count']) {
-        throw new \Exception("Please select a valid expiring date.");
-      }
+//      // Check that the date is valid and that it is greater than today.
+//      $expiring_date = \DateTime::createFromFormat("m/d/Y H:i A", $request->cookie->find('expiring_date'));
+//      $error = \DateTime::getLastErrors();
+//      if ($error['error_count']) {
+//        throw new \Exception("Please select a valid expiring date.");
+//      }
 
-      // Check that expiring date is at least one hour in the future.
-      $ed = new \DateTime($expiring_date->format("Y-m-d H:i:s"));
-      $now = new \DateTime(date("Y-m-d H:i:s"));
-      $diff = $ed->diff($now);
-      if ($diff->d < 1 && $diff->h < 1) {
-        throw new \Exception("Please select a valid expiring date. Expiring date must be at least 1 hour in the future.");
-      }
+//      // Check that expiring date is at least one hour in the future.
+//      $ed = new \DateTime($expiring_date->format("Y-m-d H:i:s"));
+//      $now = new \DateTime(date("Y-m-d H:i:s"));
+//      $diff = $ed->diff($now);
+//      if ($diff->d < 1 && $diff->h < 1) {
+//        throw new \Exception("Please select a valid expiring date. Expiring date must be at least 1 hour in the future.");
+//      }
 
       // For each delivery method, check that we have all variables set.
       $delivery = $request->cookie->find('delivery');
@@ -390,7 +390,7 @@ namespace Wp {
         "sku" => $sku,
         "delivery" => $delivery,
         "delivery_message" => $delivery_message,
-        "expiring_date" => $request->cookie->get('expiring_date'),
+//        "expiring_date" => $request->cookie->get('expiring_date'),
         "quantity" => $quantity,
         "total" => $total + $text_total,
         "email_list" => $email_list,
