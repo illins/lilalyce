@@ -50,7 +50,34 @@
     </div>
     <hr />
   </script>
-
+  
+  <script>
+    $(function() {
+      var swig = require('swig');
+      
+      var tpl_selected = swig.compileFile($('#selected-twitter-followers').html());
+      var tpl_search = swig.compileFile($('#searched-twitter-followers').html());
+      var tpl_followers = swig.compileFile($('#twitter-followers').html());
+      var tppl_login = swig.complineFile($('#twitter-login').html());
+      
+      $.ajax({
+                url: '/wp/twitter/search/',
+                data: {'keyword': keyword},
+                dataType: 'json',
+                success: function (data) {
+                    $('#twitter-view').html('');
+                    _.map(data.follower_list, function(follower) {
+                      $('#twitter-view').append(tpl_search(follower));
+                    });
+                },
+                error: function () {
+                    $('#twitter-view').html('Error retrieving users.');
+                }
+            });
+      
+    });
+  </script>
+  
   <script>
     $(function() {
       // Disabled next button until they are logged in.

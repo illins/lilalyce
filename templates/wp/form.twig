@@ -103,24 +103,8 @@ blockquote {padding: 1px;}
   </div>
 
   <form class="form" role="form" method="post" action="{{ form.post_url }}">
-
+    
     <div class="row">
-      <div class="col-md-12">
-        <div class="row">
-          <div class="{% if sidebar %}col-md-7{% else %}col-md-12{% endif %}">
-          {% block main %}{% endblock main %}
-        </div>
-        {% if sidebar %}
-          <div class="col-md-5">
-            {% include 'apps/wp/templates/wp/includes/sidebar/sidebar.twig' %}
-          </div>
-        {% else %}
-        {% endif %}
-      </div>
-      </div>
-    </div>
-      
-   <div class="row">
 {#      <div class="col-md-2 hidden-xs hidden-ms hidden-md"></div>#}
       
       <div class="col-xs-4 col-sm-4 col-md-3">
@@ -139,5 +123,23 @@ blockquote {padding: 1px;}
       
 {#      <div class="col-md-2 hidden-xs hidden-sm hidden-md"></div>#}
     </div>
+    <br />
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="{% if sidebar %}col-md-7{% else %}col-md-12{% endif %}">
+          {% block main %}{% endblock main %}
+        </div>
+        {% if sidebar %}
+          <div class="col-md-5">
+            {% include 'apps/wp/templates/wp/includes/sidebar/sidebar.twig' %}
+          </div>
+        {% else %}
+        {% endif %}
+      </div>
+      </div>
+    </div>
+      
 </form>
 {% endblock content %}
