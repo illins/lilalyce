@@ -29,7 +29,7 @@ namespace Wp {
       }
 
       // Get or create their dashboard and get their profile list.
-      $this->distributor = Distributor::get_or_create_save(array("user" => $this->request->user->id, "name" => ""), false);
+      $this->distributor = Distributor::get_or_create_save(array("user" => $this->request->user->id, "name" => ""), array(), false);
       $this->profile_list = Profile::queryset()->filter(array("distributor" => $this->distributor->id,"status"=>1))->order_by(array("-name"))->fetch();
 
       // If they don't have a profile list, redirect them to the add profile.
@@ -606,7 +606,7 @@ namespace Wp {
                     array(
                     "email" => $this->request->cookie->find("email"),
                     "account" => $account->id
-                    ), false);
+                    ), array(), false);
         $user->save(false);
       }
 
@@ -614,7 +614,7 @@ namespace Wp {
       $distributor = Distributor::get_or_create_save(
                       array(
                       "user" => $user->id
-                      ), false);
+                      ), array(), false);
 
       // Check if they have a profile.
       $profile_list = Profile::queryset()->filter(array("distributor" => $distributor->id))->fetch();
@@ -629,7 +629,7 @@ namespace Wp {
                         array(
                         "distributor" => $distributor->id,
                         "name" => $this->request->cookie->find("name", "")
-                        ), false);
+                        ), array(), false);
       }
 
       // Get promotion.
@@ -751,13 +751,13 @@ namespace Wp {
                       "email" => $this->request->cookie->find("facebook_id"),
                       "username" => $this->request->cookie->find("facebook_id"),
                       "account" => $account->id
-                      ), false);
+                      ), array(), false);
 
       // Check if distributor has been created
       $distributor = Distributor::get_or_create_save(
                       array(
                       "user" => $user->id,
-                      ), false);
+                      ), array(), false);
 
       // Check if they have a profile.
       $profile_list = Profile::queryset()->filter(array("distributor" => $distributor->id))->fetch();
@@ -772,7 +772,7 @@ namespace Wp {
                         array(
                         "distributor" => $distributor->id,
                         "name" => $this->request->cookie->find("name", "---")
-                        ), false);
+                        ), array(), false);
       }
 
       // Get promotion.

@@ -628,7 +628,7 @@ namespace Wp {
       }
       $targeturl = $result['targeturl'];
       
-      $recipient = \Wapo\WapoRecipient::get_or_create_save(array("wapo"=>$targeturl->wapo,"targeturl"=>$targeturl,"contact"=>$this->form->get("email")), false);
+      $recipient = \Wapo\WapoRecipient::get_or_create_save(array("wapo"=>$targeturl->wapo,"targeturl"=>$targeturl,"contact"=>$this->form->get("email")), array(), false);
       
       // Check if this user has downloaded.
       if($recipient->downloaded) {

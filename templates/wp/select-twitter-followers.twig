@@ -26,6 +26,30 @@
       {% endfor %}
     </div>
   </div>
+    
+    <div class="modal fade" id="twitter-followers-modal-view" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+{#            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>#}
+            <h4 class="modal-title">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search followers...">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button">Go!</button>
+                </span>
+              </div>
+            </h4>
+          </div>
+          <div class="modal-body" style="height: 300px; overflow-y: auto;">
+            Followers will appear here.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
   <script type="text/template" id="twitter-login-template">
     <a href="/twitter/?skip=1&return={{ blink.request.url }}" class="btn btn-block btn-u btn-u-aqua">
@@ -51,36 +75,39 @@
     <hr />
   </script>
   
-  <script>
-    $(function() {
-      var swig = require('swig');
-      
-      var tpl_selected = swig.compileFile($('#selected-twitter-followers').html());
-      var tpl_search = swig.compileFile($('#searched-twitter-followers').html());
-      var tpl_followers = swig.compileFile($('#twitter-followers').html());
-      var tppl_login = swig.complineFile($('#twitter-login').html());
-      
-      $.ajax({
-                url: '/wp/twitter/search/',
-                data: {'keyword': keyword},
-                dataType: 'json',
-                success: function (data) {
-                    $('#twitter-view').html('');
-                    _.map(data.follower_list, function(follower) {
-                      $('#twitter-view').append(tpl_search(follower));
-                    });
-                },
-                error: function () {
-                    $('#twitter-view').html('Error retrieving users.');
-                }
-            });
-      
-    });
-  </script>
+  {% verbatim %}
+    <div class="hidden" id="twitter-followers-template-new">
+      {% for follower in follower_list %}
+      <div class="media">
+        <div class="pull-left">
+          <a href="#">
+            <img class="media-object" src="{{follower.profile_image_url}}" alt="..." style="max-width: 64px;">
+          </a>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">
+            <div class="row">
+              <div class="col-xs-10">
+                {{follower.name}}[{{follower.screen_name}}]
+              </div>
+              <div class="col-xs-2">
+                <input type="checkbox" class="follower" value="{{follower.screen_name}}" />
+              </div>
+            </div>
+          </h4>
+          <p>{{follower.description}}</p>
+        </div>
+      </div>
+      <hr />
+      {% endfor %}
+    </div>
+  {% endverbatim %}
   
   <script>
     $(function() {
-      // Disabled next button until they are logged in.
+      
+      require(['swig'], function(swig) {
+        // Disabled next button until they are logged in.
       $('#next_button').addClass('disabled');
       
       // Set the announcement cookie whenever value changes in case they navigate away.
@@ -150,24 +177,83 @@
           if($('#twitter_followers').val()) {
             $('#next_button').removeClass('disabled');
           }
+          
+          
         }
       }));
 
       // Point each view to the other.
       twitterLoginView.view = twitterFollowersView;
       twitterFollowersView.view = twitterLoginView;
+      
+      // View to display if they have logged in to twitter.
+      var twitterFollowersModalView = new (Backbone.View.extend({
+          el: '#twitter-followers-modal-view',
+          view: null,
+          follower_list: null,
+          template: _.template($('#twitter-followers-template').html()),
+          events: {
+            'click .follower': 'selected'
+          },
+          show: function () {
+            $(this.el).modal('show');
+          },
+          hide: function () {
+            $(this.el).modal('hide');
+          },
+          selected: function (e) {
+            var sn = $(e.target).val();
+            var followers = ($('#twitter_followers').val()) ? $('#twitter_followers').val().split(',') : [];
+            if (_.contains(followers, sn)) {
+              followers.splice(followers.indexOf(sn), 1);
+            } else {
+              followers.push(sn);
+            }
 
-      // Ping Twitter API to see if they are logged in.
-      $.get('/twitter/authenticated/', function(data) {
-        if(data.authenticated) {
-          $.get('/twitter/followers/', function(data) {
-            twitterFollowersView.follower_list = data.follower_list;
-            twitterFollowersView.render();
-          });
-        } else {
-          twitterLoginView.render();
-        }
+            // Set the followers back.
+            $('#twitter_followers').val(followers.join(','));
+
+            // Enable next button.
+            if (followers.length) {
+              $('#next_button').removeClass('disabled');
+            } else {
+              $('#next_button').addClass('disabled');
+            }
+          },
+          render: function () {
+            var that = this;
+
+            var rendered = swig.render($('#twitter-followers-template-new').html(), {locals: {follower_list: this.follower_list}});
+            this.$el.find('.modal-body').html(rendered);
+            this.$el.find('.modal-body').append(rendered);
+            this.$el.find('.modal-body').append(rendered);
+            this.$el.find('.modal-body').append(rendered);
+            this.$el.find('.modal-body').append(rendered);
+          }
+        }));
+
+        // Ping Twitter API to see if they are logged in.
+        $.get('/twitter/authenticated/', function (data) {
+          if (data.authenticated) {
+            $.get('/twitter/followers/', function (data) {
+              twitterFollowersView.follower_list = data.follower_list;
+
+              twitterFollowersModalView.follower_list = data.follower_list;
+              twitterFollowersModalView.render();
+
+              twitterFollowersView.render();
+            });
+          } else {
+            twitterLoginView.render();
+          }
+        });
+
+        twitterFollowersModalView.show();
+
       });
+
     });
+
+
   </script>
 {% endblock main %}

@@ -185,7 +185,7 @@ namespace Wp {
           $profile = Profile::queryset()->get(array("id"=>$data['profile']));
         } else {
           // Create a new profile.
-          $distributor = Distributor::get_or_create_save(array("user"=>$request->user), false);
+          $distributor = Distributor::get_or_create_save(array("user"=>$request->user), array(), false);
           $profile = Profile::create_save(array("distributor" => $distributor, "name" => $data['profile_name']), false);
         }
       } else {
@@ -200,7 +200,7 @@ namespace Wp {
         }
         
         // Create their distributor and profile using the name.
-        $distributor = Distributor::get_or_create_save(array("user"=>$user), false);
+        $distributor = Distributor::get_or_create_save(array("user"=>$user), array(), false);
         $profile = Profile::get_or_create_save(array("distributor"=>$distributor, "name"=>$data["profile_name"]));
       }
       
@@ -497,7 +497,7 @@ namespace Wp {
           $profile = Profile::queryset()->get(array("id"=>$data['profile']));
         } else {
           // Create a new profile.
-          $distributor = Distributor::get_or_create_save(array("user"=>$request->user), false);
+          $distributor = Distributor::get_or_create_save(array("user"=>$request->user), array(), false);
           $profile = Profile::create_save(array("distributor" => $distributor, "name" => $data['name']), false);
         }
       } else {
@@ -512,7 +512,7 @@ namespace Wp {
         }
         
         // Create their distributor and profile using the name.
-        $distributor = Distributor::get_or_create_save(array("user"=>$user), false);
+        $distributor = Distributor::get_or_create_save(array("user"=>$user), array(), false);
         $profile = Profile::get_or_create_save(array("distributor"=>$distributor, "name"=>$data["profile_name"]));
       }
       

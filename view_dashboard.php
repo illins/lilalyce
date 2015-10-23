@@ -40,7 +40,7 @@ namespace Wp {
 
     public function get() {
       // Get or create their dashboard and get their profile list.
-      $this->distributor = Distributor::get_or_create_save(array("user" => $this->request->user->id, "name" => ""), false);
+      $this->distributor = Distributor::get_or_create_save(array("user" => $this->request->user->id, "name" => ""), array(), false);
       $this->profile_list = Profile::queryset()->filter(array("distributor" => $this->distributor->id,"status"=>1))->order_by(array("-name"))->fetch();
 
       // If they don't have a profile list, redirect them to the add profile.

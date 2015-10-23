@@ -350,7 +350,7 @@
 //          $profiles = Profile::aggregate()->count(array(array("id", "profiles")))->filter(array("wapo_distributor.user"=>$this->request->user))->get();
 //          if(!$profiles->profiles) {
 //            $distributor = Distributor::get_or_create(array("user"=>$this->request->user), false);
-//            $context['profile'] = Profile::get_or_create_save(array("distributor"=>$distributor, "name"=>"Default Profile"), false);
+//            $context['profile'] = Profile::get_or_create_save(array("distributor"=>$distributor, "name"=>"Default Profile"), array(), false);
 //          }
 //          
 //          // If this is an email list, just get that one profile.

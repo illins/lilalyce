@@ -266,7 +266,7 @@ namespace Wp {
       } else if ($delivery == "stf") {
         $definition["stf"] = array(
             "title" => "Select Twitter Followers",
-            "template" => TemplateConfig::Template("wp/select_twitter_followers.twig"),
+            "template" => TemplateConfig::Template("wp/select-twitter-followers.twig"),
             "form" => "\Wp\SelectTwitterFollowersForm"
         );
       } else if ($delivery == "aif") {

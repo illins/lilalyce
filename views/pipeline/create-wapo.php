@@ -182,7 +182,7 @@
 //          $profile = Profile::queryset()->get(array("id"=>$cookies['profile_id']));
 //        } else {
 //          // Create a new profile.
-//          $distributor = Distributor::get_or_create_save(array("user"=>$request->user), false);
+//          $distributor = Distributor::get_or_create_save(array("user"=>$request->user), array(), false);
 //          $profile = Profile::create_save(array("distributor" => $distributor, "name" => $cookies['name']), false);
 //        }
 //      } else {
@@ -197,7 +197,7 @@
 //        }
 //        
 //        // Create their distributor and profile.
-//        $distributor = Distributor::get_or_create_save(array("user"=>$user), false);
+//        $distributor = Distributor::get_or_create_save(array("user"=>$user), array(), false);
 //        $profile = Profile::get_or_create_save(array("distributor"=>$distributor, "name"=>$cookies["name"]));
 //      }
 //      
