@@ -27,19 +27,19 @@ namespace Wp {
       ),
       array(
           "uri" => '/scalablepress',
-          "url_patterns" => \Blink\include_url_patters($wp_scalable_url_patterns)
+          "url_patterns" => \Blink\include_url_patterns($wp_scalable_url_patterns)
       ),
       array(
           "uri" => '/ifeelgoods',
-          "url_patterns" => \Blink\include_url_patters($wp_ifeelgoods_url_patterns)
+          "url_patterns" => \Blink\include_url_patterns($wp_ifeelgoods_url_patterns)
       ),
       array(
           "uri" => '/tangocard',
-          "url_patterns" => \Blink\include_url_patters($wp_tangocard_url_patterns)
+          "url_patterns" => \Blink\include_url_patterns($wp_tangocard_url_patterns)
       ),
       array(
           "uri" => '/download',
-          "url_patterns" => \Blink\include_url_patters($wp_download_url_patterns)
+          "url_patterns" => \Blink\include_url_patterns($wp_download_url_patterns)
       ),
       array(
           "uri" => "/order/$",
@@ -137,18 +137,40 @@ namespace Wp {
           "title" => "FacebookUpdateResourceView"
       ),
       
-      // Pipeline step wizard.
-      array(
-          "uri" => "/$",
-          "view" => WpCookieWizardView::as_view(),
-          "name" => "DashboardTemplateView",
-          "title" => "DashboardTemplateView"
-      ),
-      array(
-          "uri" => "/(?P<step>[\w-]+)/$",
-          "view" => WpCookieWizardView::as_view(),
-          "name" => "DashboardTemplateView",
-          "title" => "DashboardTemplateView"
-      ),
+//      // Pipeline step wizard.
+//      array(
+//          "uri" => "/$",
+//          "view" => WpCookieWizardView::as_view(),
+//          "name" => "DashboardTemplateView",
+//          "title" => "DashboardTemplateView"
+//      ),
+//      array(
+//          "uri" => "/(?P<step>[\w-]+)/$",
+//          "view" => WpCookieWizardView::as_view(),
+//          "name" => "DashboardTemplateView",
+//          "title" => "DashboardTemplateView"
+//      ),
   );
+  
+  
+  require_once 'apps/wp/views/wapo/wapo.php';
+  require_once 'apps/wp/views/wapo/module.php';
+  require_once 'apps/wp/views/wapo/tangocards.php';
+  
+  WpBaseView::register_url(array("pattern"=>"/wp/wapo/"));  
+  
+  // API FUNCTIONS
+  
+  // Wapo cookie update/get view.
+  WpWapoFormView::register_url(array("pattern"=>"/wp/wapo/data/"));
+  WpSetModuleFormView::register_url(array("pattern"=>"/wp/wapo/set/module/"));
+  WpSetProfileFormView::register_url(array("pattern"=>"/wp/wapo/set/profile/"));
+  WpSetNewProfileFormView::register_url(array("pattern"=>"/wp/wapo/set/profile/new/"));
+  WpSetNewProfileFormView::register_url(array("pattern"=>"/wp/wapo/set/tangocards/"));
+  
+  // Modules view.
+  WpModuleListView::register_url(array("pattern"=>"/wp/wapo/module/"));
+  
+  // Tangocards view.
+  WpTangoCardRewardsListView::register_url(array("pattern"=>"/wp/wapo/tangocards/"));
 }
