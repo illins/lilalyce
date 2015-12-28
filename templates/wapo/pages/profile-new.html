@@ -1,0 +1,57 @@
+<div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
+
+<form>
+  <div class="form-group">
+    <label for="name">Name / Company Name</label>
+    <input type="text" class="form-control" id="name" ng-model="profile.name" placeholder="Name / Company Name">
+  </div>
+  <div class="form-group">
+    <label for="email">Email address</label>
+    <input type="email" class="form-control" id="email" ng-model="profile.email" placeholder="Email">
+  </div>
+  <!--    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" ng-model="profile.password" placeholder="Password">
+      </div>
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" class="form-control" id="confirm_password" ng-model="profile.confirm_password" placeholder="Confirm Password">
+      </div>-->
+
+
+  <!--<div class="button" ngf-select="upload($file)">Upload on file select</div>-->
+  <div class="row" ng-show="file">
+    <div class="col-xs-3">
+      <img ngf-thumbnail="file || '/thumb.jpg'" ngf-size="{width: 200, height: 200, quality: 0.9}" />
+    </div>
+  </div>
+
+  <div class="row" ng-show="wapo.profile.new.image && !file">
+    <div class="col-xs-3">
+      <img src="/{{wapo.profile.new.image}}" alt="..." style="max-width: 200px; max-height: 200px;"/>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-2">
+      <div class="button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-max-size="2MB" ngf-min-height="100" ngf-resize="{width: 1000, height: 1000}" ngf-resize-if="$width > 1000 || $height > 1000">
+        <span class="btn btn-primary">Choose Image</span>
+      </div>
+    </div>
+    <div class="col-xs-2" ng-if="file">
+      <button class="btn btn-warning btn-block" ng-click="clear_image()">Delete</button>
+    </div>
+    <div class="col-xs-2" ng-if="!file && wapo.profile.new.image">
+      <input type="checkbox" id="delete_image" ng-model="delete_image" value="1" /> Delete
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-offset-8 col-xs-2">
+      <a class="btn btn-primary btn-block" href="#/profile">Profiles</a>
+    </div>
+    <div class="col-xs-2">
+      <button class="btn btn-warning btn-block" ng-click="clear()">Clear</button>
+    </div>
+  </div>
+</form>

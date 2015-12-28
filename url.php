@@ -155,6 +155,7 @@ namespace Wp {
   
   require_once 'apps/wp/views/wapo/wapo.php';
   require_once 'apps/wp/views/wapo/module.php';
+  require_once 'apps/wp/views/wapo/profile.php';
   require_once 'apps/wp/views/wapo/tangocards.php';
   
   WpBaseView::register_url(array("pattern"=>"/wp/wapo/"));  
@@ -166,11 +167,19 @@ namespace Wp {
   WpSetModuleFormView::register_url(array("pattern"=>"/wp/wapo/set/module/"));
   WpSetProfileFormView::register_url(array("pattern"=>"/wp/wapo/set/profile/"));
   WpSetNewProfileFormView::register_url(array("pattern"=>"/wp/wapo/set/profile/new/"));
-  WpSetNewProfileFormView::register_url(array("pattern"=>"/wp/wapo/set/tangocards/"));
+  WpSetTangoCardsFormView::register_url(array("pattern"=>"/wp/wapo/set/tangocards/"));
+  
+  WpSetFreeForAllDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/free-for-all/"));
+  WpSetEmailListDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/email-list/"));
   
   // Modules view.
   WpModuleListView::register_url(array("pattern"=>"/wp/wapo/module/"));
   
+  // Profile list view.
+  WpProfileListView::register_url(array("pattern"=>"/wp/wapo/profile/"));
+  
   // Tangocards view.
   WpTangoCardRewardsListView::register_url(array("pattern"=>"/wp/wapo/tangocards/"));
+  
+
 }

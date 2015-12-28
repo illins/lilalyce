@@ -1,0 +1,51 @@
+<div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <select ng-model="subscription" class="form-control" ng-options="subscription as subscription.name for subscription in subscription_list track by subscription.id" ng-change="getSubscriptionEmails()"></select>
+  </div>
+
+  <div class="panel-body">
+
+    <md-content class="md-padding autocomplete" layout="column">
+      <md-contact-chips
+        ng-model="selected_email_list"
+        md-contacts="querySearch($query)"
+        
+        md-contact-name="merges.FNAME merges.LNAME"
+        md-contact-email="email"
+        md-require-match="true"
+        md-highlight-flags="i"
+        filter-selected="filterSelected"
+        placeholder="Search Emails">
+      </md-contact-chips>
+      
+      <md-list class="fixedRows">
+        <md-subheader class="md-no-sticky">Contacts</md-subheader>
+        <md-list-item class="md-2-line contact-item" ng-repeat="email in subscription_email_list"
+                      ng-if="selected_email_list.indexOf(email) < 0">
+          <!--<img ng-src="{{contact.image}}" class="md-avatar" alt="{{contact.name}}" />-->
+          <div class="md-list-item-text compact">
+            <h3>{{email.merges.FNAME}} {{email.merges.LNAME}}</h3>
+            <p>{{email.email}}</p>
+          </div>
+        </md-list-item>
+        <md-list-item class="md-2-line contact-item selected" ng-repeat="email in selected_email_list">
+          <!--<img ng-src="{{contact.image}}" class="md-avatar" alt="{{contact.name}}" />-->
+          <div class="md-list-item-text compact">
+            <h3>{{email.merges.FNAME}} {{email.merges.LNAME}}</h3>
+            <p>{{email.email}}</p>
+          </div>
+        </md-list-item>
+      </md-list>
+    </md-content>
+
+<!--    <table class="table table-striped">
+      <tbody>
+        <tr ng-repeat="email in subscription_email_list">
+          <td>{{email.email}}</td>
+        </tr>
+      </tbody>
+    </table>-->
+  </div>
+</div>
