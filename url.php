@@ -171,6 +171,7 @@ namespace Wp {
   
   WpSetFreeForAllDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/free-for-all/"));
   WpSetEmailListDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/email-list/"));
+  WpSetMailChimpDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/mailchimp/"));
   
   // Modules view.
   WpModuleListView::register_url(array("pattern"=>"/wp/wapo/module/"));

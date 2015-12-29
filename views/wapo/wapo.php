@@ -256,7 +256,7 @@ namespace Wp {
       $emails = $this->request->post->find("emails", "");
       
       $this->wapo->delivery = "mailchimp";
-      $this->wapo->numbers = explode(",", $emails);
+      $this->wapo->mailchimp->email_list = explode(",", $emails);
       return parent::form_valid();
     }
   }

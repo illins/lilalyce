@@ -545,15 +545,17 @@ wapoApp.controller('EmailListCtrl', ['$rootScope', '$scope', '$location', '$http
   }]);
 
 wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
-    $scope.email_list = [];
+    $scope.email_list = [];// Emails (strings) that have been picked..
     $scope.max_count = 1;
-    $scope.subscription = null;
-
+    $scope.subscription = null;// The selected subscription.
+    $scope.selected_email_list = [];// List of selected emails (objects).
+    
+    $scope.selected_item = null;
+    $scope.search_text = null;
+    
     $rootScope.previous_path = '/delivery';
     $rootScope.next_path = '/checkout';
     
-    $rootScope.selected_email_list = [];
-
     $scope.next = function () {
       $scope.setMail();
     };
@@ -570,14 +572,17 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
       $scope.email_list = $rootScope.wapo.mailchimp.email_list;
       $scope.max_count = $rootScope.wapo.mailchimp.max;
 
+      // Fetch the list of subscription lists if we don't have any.
       if (!$rootScope.subscription_list.length) {
         $http.get('/wp/mailchimp/lists/').success(function (response) {
           $rootScope.subscription_list = response.data.data;
 
+          // Pick the first one if we don't have any.
           if (!$scope.subscription) {
             $scope.subscription = $rootScope.subscription_list[0];
           }
 
+          // Load the list of emails for this subscription.
           if ($scope.subscription) {
             $scope.getSubscriptionEmails();
           }
@@ -590,44 +595,58 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
 //      console.log($scope.subscription);
 //      $scope.subscription = subscription;
 
-      $http.get('http://redbk.com/wp/mailchimp/lists/members/?id=' + $scope.subscription.id).success(function (response) {
+      $http.get('/wp/mailchimp/lists/members/?id=' + $scope.subscription.id).success(function (response) {
         $rootScope.subscription_email_list = response.data.data;
+        
+        // Check if any of the emails in this list have been picked.
+        $scope.selected_email_list = _.filter($rootScope.subscription_email_list, function(item) {
+          return ($scope.email_list.indexOf(item.email) > -1);
+        });
       });
     };
 
     $scope.setMail = function () {
-      $scope.emails = $scope.email_list.join(',');
-      $http.post('/wp/wapo/set/delivery/email-list/', {emails: $scope.email_list.join(',')}).success(function (response) {
+      $scope.email_list = [];
+      
+      _.map($scope.selected_email_list, function(item) {
+        $scope.email_list.push(item.email);
+      });
+      
+      $http.post('/wp/wapo/set/delivery/mailchimp/', {emails: $scope.email_list.join(',')}).success(function (response) {
         $rootScope.wapo = response.wapo;
         $location.path($scope.next_path);
       });
     };
+    
+    $scope.addEmail = function(item) {
+      $scope.selected_email_list.push(item);
+      $scope.email_list.push(item.email);
+    };
 
     $scope.clear = function () {
-      $scope.emails = '';
+      $scope.email_list = [];
+      $scope.subscription_email_list = [];
     };
     
-    var self = this;
-    $scope.querySearch = querySearch;
-//    self.allContacts = loadContacts();
-//    self.contacts = [self.allContacts[0]];
-    $scope.filterSelected = true;
     /**
-     * Search for contacts.
+     * Search for emails!
      */
-    function querySearch (query) {
-      var results = query ? $rootScope.subscription_email_list.filter(createFilterFor(query)) : [];
+    $scope.querySearch = function(query) {
+      var results = query ? $scope.subscription_email_list.filter($scope.createFilterFor(query)) : [];
       return results;
-    }
+    };
     /**
      * Create filter function for a query string
      */
-    function createFilterFor(query) {
+    $scope.createFilterFor = function(query) {
       var lowercaseQuery = angular.lowercase(query);
-      return function filterFn(email) {
-        return (email.email.toLowerCase().indexOf(lowercaseQuery) != -1);;
+      return function filterFn(item) {
+//        return (item.email.toLowerCase().indexOf(lowercaseQuery) === 0) || (item.email.toLowerCase().indexOf(lowercaseQuery) === 0);
+          var text = item.email+' '+item.merges.FNAME+' '+item.merges.LNAME;
+          text = text.toLowerCase();
+          return (text.indexOf(lowercaseQuery) > -1) || (text.indexOf(lowercaseQuery) > -1);
       };
-    }
+    };
   
   }]);
 

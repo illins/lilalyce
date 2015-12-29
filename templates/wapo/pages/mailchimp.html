@@ -8,44 +8,52 @@
   <div class="panel-body">
 
     <md-content class="md-padding autocomplete" layout="column">
-      <md-contact-chips
+      <md-chips
         ng-model="selected_email_list"
-        md-contacts="querySearch($query)"
+        md-autocomplete-snap
+        md-require-match="true">
         
-        md-contact-name="merges.FNAME merges.LNAME"
-        md-contact-email="email"
-        md-require-match="true"
-        md-highlight-flags="i"
-        filter-selected="filterSelected"
-        placeholder="Search Emails">
-      </md-contact-chips>
-      
+        <md-autocomplete
+          md-selected-item="selected_item"
+          md-search-text="search_text"
+          md-items="item in querySearch(search_text)"
+          md-item-text="item.email"
+          placeholder="Search for an email">
+          <span md-highlight-text="search_text">{{item.merges.FNAME}} {{item.merges.LNAME}} ({{item.email}})</span>
+        </md-autocomplete>
+        <md-chip-template>
+          <span>
+            <strong>{{$chip.merges.FNAME}} {{$chip.merges.LNAME}}</strong>
+            <em>({{$chip.email}})</em>
+          </span>
+        </md-chip-template>
+      </md-chips>
+
       <md-list class="fixedRows">
         <md-subheader class="md-no-sticky">Contacts</md-subheader>
-        <md-list-item class="md-2-line contact-item" ng-repeat="email in subscription_email_list"
-                      ng-if="selected_email_list.indexOf(email) < 0">
+        <md-list-item class="md-2-line contact-item" ng-repeat="item in subscription_email_list" ng-if="email_list.indexOf(item.email) < 0" ng-click="addEmail(item)">
           <!--<img ng-src="{{contact.image}}" class="md-avatar" alt="{{contact.name}}" />-->
+          <div class="md-list-item-text compact">
+            <h3>{{item.merges.FNAME}} {{item.merges.LNAME}}</h3>
+            <p>{{item.email}}</p>
+          </div>
+        </md-list-item>
+<!--        <md-list-item class="md-2-line contact-item selected" ng-repeat="email in selected_email_list">
+          <img ng-src="{{contact.image}}" class="md-avatar" alt="{{contact.name}}" />
           <div class="md-list-item-text compact">
             <h3>{{email.merges.FNAME}} {{email.merges.LNAME}}</h3>
             <p>{{email.email}}</p>
           </div>
-        </md-list-item>
-        <md-list-item class="md-2-line contact-item selected" ng-repeat="email in selected_email_list">
-          <!--<img ng-src="{{contact.image}}" class="md-avatar" alt="{{contact.name}}" />-->
-          <div class="md-list-item-text compact">
-            <h3>{{email.merges.FNAME}} {{email.merges.LNAME}}</h3>
-            <p>{{email.email}}</p>
-          </div>
-        </md-list-item>
+        </md-list-item>-->
       </md-list>
     </md-content>
 
-<!--    <table class="table table-striped">
-      <tbody>
-        <tr ng-repeat="email in subscription_email_list">
-          <td>{{email.email}}</td>
-        </tr>
-      </tbody>
-    </table>-->
+    <!--    <table class="table table-striped">
+          <tbody>
+            <tr ng-repeat="email in subscription_email_list">
+              <td>{{email.email}}</td>
+            </tr>
+          </tbody>
+        </table>-->
   </div>
 </div>
