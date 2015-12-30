@@ -1,0 +1,46 @@
+<div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    &nbsp;
+  </div>
+
+  <div class="panel-body">
+
+    <md-content class="md-padding autocomplete" layout="column">
+      <md-chips
+        ng-model="selected_page_list"
+        md-autocomplete-snap
+        md-require-match="true">
+        
+        <md-autocomplete
+          md-selected-item="selected_item"
+          md-selected-item-change="refresh()"
+          md-search-text="search_text"
+          md-items="item in querySearch(search_text)"
+          md-item-text="item.screen_name"
+          placeholder="Search for a page">
+          <span md-highlight-text="search_text">{{item.name}} ({{item.screen_name}})</span>
+        </md-autocomplete>
+        <md-chip-template>
+          <span>
+            <!--<img ng-src="{{$chip.profile_image_url_https}}" class="md-avatar" alt="{{$chip.name}}" />-->
+            <strong>{{$chip.name}}</strong>
+            <!--<em>({{$chip.screen_name}})</em>-->
+          </span>
+        </md-chip-template>
+      </md-chips>
+
+      <md-list class="fixedRows">
+        <md-subheader class="md-no-sticky">Pages</md-subheader>
+        <md-list-item class="md-2-line contact-item" ng-repeat="item in pages" ng-if="page_list.indexOf(item.id) < 0" ng-click="addPage(item)">
+          <!--<img ng-src="{{item.profile_image_url_https}}" class="md-avatar" alt="{{item.name}}" />-->
+          <div class="md-list-item-text compact">
+            <h3>{{item.name}}</h3>
+            <p>{{item.category}}</p>
+          </div>
+        </md-list-item>
+      </md-list>
+    </md-content>
+  </div>
+</div>

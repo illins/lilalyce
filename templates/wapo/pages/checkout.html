@@ -2,31 +2,79 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    Select a profile for your Wapo.
+    &nbsp;
   </div>
-  <div class="panel-body" ng-if="user && profile_list.length">
-    <div class="list-group">
-      <div class="list-group-item" ng-repeat="profile in profile_list" ng-class="{}">
-        <h4 class="list-group-item-heading">{{profile.name}}</h4>
-        <p class="list-group-item-text">{{profile.description}}</p>
+  <div class="panel-body">
+    <h2>Account</h2>
+    <div ng-if="user">
+      <div class="profile-blog blog-border">
+        <img class="rounded-x" ng-src="{{user.account_image.full_url}}" style="max-width: 50px;" alt="">
+        <div class="name-location">
+          <strong>{{user.first_name}} {{user.last_name}}</strong><br />
+          <span><i class="fa fa-envelope"></i> {{user.email}}</span>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="panel-body" ng-if="!user">
-    <div class="row">
-      <div class="col-xs-offset-2 col-xs-4">
-        <a class="btn btn-info btn-block" href="/user/login/?return=/wp/wapo/#/profile">Log in to get your profiles!</a>
-      </div>
-      <div class="col-xs-4">
-        <a class="btn btn-info btn-block" href="#/profile-new">Add a new profile!</a>
-      </div>
+    <div ng-if="!user">
+      Guest
     </div>
-  </div>
-  <div class="panel-body" ng-if="user && !profile_list.length">
-    <div class="row">
-      <div class="col-xs-offset-4 col-xs-4">
-        <a class="btn btn-info btn-block" href="#/profile-new">Add a new profile!</a>
-      </div>
+    <hr />
+    
+    <h2>Delivery</h2>
+    <div ng-if="wapo.delivery == 'free-for-all'">
+      <strong>Free for all</strong>
     </div>
+    <div ng-if="wapo.delivery == 'email'">
+      <strong>Email(s):</strong>
+      <span ng-repeat="email in wapo.email.email_list track by $index">
+        <span class="label label-light rounded">{{email}}</span>
+        <span ng-if="!$last">,</span>
+      </span>
+    </div>
+    <div ng-if="wapo.delivery == 'email-list'">
+      <strong>Email(s):</strong>
+      <span ng-repeat="email in wapo.email_list.email_list track by $index" ng-if="$index < 3">
+        <span class="label label-light rounded">{{email}}</span>
+        <span ng-if="!$last && $index < 2">,</span>
+      </span>
+      <span ng-if="wapo.email_list.email_list.length > 3">...</span>
+    </div>
+    <div ng-if="wapo.delivery == 'mailchimp'">
+      <strong>Email(s):</strong>
+      <span ng-repeat="email in wapo.mailchimp.email_list track by $index" ng-if="$index < 3">
+        <span class="label label-light rounded">{{email}}</span>
+        <span ng-if="!$last && $index < 2">,</span>
+      </span>
+      <span ng-if="wapo.mailchimp.email_list.length > 3">...</span>
+    </div>
+    <hr />
+    
+    <h2>Reward</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Qty</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="product-in-table" ng-if="wapo.marketplace == 'tangocards'">
+            <img class="img-responsive" src="{{wapo.tangocards.brand_image_url}}" alt="">
+            <div class="product-it-in">
+              <h3>{{wapo.tangocards.name}}</h3>
+              <span>{{wapo.tangocards.description}}</span>
+            </div>    
+          </td>
+          <td>{{wapo.tangocards.unit_price / 100 }}</td>
+          <td>
+            {{wapo.quantity}}
+          </td>
+          <td class="shop-red">$ {{ (wapo.tangocards.unit_price / 100) * wapo.quantity }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

@@ -1,9 +1,9 @@
 <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
 
 <form>
-  <div class="form-group">
-    <label for="email">Email address</label>
-    <input type="email" class="form-control" id="email" ng-model="email_list[0]" placeholder="Email">
+  <div class="form-group" ng-repeat="email in email_list track by $index" ng-if="$index < max_count">
+    <label for="email-{{$index}}">Email address</label>
+    <input type="email" class="form-control" id="email-{{$index}}" ng-model="email_list[$index]" placeholder="Email {{$index + 1}}">
   </div>
 
   <div class="form-group">
@@ -12,16 +12,11 @@
   </div>
 
   <div class="row">
-    <div class="col-xs-offset-6 col-xs-2">
+    <div class="col-xs-offset-8 col-xs-2">
       <a class="btn btn-primary btn-block" href="#/delivery">Change Delivery</a>
     </div>
     <div class="col-xs-2">
       <button class="btn btn-warning btn-block" ng-click="clear()">Clear</button>
-    </div>
-    <div class="col-xs-2">
-      <button class="btn btn-warning btn-block" ng-click="addEmail()">
-        <i class="fa fa-plus"></i> Add
-      </button>
     </div>
   </div>
 </form>

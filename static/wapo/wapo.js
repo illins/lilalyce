@@ -427,7 +427,14 @@ wapoApp.controller('FFACtrl', ['$rootScope', '$scope', '$location', '$http', '$r
 
 wapoApp.controller('EmailCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $scope.email_list = [];
-    $scope.max_count = 3;
+    $scope.max_count = 1;
+    
+    $rootScope.previous_path = '/marketplace';
+    $rootScope.next_path = '/checkout';
+    
+    $scope.next = function() {
+      $scope.setEmail();
+    };
 
     // Run init only when 'wapo' is set.
     $scope.$watch('wapo', function (newValue, oldValue) {
@@ -437,11 +444,11 @@ wapoApp.controller('EmailCtrl', ['$rootScope', '$scope', '$location', '$http', '
     });
 
     $scope.init = function () {
-      $scope.email_list = $rootScope.wapo.email.email_list;
       $scope.max_count = $rootScope.wapo.email.max;
-
-      if ($scope.email_list.length) {
-        $rootScope.next_path = '/checkout';
+      $scope.email_list = $rootScope.wapo.email.email_list;
+      
+      for(var x = $scope.email_list.length; x < $scope.max_count; x++) {
+        $scope.email_list.push('');
       }
     };
 
@@ -455,21 +462,29 @@ wapoApp.controller('EmailCtrl', ['$rootScope', '$scope', '$location', '$http', '
     $scope.setEmail = function () {
       var email_list = [];
 
-      angular.forEach($scope.email_list, function (email) {
+      _.map($scope.email_list, function (email) {
         if (email.trim()) {
           email_list.push(email);
         }
       });
-
-      $http.post('/wp/wapo/set/delivery/email/', {email_list: email_list.join(',')}).success(function (response) {
+      
+      if(!email_list.length) {
+        alert("Please enter at least one email!");
+        return;
+      }
+      
+      $http.post('/wp/wapo/set/delivery/email/', {emails: email_list.join(',')}).success(function (response) {
         $rootScope.wapo = response.wapo;
-        $rootScope.next_path = '/checkout';
-//        $location.path('/checkout');
+        $location.path($rootScope.next_path);
       });
     };
 
     $scope.clear = function () {
       $scope.email_list = [];
+      
+      for(var x = $scope.email_list.length; x < $scope.max_count; x++) {
+        $scope.email_list.push('');
+      }
     };
   }]);
 
@@ -547,8 +562,10 @@ wapoApp.controller('EmailListCtrl', ['$rootScope', '$scope', '$location', '$http
 wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $scope.email_list = [];// Emails (strings) that have been picked..
     $scope.max_count = 1;
+    $scope.subscription_id = null;
     $scope.subscription = null;// The selected subscription.
     $scope.selected_email_list = [];// List of selected emails (objects).
+    $scope.remaining_email_list = [];// List of remaining emails (objects).
     
     $scope.selected_item = null;
     $scope.search_text = null;
@@ -568,7 +585,7 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
     });
 
     $scope.init = function () {
-      $scope.subscription = $rootScope.wapo.mailchimp.subscription;
+      $scope.subscription_id = $rootScope.wapo.mailchimp.subscription;
       $scope.email_list = $rootScope.wapo.mailchimp.email_list;
       $scope.max_count = $rootScope.wapo.mailchimp.max;
 
@@ -576,6 +593,13 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
       if (!$rootScope.subscription_list.length) {
         $http.get('/wp/mailchimp/lists/').success(function (response) {
           $rootScope.subscription_list = response.data.data;
+          
+          // If we had previously selected a 'subscription', then find the object.
+          if($scope.subscription_id) {
+            $scope.subscription = _.find($rootScope.subscription_list, function(item) {
+              return (item.id == $scope.subscription_id);
+            });
+          }
 
           // Pick the first one if we don't have any.
           if (!$scope.subscription) {
@@ -591,10 +615,6 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
     };
 
     $scope.getSubscriptionEmails = function () {
-//      console.log(subscription);
-//      console.log($scope.subscription);
-//      $scope.subscription = subscription;
-
       $http.get('/wp/mailchimp/lists/members/?id=' + $scope.subscription.id).success(function (response) {
         $rootScope.subscription_email_list = response.data.data;
         
@@ -602,7 +622,68 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
         $scope.selected_email_list = _.filter($rootScope.subscription_email_list, function(item) {
           return ($scope.email_list.indexOf(item.email) > -1);
         });
+        
+        $scope.remaining_email_list = _.filter($rootScope.subscription_email_list, function(item) {
+          return ($scope.email_list.indexOf(item.email) < 0);
+        });
+        
+        // Chunk into 3.
+        $scope.chunked_email_list = _.chunk($scope.remaining_email_list, 3);
       });
+    };
+    
+    $scope.search = function (keyword) {
+      console.log('search', keyword);
+      var searched_email_list = []
+
+      if (keyword) {
+        searched_email_list = _.filter($scope.remaining_email_list, function (item) {
+          var text = item.email+' '+item.merges.FNAME+' '+item.merges.LNAME;
+          return (text.search(new RegExp(keyword, 'i')) > -1);
+        });
+      } else {
+        searched_email_list = $scope.remaining_email_list;
+      }
+
+      // Chunk them again.
+      $scope.chunked_email_list = _.chunk(searched_email_list, 3);
+    };
+    
+    $scope.addEmail = function (item) {
+      // If we have already added the email, don't do anything.
+      if ($scope.email_list.indexOf(item.email) > -1) {
+        return;
+      }
+
+      // Add it to our selected and email list.
+      $scope.selected_email_list.push(item);
+      $scope.email_list.push(item.email);
+
+      // Filter our the remaining ones.
+      $scope.remaining_email_list = _.filter($scope.remaining_email_list, function (item) {
+        return ($scope.email_list.indexOf(item.email) < 0);
+      });
+
+      // Chunk them again.
+      $scope.chunked_email_list = _.chunk($scope.remaining_email_list, 3);
+    };
+
+    $scope.removeEmail = function (item) {
+      $scope.email_list = _.filter($scope.email_list, function (email) {
+        return (email != item.email);
+      });
+
+      // Check if any of the emails in this list have been picked.
+      $scope.selected_email_list = _.filter($rootScope.subscription_email_list, function (item) {
+        return ($scope.email_list.indexOf(item.email) > -1);
+      });
+
+      $scope.remaining_email_list = _.filter($rootScope.subscription_email_list, function (item) {
+        return ($scope.email_list.indexOf(item.email) < 0);
+      });
+
+      // Chunk them again.
+      $scope.chunked_email_list = _.chunk($scope.remaining_email_list, 3);
     };
 
     $scope.setMail = function () {
@@ -618,10 +699,7 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
       });
     };
     
-    $scope.addEmail = function(item) {
-      $scope.selected_email_list.push(item);
-      $scope.email_list.push(item.email);
-    };
+    
 
     $scope.clear = function () {
       $scope.email_list = [];
@@ -650,9 +728,14 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
   
   }]);
 
-wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
-    $scope.valid = false;
+wapoApp.controller('AnyTwitterFollowersCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
+    $scope.account = null;
     $rootScope.previous_path = '/delivery';
+    $rootScope.next_path = '/checkout';
+    
+    $scope.next = function () {
+      $scope.setTwitter();
+    };
 
     // Run init only when 'wapo' is set.
     $scope.$watch('wapo', function (newValue, oldValue) {
@@ -662,11 +745,243 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
     });
 
     $scope.init = function () {
-      $rootScope.previous_path = '/delivery/' + $rootScope.wapo.delivery;
-      
-      $http.get('/wp/wapo/validate/').success(function (response) {
-        $scope.valid = response.valid;
+      $http.get('/twitter/authenticated/').success(function(response) {
+        $scope.account = response.account;
       });
+    };
+    
+    $scope.setTwitter = function() {
+      $http.post('/wp/wapo/set/delivery/any-twitter-followers/', {}).success(function(response) {
+        $location.path($rootScope.next_path);
+      });
+    };
+  }]);
+
+wapoApp.controller('SelectTwitterFollowersCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
+    $rootScope.previous_path = '/delivery';
+    $rootScope.next_path = '/checkout';
+    
+    $scope.account = null;
+    $scope.selected_follower_list = [];
+    $scope.follower_list = [];
+    
+    $scope.next = function () {
+      $scope.setTwitter();
+    };
+
+    // Run init only when 'wapo' is set.
+    $scope.$watch('wapo', function (newValue, oldValue) {
+      if (!oldValue && newValue) {
+        $scope.init();
+      }
+    });
+    
+    $scope.refresh = function() {
+      console.log($scope.selected_follower_list);
+    };
+    
+    $scope.next = function() {
+      $scope.setTwitter();
+    };
+
+    $scope.init = function () {
+      $scope.follower_list = $rootScope.wapo.twitter.follower_list;
+      
+      $http.get('/twitter/authenticated/').success(function(response) {
+        $scope.account = response.account;
+        
+        if($scope.account) {
+          $scope.getFollowers();
+        }
+      });
+    };
+    
+    $scope.getFollowers = function() {
+      $http.get('/twitter/followers/').success(function(response) {
+        $scope.followers = response.follower_list;
+        
+        // Re-fill 'selected_follower_list' with selected screen names from 'follower_list'.
+        _.map($scope.followers, function(item) {
+          if(_.contains($scope.follower_list, item.screen_name)) {
+            $scope.selected_follower_list.push(item);
+          }
+        });
+      });
+    };
+    
+    $scope.addFollower = function(item) {
+      $scope.selected_follower_list.push(item);
+      $scope.follower_list.push(item.screen_name);
+    };
+    
+    $scope.setTwitter = function() {
+      if(!$scope.follower_list.length) {
+        alert("Please select at least one follower!");
+        return;
+      }
+      
+      $http.post('/wp/wapo/set/delivery/select-twitter-followers/', {followers: $scope.follower_list.join(',')}).success(function(response) {
+        $location.path($rootScope.next_path);
+      });
+    };
+    
+    /**
+     * Search for emails!
+     */
+    $scope.querySearch = function(query) {
+      var results = query ? $scope.followers.filter($scope.createFilterFor(query)) : [];
+      return results;
+    };
+    /**
+     * Create filter function for a query string
+     */
+    $scope.createFilterFor = function(query) {
+      var lowercaseQuery = angular.lowercase(query);
+      return function filterFn(item) {
+//        return (item.email.toLowerCase().indexOf(lowercaseQuery) === 0) || (item.email.toLowerCase().indexOf(lowercaseQuery) === 0);
+          var text = item.name+' '+item.screen_name;
+          text = text.toLowerCase();
+          return (text.indexOf(lowercaseQuery) > -1) || (text.indexOf(lowercaseQuery) > -1);
+      };
+    };
+  }]);
+
+wapoApp.controller('AnyFacebookFriendsCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
+    $scope.profile = null;
+    $rootScope.previous_path = '/delivery';
+    $rootScope.next_path = '/checkout';
+    
+    $scope.next = function () {
+      $scope.setFacebook();
+    };
+
+    // Run init only when 'wapo' is set.
+    $scope.$watch('wapo', function (newValue, oldValue) {
+      if (!oldValue && newValue) {
+        $scope.init();
+      }
+    });
+
+    $scope.init = function () {
+      $http.get('/facebook/authenticated/').success(function(response) {
+        $scope.profile = response.profile;
+        console.log($scope.profile);
+      });
+    };
+    
+    $scope.setFacebook = function() {
+      $http.post('/wp/wapo/set/delivery/any-facebook-friends/', {}).success(function(response) {
+        $location.path($rootScope.next_path);
+      });
+    };
+  }]);
+
+wapoApp.controller('FacebookPageCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
+    $rootScope.previous_path = '/delivery';
+    $rootScope.next_path = '/checkout';
+    
+    $scope.profile = null;
+    $scope.selected_page_list = [];
+    $scope.page_list = [];
+    
+    $scope.next = function () {
+      $scope.setFacebook();
+    };
+
+    // Run init only when 'wapo' is set.
+    $scope.$watch('wapo', function (newValue, oldValue) {
+      if (!oldValue && newValue) {
+        $scope.init();
+      }
+    });
+    
+    $scope.refresh = function() {
+      console.log($scope.selected_page_list);
+    };
+    
+    $scope.next = function() {
+      $scope.setFacebook();
+    };
+
+    $scope.init = function () {
+      $scope.page_list = $rootScope.wapo.facebook.page_list;
+      
+      $http.get('/facebook/authenticated/').success(function(response) {
+        $scope.profile = response.profile;
+        
+        if($scope.profile) {
+          $scope.getPages();
+        }
+      });
+    };
+    
+    $scope.getPages = function() {
+      $http.get('/facebook/pages/').success(function(response) {
+        $scope.pages = response.page_list;
+        
+        // Re-fill 'selected_follower_list' with selected screen names from 'follower_list'.
+        _.map($scope.pages, function(item) {
+          if(_.contains($scope.page_list, item.id)) {
+            $scope.selected_page_list.push(item);
+          }
+        });
+      });
+    };
+    
+    $scope.addPage = function(item) {
+      $scope.selected_page_list.push(item);
+      $scope.page_list.push(item.id);
+    };
+    
+    $scope.setFacebook = function() {
+      if(!$scope.page_list.length) {
+        alert("Please select at least one page!");
+        return;
+      }
+      
+      $http.post('/wp/wapo/set/delivery/facebook-page/', {pages: $scope.page_list.join(',')}).success(function(response) {
+        $location.path($rootScope.next_path);
+      });
+    };
+    
+    /**
+     * Search for emails!
+     */
+    $scope.querySearch = function(query) {
+      var results = query ? $scope.pages.filter($scope.createFilterFor(query)) : [];
+      return results;
+    };
+    /**
+     * Create filter function for a query string
+     */
+    $scope.createFilterFor = function(query) {
+      var lowercaseQuery = angular.lowercase(query);
+      return function filterFn(item) {
+          var text = item.name;
+          text = text.toLowerCase();
+          return (text.indexOf(lowercaseQuery) > -1) || (text.indexOf(lowercaseQuery) > -1);
+      };
+    };
+  }]);
+
+wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
+    $scope.valid = false;
+    
+    $rootScope.previous_path = '/delivery';
+    $rootScope.next_path = '/pay';
+
+    // Run init only when 'wapo' is set.
+    $scope.$watch('wapo', function (newValue, oldValue) {
+      if (!oldValue && newValue) {
+        $scope.init();
+      }
+    });
+
+    $scope.init = function () {
+      
+//      $http.get('/wp/wapo/validate/').success(function (response) {
+//        $scope.valid = response.valid;
+//      });
     };
 
     $scope.setPaymentMethod = function (payment_method) {
@@ -766,6 +1081,18 @@ wapoApp.config(function ($routeProvider) {
   }).when('/delivery/mailchimp', {
     templateUrl: '/apps/wp/templates/wapo/pages/mailchimp.html',
     controller: 'MailChimpCtrl'
+  }).when('/delivery/any-twitter-followers', {
+    templateUrl: '/apps/wp/templates/wapo/pages/any-twitter-followers.html',
+    controller: 'AnyTwitterFollowersCtrl'
+  }).when('/delivery/select-twitter-followers', {
+    templateUrl: '/apps/wp/templates/wapo/pages/select-twitter-followers.html',
+    controller: 'SelectTwitterFollowersCtrl'
+  }).when('/delivery/any-facebook-friends', {
+    templateUrl: '/apps/wp/templates/wapo/pages/any-facebook-friends.html',
+    controller: 'AnyFacebookFriendsCtrl'
+  }).when('/delivery/facebook-page', {
+    templateUrl: '/apps/wp/templates/wapo/pages/facebook-page.html',
+    controller: 'FacebookPageCtrl'
   }).when('/checkout', {
     templateUrl: '/apps/wp/templates/wapo/pages/checkout.html',
     controller: 'CheckoutCtrl'

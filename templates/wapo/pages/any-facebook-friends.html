@@ -1,0 +1,24 @@
+<div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <span ng-if="profile">You are logged in as:</span>
+  </div>
+
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2 text-center">
+        <ul class="list-unstyled owl-ts-v1">
+          <li class="item">
+            <img class="rounded-x img-bordered" src="{{profile.picture.url}}" alt="">
+            <div class="testimonials-v3-title">
+              <p>{{profile.name}}</p>
+              <!--<span>{{account.screen_name}}</span>-->
+            </div>
+            <!--<p>{{account.description}}<p>-->
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

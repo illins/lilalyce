@@ -170,8 +170,13 @@ namespace Wp {
   WpSetTangoCardsFormView::register_url(array("pattern"=>"/wp/wapo/set/tangocards/"));
   
   WpSetFreeForAllDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/free-for-all/"));
+  WpSetEmailDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/email/"));
   WpSetEmailListDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/email-list/"));
   WpSetMailChimpDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/mailchimp/"));
+  WpSetAnyTwitterFollowersDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/any-twitter-followers/"));
+  WpSetSelectTwitterFollowersDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/select-twitter-followers/"));
+  WpSetAnyFacebookFriendsDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/any-facebook-friends/"));
+  WpSetFacebookPageDeliveryFormView::register_url(array("pattern"=>"/wp/wapo/set/delivery/facebook-page/"));
   
   // Modules view.
   WpModuleListView::register_url(array("pattern"=>"/wp/wapo/module/"));

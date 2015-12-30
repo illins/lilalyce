@@ -30,7 +30,7 @@ namespace Wp {
         "delivery" => null,
         "email" => array(
             "email_list" => array(),
-            "max" => 5
+            "max" => 1
         ),
         "email_list" => array(
             "email_list" => array(),
@@ -96,6 +96,14 @@ namespace Wp {
 
     protected function get_context_data() {
       $c = parent::get_context_data();
+      
+      // Set some values for email max based on authentication.
+      if($this->request->user) {
+        $this->wapo->email->max = WpConfig::MAX_EMAIL_DELIVERY_COUNT_USER;
+      } else {
+        $this->wapo->email->max = WpConfig::MAX_EMAIL_DELIVERY_COUNT_GUEST;
+      }
+      
       $c['wapo'] = $this->wapo;
       $this->set_wapo();
       return $c;
@@ -176,7 +184,7 @@ namespace Wp {
         $this->wapo->profile->new->image = "";
       }
       
-      if(isset($_FILES['image'])) {
+      if(\Blink\Files::is_set('image')) {
         $file = new \Blink\Files("image");
         
         if(!$file->move("media/wp/tmp/profile", uniqid("profile-"))) {
@@ -273,33 +281,32 @@ namespace Wp {
   
   class WpSetFacebookPageDeliveryFormView extends WpWapoFormView {
     protected function form_valid() {
-      $page = $this->request->post->find("page", "");
-      
+      $pages = $this->request->post->find("pages", "");
       $this->wapo->delivery = "facebook-page";
-      $this->wapo->facebook->page = $page;
+      $this->wapo->facebook->page_list = explode(",", $pages);
       return parent::form_valid();
     }
   }
   
-  class WpSetFacebookFriendsDeliveryFormView extends WpWapoFormView {
+  class WpSetAnyFacebookFriendsDeliveryFormView extends WpWapoFormView {
     protected function form_valid() {
-      $this->wapo->delivery = "facebook-friends";
+      $this->wapo->delivery = "any-facebook-friends";
       return parent::form_valid();
     }
   }
   
-  class WpSetTwitterAnyTwitterFollowersFormView extends WpWapoFormView {
+  class WpSetAnyTwitterFollowersDeliveryFormView extends WpWapoFormView {
     protected function form_valid() {
       $this->wapo->delivery = "any-twitter-followers";
       return parent::form_valid();
     }
   }
   
-  class WpSetSelectTwitterFollowersFormView extends WpWapoFormView {
+  class WpSetSelectTwitterFollowersDeliveryFormView extends WpWapoFormView {
     protected function form_valid() {
       $followers = $this->request->post->find("followers", "");
       $this->wapo->delivery = "select-twitter-followers";
-      $this->wapo->twitter->followers = explode(",", $followers);
+      $this->wapo->twitter->follower_list = explode(",", $followers);
       return parent::form_valid();
     }
   }

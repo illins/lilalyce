@@ -6,6 +6,41 @@
   </div>
 
   <div class="panel-body">
+    <div>
+      <span ng-repeat="item in selected_email_list">
+        <span class="label label-light">
+          {{item.merges.FNAME}} {{item.merges.LNAME}} <em>({{item.email}})</em>
+          <i class="fa fa-times" ng-click="removeEmail(item)"></i>
+        </span>
+        <span ng-if="!$last">,</span>
+      </span>
+      <br /><br />
+      
+      <div class="well well-sm">
+        {{ email_list.length }} of {{ max_count }}
+      </div>
+    </div>
+    <div class="heading heading-v4 margin-bottom-40">
+      <h3>Contacts</h3>
+    </div>
+    
+    <div class="form-group">
+    <input type="text" class="form-control" placeholder="Filter" ng-model="search_text" ng-change="search(search_text)">
+  </div>
+    
+    <div class="row" ng-repeat="chunk in chunked_email_list">
+      <div class="col-xs-4" ng-repeat="item in chunk">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div ng-if="item.merges.FNAME || item.merges.LNAME">{{item.merges.FNAME}} {{item.merges.LNAME}} </div>
+            <em>({{item.email}})</em>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+    
 
     <md-content class="md-padding autocomplete" layout="column">
       <md-chips
