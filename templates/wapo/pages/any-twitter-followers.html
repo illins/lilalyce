@@ -1,13 +1,14 @@
 <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
 
 <div class="panel panel-default">
-  <div class="panel-heading">
-    <span ng-if="account">You are logged in as:</span>
+  <div class="panel-heading text-center">
+    <strong ng-if="account">You are logged in as</strong>
+    <strong ng-if="!account">Please log in to your twitter account</strong>
   </div>
 
   <div class="panel-body">
     <div class="row">
-      <div class="col-md-8 col-md-offset-2 text-center">
+      <div class="col-md-8 col-md-offset-2 text-center" ng-if="account">
         <ul class="list-unstyled owl-ts-v1">
           <li class="item">
             <img class="rounded-x img-bordered" src="{{account.profile_image_url_https}}" alt="">
@@ -19,6 +20,19 @@
           </li>
         </ul>
       </div>
+      
+      <div class="col-xs-offset-4 col-xs-4" ng-if="account">
+        <a class="btn btn-block btn-twitter" href="/twitter/logout/?skip=1&return=/wp/wapo/#/delivery/any-twitter-followers">
+          <i class="fa fa-twitter"></i> Sign Out
+        </a>
+      </div>
+
+      <div class="col-xs-offset-4 col-xs-4" ng-if="!account">
+        <a class="btn btn-block btn-twitter" href="/twitter/?skip=1&return=/wp/wapo/#/delivery/any-twitter-followers">
+          <i class="fa fa-twitter"></i> Twitter
+        </a>
+      </div>
+
     </div>
   </div>
 </div>

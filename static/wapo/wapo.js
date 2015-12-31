@@ -633,8 +633,7 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
     };
     
     $scope.search = function (keyword) {
-      console.log('search', keyword);
-      var searched_email_list = []
+      var searched_email_list = [];
 
       if (keyword) {
         searched_email_list = _.filter($scope.remaining_email_list, function (item) {
@@ -665,7 +664,12 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
       });
 
       // Chunk them again.
-      $scope.chunked_email_list = _.chunk($scope.remaining_email_list, 3);
+      if($scope.search_text) {
+        $scope.search($scope.search_text);
+      } else {
+        $scope.chunked_email_list = _.chunk($scope.remaining_email_list, 3);
+      }
+      
     };
 
     $scope.removeEmail = function (item) {
@@ -687,45 +691,16 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
     };
 
     $scope.setMail = function () {
-      $scope.email_list = [];
-      
-      _.map($scope.selected_email_list, function(item) {
-        $scope.email_list.push(item.email);
-      });
-      
-      $http.post('/wp/wapo/set/delivery/mailchimp/', {emails: $scope.email_list.join(',')}).success(function (response) {
+      $http.post('/wp/wapo/set/delivery/mailchimp/', {subscription: $scope.subscription.id, emails: $scope.email_list.join(',')}).success(function (response) {
         $rootScope.wapo = response.wapo;
         $location.path($scope.next_path);
       });
     };
     
-    
-
     $scope.clear = function () {
       $scope.email_list = [];
       $scope.subscription_email_list = [];
     };
-    
-    /**
-     * Search for emails!
-     */
-    $scope.querySearch = function(query) {
-      var results = query ? $scope.subscription_email_list.filter($scope.createFilterFor(query)) : [];
-      return results;
-    };
-    /**
-     * Create filter function for a query string
-     */
-    $scope.createFilterFor = function(query) {
-      var lowercaseQuery = angular.lowercase(query);
-      return function filterFn(item) {
-//        return (item.email.toLowerCase().indexOf(lowercaseQuery) === 0) || (item.email.toLowerCase().indexOf(lowercaseQuery) === 0);
-          var text = item.email+' '+item.merges.FNAME+' '+item.merges.LNAME;
-          text = text.toLowerCase();
-          return (text.indexOf(lowercaseQuery) > -1) || (text.indexOf(lowercaseQuery) > -1);
-      };
-    };
-  
   }]);
 
 wapoApp.controller('AnyTwitterFollowersCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
@@ -751,6 +726,11 @@ wapoApp.controller('AnyTwitterFollowersCtrl', ['$rootScope', '$scope', '$locatio
     };
     
     $scope.setTwitter = function() {
+      if(!$scope.account) {
+        alert('Please log into Twitter!');
+        return;
+      }
+      
       $http.post('/wp/wapo/set/delivery/any-twitter-followers/', {}).success(function(response) {
         $location.path($rootScope.next_path);
       });

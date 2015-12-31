@@ -239,32 +239,72 @@ namespace Wp {
     }
   }
   
-  class WpSetEmailDeliveryFormView extends WpWapoFormView {
+  /**
+   * Base class for email*delivery. 
+   * Cleans the emails sent from server and cleans duplicates.
+   * Sets the quantity.
+   */
+  class WpEmailDeliveryFormView extends WpWapoFormView {
+    protected function clean_emails($emails) {
+      $email_list = array();
+      foreach(explode(",", $emails) as $email) {
+        $trimmed = trim($email);
+        if($trimmed && !in_array($trimmed, $email_list)) {
+          $email_list[] = $trimmed;
+        }
+      }
+      
+      $this->wapo->quantity = count($email_list);
+      return $email_list;
+    }
+  }
+  
+  class WpSetEmailDeliveryFormView extends WpEmailDeliveryFormView {
     protected function form_valid() {
       $emails = $this->request->post->find("emails", "");
+      
+      $email_list = $this->clean_emails($emails);
+      if(!count($email_list)) {
+        $this->set_error("Please select at least one email!");
+        return $this->form_invalid();
+      }
       
       $this->wapo->delivery = "email";
-      $this->wapo->email->email_list = explode(",", $emails);
+      $this->wapo->email->email_list = $email_list;
       return parent::form_valid();
     }
   }
   
-  class WpSetEmailListDeliveryFormView extends WpWapoFormView {
+  class WpSetEmailListDeliveryFormView extends WpEmailDeliveryFormView {
     protected function form_valid() {
       $emails = $this->request->post->find("emails", "");
+      
+      $email_list = $this->clean_emails($emails);
+      if(!count($email_list)) {
+        $this->set_error("Please select at least one email!");
+        return $this->form_invalid();
+      }
       
       $this->wapo->delivery = "email-list";
-      $this->wapo->email_list->email_list = explode(",", $emails);
+      $this->wapo->email_list->email_list = $email_list;
       return parent::form_valid();
     }
   }
   
-  class WpSetMailChimpDeliveryFormView extends WpWapoFormView {
+  class WpSetMailChimpDeliveryFormView extends WpEmailDeliveryFormView {
     protected function form_valid() {
       $emails = $this->request->post->find("emails", "");
+      $subscription = $this->request->post->find("subscription", "");
+      
+      $email_list = $this->clean_emails($emails);
+      if(!count($email_list)) {
+        $this->set_error("Please select at least one email!");
+        return $this->form_invalid();
+      }
       
       $this->wapo->delivery = "mailchimp";
-      $this->wapo->mailchimp->email_list = explode(",", $emails);
+      $this->wapo->mailchimp->subscription = $subscription;
+      $this->wapo->mailchimp->email_list = $email_list;
       return parent::form_valid();
     }
   }

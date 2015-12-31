@@ -2,35 +2,37 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <select ng-model="subscription" class="form-control" ng-options="subscription as subscription.name for subscription in subscription_list track by subscription.id" ng-change="getSubscriptionEmails()"></select>
+
+    <div class="row">
+      <div class="col-xs-2">
+        <label>MailChimp List:</label>
+      </div>
+      <div class="col-xs-10">
+        <select ng-model="subscription" class="form-control" ng-options="subscription as subscription.name for subscription in subscription_list track by subscription.id" ng-change="getSubscriptionEmails()"></select>
+      </div>
+    </div>
   </div>
 
   <div class="panel-body">
     <div>
+      <span class="label label-default">{{ email_list.length}} <em>of</em> {{ max_count}}</span>
       <span ng-repeat="item in selected_email_list">
         <span class="label label-light">
           {{item.merges.FNAME}} {{item.merges.LNAME}} <em>({{item.email}})</em>
-          <i class="fa fa-times" ng-click="removeEmail(item)"></i>
+          <i class="fa fa-times" ng-click="removeEmail(item)" style='cursor: pointer;'></i>
         </span>
         <span ng-if="!$last">,</span>
       </span>
-      <br /><br />
-      
-      <div class="well well-sm">
-        {{ email_list.length }} of {{ max_count }}
-      </div>
     </div>
-    <div class="heading heading-v4 margin-bottom-40">
-      <h3>Contacts</h3>
-    </div>
-    
+    <br />
+
     <div class="form-group">
-    <input type="text" class="form-control" placeholder="Filter" ng-model="search_text" ng-change="search(search_text)">
-  </div>
-    
+      <input type="text" class="form-control" placeholder="Filter Contacts" ng-model="search_text" ng-change="search(search_text)">
+    </div>
+
     <div class="row" ng-repeat="chunk in chunked_email_list">
       <div class="col-xs-4" ng-repeat="item in chunk">
-        <div class="panel panel-default">
+        <div class="panel panel-default" ng-css="{'panel-light': email_list.indexOf(item.email) > -1}" style='cursor: pointer;' ng-click="addEmail(item)">
           <div class="panel-body">
             <div ng-if="item.merges.FNAME || item.merges.LNAME">{{item.merges.FNAME}} {{item.merges.LNAME}} </div>
             <em>({{item.email}})</em>
@@ -38,57 +40,6 @@
         </div>
       </div>
     </div>
-    
-    
-    
 
-    <md-content class="md-padding autocomplete" layout="column">
-      <md-chips
-        ng-model="selected_email_list"
-        md-autocomplete-snap
-        md-require-match="true">
-        
-        <md-autocomplete
-          md-selected-item="selected_item"
-          md-search-text="search_text"
-          md-items="item in querySearch(search_text)"
-          md-item-text="item.email"
-          placeholder="Search for an email">
-          <span md-highlight-text="search_text">{{item.merges.FNAME}} {{item.merges.LNAME}} ({{item.email}})</span>
-        </md-autocomplete>
-        <md-chip-template>
-          <span>
-            <strong>{{$chip.merges.FNAME}} {{$chip.merges.LNAME}}</strong>
-            <em>({{$chip.email}})</em>
-          </span>
-        </md-chip-template>
-      </md-chips>
-
-      <md-list class="fixedRows">
-        <md-subheader class="md-no-sticky">Contacts</md-subheader>
-        <md-list-item class="md-2-line contact-item" ng-repeat="item in subscription_email_list" ng-if="email_list.indexOf(item.email) < 0" ng-click="addEmail(item)">
-          <!--<img ng-src="{{contact.image}}" class="md-avatar" alt="{{contact.name}}" />-->
-          <div class="md-list-item-text compact">
-            <h3>{{item.merges.FNAME}} {{item.merges.LNAME}}</h3>
-            <p>{{item.email}}</p>
-          </div>
-        </md-list-item>
-<!--        <md-list-item class="md-2-line contact-item selected" ng-repeat="email in selected_email_list">
-          <img ng-src="{{contact.image}}" class="md-avatar" alt="{{contact.name}}" />
-          <div class="md-list-item-text compact">
-            <h3>{{email.merges.FNAME}} {{email.merges.LNAME}}</h3>
-            <p>{{email.email}}</p>
-          </div>
-        </md-list-item>-->
-      </md-list>
-    </md-content>
-
-    <!--    <table class="table table-striped">
-          <tbody>
-            <tr ng-repeat="email in subscription_email_list">
-              <td>{{email.email}}</td>
-            </tr>
-          </tbody>
-        </table>-->
   </div>
 </div>
