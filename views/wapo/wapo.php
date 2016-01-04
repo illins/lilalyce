@@ -4,13 +4,13 @@ namespace Wp {
   require_once 'blink/base/view/generic.php';
   require_once 'apps/wapo/model.php';
   
-  class WpBaseView extends \Blink\TemplateView {
-    protected function get_template() {
-      return WpTemplateConfig::Template("wapo/base.twig");
-    }
-  }
-    
-  // JSON views.
+  require_once 'apps/wp/views/wapo/validate.php';
+  require_once 'apps/wp/views/wapo/create.php';
+  require_once 'apps/wp/views/wapo/send.php';
+  
+  /**
+   * Base class for setting data in the pipeline.
+   */
   class WpWapoFormView extends \Blink\JSONFormView {
     protected $form_class = "\Blink\Form";
     private $wapo_schema = array(
@@ -37,38 +37,68 @@ namespace Wp {
             "max" => 25
         ),
         "mailchimp" => array(
+            "account" => null,
             "subscription" => null,
             "email_list" => array(),
             "max" => 50
         ),
         "text" => array(
-            "number_list" => array()
+            "number_list" => array(),
+            "max" => 50
         ),
         "twitter" => array(
             "account" => null,
             "follower_list" => array()
         ),
         "facebook" => array(
-            "account" => null,
-            "page_list" => array()
+            "profile" => null,
+            "page_list" => array(),
+            "page_name_list" => array()
         ),
         "delivery_message" => "",
         "quantity" => 0,
-        "payment-method" => null
+        "payment_method" => null
     );
     protected $wapo_json = null;
     protected $wapo = null;
     
     protected $require_csrf_token = false;
 
+    /**
+     * Set the wapo session.
+     */
     protected function set_wapo() {
-      $this->request->cookie->set("wapo", json_encode($this->wapo));
-//      $this->request->cookie->delete("wapo");
+      $this->request->session->set("wapo", $this->wapo);
     }
     
+    /**
+     * Convert a dictionary to an object recursively.
+     * @param array $mixed
+     * @return \stdClass
+     */
+    final protected function to_object($mixed) {
+      if(is_array($mixed)) {
+        $object = new \stdClass();
+        foreach($mixed as $key => $value) {
+          if(is_array($value)) {
+            $object->{$key} = $this->to_object($value);
+          } else {
+            $object->{$key} = $value;
+          }
+        }
+        return $object;
+      } else {
+        return null;
+      }
+    }
+    
+    final protected function get_new_wapo() {
+      $this->wapo = $this->to_object($this->wapo_schema);
+    }
+
     protected function get_wapo() {
       if(!$this->wapo_json) {
-        $this->wapo_json = (object) $this->wapo_schema;
+        $this->wapo_json = $this->to_object($this->wapo_schema);
       }
       
       if($this->wapo) {
@@ -76,32 +106,26 @@ namespace Wp {
       }
       
       try {
-        $wapo_string = $this->request->cookie->find("wapo", null);
-        $this->wapo = json_decode($wapo_string);
+        $this->wapo = $this->request->session->find("wapo", null);
       } catch (\Exception $ex) {
         $this->wapo = null;
       }
       
       if(!$this->wapo) {
         $this->wapo = $this->wapo_json;
-      } else {
-        
-//        $this->wapo = $this->wapo_json;
-//        foreach($this->wapo_schema as $key => $value) {
-//          $this->wapo->{$key} = $wapo->{$key};
-//        }
       }
-      
     }
 
     protected function get_context_data() {
       $c = parent::get_context_data();
       
       // Set some values for email max based on authentication.
-      if($this->request->user) {
-        $this->wapo->email->max = WpConfig::MAX_EMAIL_DELIVERY_COUNT_USER;
-      } else {
-        $this->wapo->email->max = WpConfig::MAX_EMAIL_DELIVERY_COUNT_GUEST;
+      if ($this->wapo) {
+        if ($this->request->user) {
+          $this->wapo->email->max = WpConfig::MAX_EMAIL_DELIVERY_COUNT_USER;
+        } else {
+          $this->wapo->email->max = WpConfig::MAX_EMAIL_DELIVERY_COUNT_GUEST;
+        }
       }
       
       $c['wapo'] = $this->wapo;
@@ -128,6 +152,15 @@ namespace Wp {
     }
   }
   
+  /**
+   * Reset the data for use later.
+   */
+  class WpStartOverFormView extends WpWapoFormView {
+    protected function get_wapo() {
+      $this->wapo = $this->get_new_wapo();
+    }
+  }
+  
   class WpSetModuleFormView extends WpWapoFormView {
     
     public function __construct(&$request, $options = array()) {
@@ -141,22 +174,21 @@ namespace Wp {
         return $this->form_invalid();
       }
       
-      $this->wapo->module = $module;
+      $this->wapo->module = (object) $module->to_plain_array();
       return parent::form_valid();
     }
   }
   
   class WpSetProfileFormView extends WpWapoFormView {
     protected function form_valid() {
-      $profile = \Wapo\Profile::get_or_null(array("id"=>$this->request->post->find("profile_id"), "wapo_distributor.user"=>1));
+      $profile = \Wapo\Profile::get_or_null(array("id"=>$this->request->post->find("profile_id"), "wapo_distributor.user"=>$this->request->user));
       
       if(!$profile) {
         $this->set_error("Invalid profile selected!");
         return $this->form_invalid();
       }
       
-      $this->wapo->profile->id = $profile->id;
-      $this->wapo->profile->new = $this->wapo_json->new;
+      $this->wapo->profile->profile = (object) $profile->to_plain_array();
       return parent::form_valid();
     }
   }
@@ -218,13 +250,25 @@ namespace Wp {
         return $this->form_invalid();
       }
       
+      
       $this->wapo->marketplace = "tangocards";
-      $this->wapo->tangocards = $tangocards;
+      $this->wapo->tangocards = (object) $tangocards->to_plain_array();
       return parent::form_valid();
     }
   }
   
-  class WpSetFreeForAllDeliveryFormView extends WpWapoFormView {
+  /**
+   * Base class for *delivery.
+   * Set the delivery message.
+   */
+  class WpDeliveryFormView extends WpWapoFormView {
+    protected function form_valid() {
+      $this->wapo->delivery_message = $this->request->post->find("delivery_message", "");
+      return parent::form_valid();
+    }
+  }
+  
+  class WpSetFreeForAllDeliveryFormView extends WpDeliveryFormView {
     protected function form_valid() {
       $quantity = $this->request->post->find("quantity", 0);
       if($quantity < 1) {
@@ -234,7 +278,6 @@ namespace Wp {
       
       $this->wapo->delivery = "free-for-all";
       $this->wapo->quantity = $quantity;
-      $this->wapo->delivery_message = $this->request->post->find("delivery_message", "");
       return parent::form_valid();
     }
   }
@@ -244,7 +287,7 @@ namespace Wp {
    * Cleans the emails sent from server and cleans duplicates.
    * Sets the quantity.
    */
-  class WpEmailDeliveryFormView extends WpWapoFormView {
+  class WpEmailDeliveryFormView extends WpDeliveryFormView {
     protected function clean_emails($emails) {
       $email_list = array();
       foreach(explode(",", $emails) as $email) {
@@ -302,97 +345,353 @@ namespace Wp {
         return $this->form_invalid();
       }
       
+      // Get mailchimp ping.
+      $account = $this->wapo->mailchimp->account;
+      if(!$account) {
+        $api_key = $this->request->cookie->prefix("mailchimp-")->find("apikey", "");
+        $account = (new \Drewm\MailChimp($api_key))->call("helper/ping");
+      }
+      
       $this->wapo->delivery = "mailchimp";
+      $this->wapo->mailchimp->account = $account;
       $this->wapo->mailchimp->subscription = $subscription;
       $this->wapo->mailchimp->email_list = $email_list;
       return parent::form_valid();
     }
   }
   
-  class WpSetTextDeliveryFormView extends WpWapoFormView {
+  class WpSetTextDeliveryFormView extends WpDeliveryFormView {
     protected function form_valid() {
       $numbers = $this->request->post->find("numbers", "");
       
+      $number_list = array();
+      $error = false;
+      foreach(explode(",", $numbers) as $number) {
+        $trimmed = (int) trim($number);
+        if(!is_int($trimmed)) {
+          $error = true;
+          break;
+        }
+        if($trimmed) {
+          $number_list[] = $trimmed;
+        }
+      }
+      
+      if($error) {
+        $this->set_error("You have entered some invalid numbers!");
+        return $this->form_invalid();
+      }
+      
+      if(!count($number_list)) {
+        $this->set_error("Please select at least one number!");
+        return $this->form_invalid();
+      }
+      
       $this->wapo->delivery = "text";
-      $this->wapo->numbers = explode(",", $numbers);
+      $this->wapo->text->number_list = $number_list;
+      $this->wapo->quantity = count($number_list);
+      
       return parent::form_valid();
     }
   }
   
-  class WpSetFacebookPageDeliveryFormView extends WpWapoFormView {
+  class WpSetFacebookPageDeliveryFormView extends WpDeliveryFormView {
     protected function form_valid() {
-      $pages = $this->request->post->find("pages", "");
+      $page = $this->request->post->find("page", "");
+      $name = $this->request->post->find("name", "");
+      $quantity = $this->request->post->find("quantity", 0);
+      
+      if(!$this->wapo->facebook->profile) {
+        $fbapi = new \BlinkFacebook\BlinkFacebookApi($this->request);
+        $this->wapo->facebook->profile = $fbapi->getUserProfile();
+        $this->wapo->facebook->picture = $fbapi->getUserPicture();
+      }
+      
       $this->wapo->delivery = "facebook-page";
-      $this->wapo->facebook->page_list = explode(",", $pages);
+      $this->wapo->facebook->page = $page;
+      $this->wapo->facebook->page_name =$name;
+      $this->wapo->quantity = $quantity;
       return parent::form_valid();
     }
   }
   
-  class WpSetAnyFacebookFriendsDeliveryFormView extends WpWapoFormView {
+  class WpSetAnyFacebookFriendsDeliveryFormView extends WpDeliveryFormView {
     protected function form_valid() {
+      $quantity = $this->request->post->find("quantity", 0);
+      
+      if($quantity < 1) {
+        $this->set_error("Please enter a valid quantity greater than 0!");
+        return $this->form_invalid();
+      }
+      
+      if(!$this->wapo->facebook->profile) {
+        $fbapi = new \BlinkFacebook\BlinkFacebookApi($this->request);
+        $this->wapo->facebook->profile = $fbapi->getUserProfile();
+        $this->wapo->facebook->picture = $fbapi->getUserPicture();
+      }
+      
       $this->wapo->delivery = "any-facebook-friends";
+      $this->wapo->quantity = $quantity;
       return parent::form_valid();
     }
   }
   
-  class WpSetAnyTwitterFollowersDeliveryFormView extends WpWapoFormView {
+  class WpSetAnyTwitterFollowersDeliveryFormView extends WpDeliveryFormView {
     protected function form_valid() {
+      $quantity = $this->request->post->find("quantity", 0);
+      
+      if($quantity < 1) {
+        $this->set_error("Please enter a valid quantity greater than 0!".$quantity);
+        return $this->form_invalid();
+      }
+      
+      if(!$this->wapo->twitter->account) {
+        $tapi = new \BlinkTwitter\BlinkTwitterAPI($this->request);
+        $this->wapo->twitter->account = $tapi->getProfile();
+      }
+      
       $this->wapo->delivery = "any-twitter-followers";
+      $this->wapo->quantity = $quantity;
       return parent::form_valid();
     }
   }
   
-  class WpSetSelectTwitterFollowersDeliveryFormView extends WpWapoFormView {
+  class WpSetSelectTwitterFollowersDeliveryFormView extends WpDeliveryFormView {
     protected function form_valid() {
       $followers = $this->request->post->find("followers", "");
+      
+      $follower_list = array();
+      foreach(explode(",", $followers) as $follower) {
+        $trimmed = trim($follower);
+        if($follower) {
+          $follower_list[] = $trimmed;
+        }
+      }
+      
+      if(!count($follower_list)) {
+        $this->set_error("Please select at least one follower!");
+        return $this->form_invalid();
+      }
+      
+      if(!$this->wapo->twitter->account) {
+        $tapi = new \BlinkTwitter\BlinkTwitterAPI($this->request);
+        $this->wapo->twitter->account = $tapi->getProfile();
+      }
+      
       $this->wapo->delivery = "select-twitter-followers";
       $this->wapo->twitter->follower_list = explode(",", $followers);
+      $this->wapo->quantity = count($follower_list);
       return parent::form_valid();
     }
   }
   
-  class WpoCheckoutWapoFormView extends WpWapoFormView {
+  class WpValidateFormView extends WpWapoFormView {
+    private $wepay;
+    
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      $c['wepay'] = $this->wepay;
+      return $c;
+    }
+    
     protected function form_valid() {
+      $payment_method = $this->request->post->find("payment_method");
+      $message = "";
+      
+      if(!in_array($payment_method, array("wepay"))) {
+        $this->set_error("Invalid payment method!");
+        return $this->form_invalid();
+      }
+      
+      $message = validate_module($this->request, $this->wapo);
+      if($message) {
+        $this->set_error($message);
+        return $this->form_invalid();
+      }
+      
+      $profile = validate_profile($this->request, $this->wapo);
+      if($profile) {
+        $this->set_error($profile);
+        return $this->form_invalid();
+      }
+      
+      if(!in_array($this->wapo->marketplace, array("tangocards"))) {
+        $this->set_error("Please select a reward!");
+        return $this->form_invalid();
+      }
+      
+//      \Blink\blink_log($this->wapo->marketplace);
+      
+      if($this->wapo->marketplace == "tangocards") {
+        $tangocards = validate_tangocards($this->request, $this->wapo);
+        if($tangocards) {
+          $this->set_error($tangocards);
+          return $this->form_invalid();
+        }
+      }
+      
+      // Validate delivery method.
+      
+      if($this->wapo->delivery == "free-for-all") {
+        $message = validate_delivery_ffa($this->request, $this->wapo);
+      } else if($this->wapo->delivery == "email") {
+        $message = validate_delivery_email($this->request, $this->wapo);
+      } else if($this->wapo->delivery == "email-list") {
+        $message = validate_delivery_email_list($this->request, $this->wapo);
+      } else if($this->wapo->delivery == "mailchimp") {
+        $message = validate_delivery_mailchimp($this->request, $this->wapo);
+      } else if($this->wapo->delivery == "facebook-page") {
+        $message = validate_delivery_facebook_page($this->request, $this->wapo);
+      } else if($this->wapo->delivery == "any-facebook-friends") {
+        $message = validate_delivery_facebook($this->request, $this->wapo);
+      } else if($this->wapo->delivery == "any-twitter-followers") {
+        $message = validate_delivery_twitter($this->request, $this->wapo);
+      } else if($this->wapo->delivery == "select-twitter-followers") {
+        $message = validate_delivery_twitter($this->request, $this->wapo);
+      } else if($this->wapo->delivery == "text") {
+        $message = validate_delivery_text($this->request, $this->wapo);
+      } else {
+        $message = "Invalid delivery method!";
+      }
+      
+      if($message) {
+        $this->set_error($message);
+        return $this->form_invalid();
+      }
+      
+      // Calculate the checkout stuff.
       $amount = 0;
       $short_description = "";
-      $redirect_uri = sprintf("%s/wp/create/", \Blink\SiteConfig::SITE);
-      
-      
-      // Do validation here.
-      //list($error, $message, $data) = validate_wapo($this->request);
-      
-      // If: tango-card - Set the 'sku' as the 'short_description'.
-      // Else: wapo - Set the 'promotion category name' as the 'short_description'.
-      if ($this->promotioncategory->tag == "tango-card") {
-        $short_description = $data['sku']->sku;
-      } else if ($this->promotioncategory->tag == "wapo") {
-        $short_description = $data['promotioncategory']->name;
-      }
+      $redirect_uri = sprintf("%s/wp/wapo/", \Blink\SiteConfig::SITE);
       
       if($this->wapo->marketplace == "tangocards") {
         $short_description = $this->wapo->tangocards->sku;
-      } else if($this->wapo->marketplace == "promotion") {
-        $short_description = $this->wapo->promotion->name;
+        $amount += ($this->wapo->quantity * ($this->wapo->tangocards->unit_price / 100));
       }
-
+      
       // Create the checkout.
-      // @todo - Validate that it was created.
-      $wepay = new \WePay\WepayAPI();
-      $checkout = $wepay->checkout_create($data['total'], $short_description, $redirect_uri);
-
-      // Add to context.
-      $context['checkout'] = $checkout;
-
-
+      if($payment_method == "wepay") {
+        try {
+          $wepay = new \WePay\WepayAPI();
+          $this->wepay = $wepay->checkout_create($amount, $short_description, $redirect_uri);
+          
+          if(!$this->wepay->checkout_id) {
+            throw new Exception("Could not initialize payment method");
+          }
+        } catch (\Exception $ex) {
+          $this->set_error("Could not initialize payment method!");
+          return $this->form_invalid();
+        }
+        $this->wapo->payment_method = $payment_method;
+      } else {
+        $this->set_error("Invalid payment method!");
+        return $this->form_invalid();
+      }
+      
+//      $this->request->session->set("checkoutid", 760173062);760173062
+      $this->request->session->prefix("wepay")->set("checkout_id", $this->wepay->checkout_id);
+      
       return parent::form_valid();
     }
   }
   
   class WpPaymentFormView extends WpWapoFormView {
+    protected $verified = false;
+    
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      $c['verified'] = $this->verified;
+      return $c;
+    }
     protected function form_valid() {
-      if($this->wapo->payment_method == "wepay") {
-        
+      $checkout_id = $this->request->session->prefix("wepay")->find("checkout_id", 760173062);
+      $checkout = (new \WePay\WepayAPI())->checkout($checkout_id);
+      
+      if($checkout->state == "captured") {
+        $this->verified = true;
+      } else {
+        $this->set_error("Could not verify payment or payment did not complete!");
+        return $this->form_invalid();
       }
+      
+      return parent::form_valid();
+    }
+  }
+  
+  /**
+   * Form view for post checkout.
+   * Delete the wapo from the context.
+   */
+  class WpCheckoutFormView extends WpWapoFormView {
+    protected $wp;
+    
+    protected function get_wapo() {
+      $this->wapo = null;
+    }
+    
+    protected function set_wapo() {
+      $this->wapo = null;
+    }
+    
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      unset($c['wapo']);
+      return $c;
+    }
+  }
+  
+  class WpCreateFormView extends WpWapoFormView {
+    protected $wapo_id;
+    
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      $c['wapo_id'] = $this->wapo_id;
+      return $c;
+    }
+    
+    protected function form_valid() {
+      list($wapo, $error) = create_wapo($this->request, $this->wapo);
+      
+      if($error) {
+        $this->set_error($error);
+        return $this->form_invalid();
+      }
+      
+      $this->wapo_id = $wapo->id;
+      $this->request->session->set("wapo_id", $wapo->id);
+      
+      return parent::form_valid();
+    }
+  }
+  
+  class WpSendFormView extends WpCheckoutFormView {
+    protected function form_valid() {
+      // Check that the wapo to send matches the wapo in the session.
+      if($this->request->session->find("wapo_id") != $this->request->post->find("wapo_id")) {
+        $this->set_error("Invalid wapo id!");
+        return $this->form_invalid();
+      }
+      
+      // Get the wapo.
+      $wapo = \Wapo\Wapo::get_or_null(array("id"=>$this->request->session->find("wapo_id")));
+      if(!$wapo) {
+        $this->set_error("Wapo not found!");
+        return $this->form_invalid();
+      }
+      
+      // Check that the wapo can be sent.
+//      if($wapo->status != "paid") {
+//        $this->set_error("Wapo cannot be sent at this time!");
+//        return $this->form_invalid();
+//      }
+      
+      // Send the wapo.
+      $result = send_wapo($this->request, $wapo);
+      if($result) {
+        $this->set_error($result);
+        return $this->form_invalid();
+      }
+      
       return parent::form_valid();
     }
   }

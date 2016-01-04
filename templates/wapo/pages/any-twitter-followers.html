@@ -3,36 +3,37 @@
 <div class="panel panel-default">
   <div class="panel-heading text-center">
     <strong ng-if="account">You are logged in as</strong>
-    <strong ng-if="!account">Please log in to your twitter account</strong>
+    <strong ng-if="!account">Please log in to your Twitter account</strong>
   </div>
 
   <div class="panel-body">
+    <div class="row" ng-if="account">
+      <div class="col-md-8 col-md-offset-2 text-center" ng-include="'/apps/wp/templates/wapo/includes/twitter-profile.html'"></div>
+    </div>
+    
     <div class="row">
-      <div class="col-md-8 col-md-offset-2 text-center" ng-if="account">
-        <ul class="list-unstyled owl-ts-v1">
-          <li class="item">
-            <img class="rounded-x img-bordered" src="{{account.profile_image_url_https}}" alt="">
-            <div class="testimonials-v3-title">
-              <p>{{account.name}}</p>
-              <span>{{account.screen_name}}</span>
-            </div>
-            <p>{{account.description}}<p>
-          </li>
-        </ul>
-      </div>
-      
       <div class="col-xs-offset-4 col-xs-4" ng-if="account">
-        <a class="btn btn-block btn-twitter" href="/twitter/logout/?skip=1&return=/wp/wapo/#/delivery/any-twitter-followers">
+        <button class="btn btn-block btn-twitter"ng-click="setPath('/delivery/any-twitter-followers', '/twitter/logout/?skip=1&return=/wp/wapo/')">
           <i class="fa fa-twitter"></i> Sign Out
-        </a>
+        </button>
       </div>
 
       <div class="col-xs-offset-4 col-xs-4" ng-if="!account">
-        <a class="btn btn-block btn-twitter" href="/twitter/?skip=1&return=/wp/wapo/#/delivery/any-twitter-followers">
+        <button class="btn btn-block btn-twitter" ng-click="setPath('/delivery/any-twitter-followers', '/twitter/?skip=1&return=/wp/wapo/')">
           <i class="fa fa-twitter"></i> Twitter
-        </a>
+        </button>
       </div>
-
     </div>
+    
+    <div class="form-group">
+      <label for="quantity">Quantity</label>
+      <input type="number" class="form-control" id="quantity" ng-model="quantity" placeholder="Quantity">
+    </div>
+
+    <div class="form-group">
+      <label>Delivery Message</label>
+      <textarea class="form-control" rows="5" ng-model="delivery_message"></textarea>
+    </div>
+    
   </div>
 </div>

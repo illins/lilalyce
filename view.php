@@ -268,7 +268,7 @@ namespace Wp {
     protected function get_context_data() {
       $c = parent::get_context_data();
       
-      $connection = new \TwitterOAuth(\Blink\ConfigTwitter::$ConsumerKey, \Blink\ConfigTwitter::$ConsumerSecret, $this->request->session->nmsp("twitter")->get('oauth_token'), $this->request->session->nmsp("twitter")->get('oauth_token_secret'));
+      $connection = new \TwitterOAuth(\Blink\ConfigTwitter::$ConsumerKey, \Blink\ConfigTwitter::$ConsumerSecret, $this->request->session->prefix("twitter-")->get('oauth_token'), $this->request->session->prefix("twitter-")->get('oauth_token_secret'));
       $followers = $connection->get('followers/list');
       $c['followers'] = $followers;
       
@@ -288,7 +288,7 @@ namespace Wp {
       $c = parent::get_context_data();
       
       try {
-        $connection = new \TwitterOAuth(\Blink\ConfigTwitter::$ConsumerKey, \Blink\ConfigTwitter::$ConsumerSecret, $this->request->session->nmsp("twitter")->get('oauth_token'), $this->request->session->nmsp("twitter")->get('oauth_token_secret'));
+        $connection = new \TwitterOAuth(\Blink\ConfigTwitter::$ConsumerKey, \Blink\ConfigTwitter::$ConsumerSecret, $this->request->session->prefix("twitter-")->get('oauth_token'), $this->request->session->prefix("twitter-")->get('oauth_token_secret'));
         
         $wapo = Wapo::queryset()->get(array("id"=>$this->request->session->find("wapo_id")), "Wapo not found.");
         if($wapo->delivery_method_abbr == "atf") {
@@ -340,7 +340,7 @@ namespace Wp {
           'apiCallback' => sprintf("%s/user/login/instagram/callback/", \Blink\SiteConfig::SITE)
       );
       $instagram = new \Instagram($config);
-      $instagram->setAccessToken($this->request->session->nmsp("instagram")->find("access_token"));
+      $instagram->setAccessToken($this->request->session->prefix("instagram-")->find("access_token"));
       $c['followers'] = $instagram->getUserFollower();
       
       return $c;
@@ -365,7 +365,7 @@ namespace Wp {
             'apiCallback' => sprintf("%s/user/login/instagram/callback/", \Blink\SiteConfig::SITE)
         );
         $instagram = new \Instagram($config);
-        $instagram->setAccessToken($this->request->session->nmsp("instagram")->find("access_token"));
+        $instagram->setAccessToken($this->request->session->prefix("instagram-")->find("access_token"));
 
         $wapo = Wapo::queryset()->get(array("id"=>$this->request->session->find("wapo_id")), "Wapo not found.");
         if($wapo->delivery_method_abbr == "aif") {

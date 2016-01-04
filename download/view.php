@@ -870,7 +870,7 @@ namespace Wp {
       $targeturl = $cresult['targeturl'];
       
       // Check that user is authenticated using twitter.
-      $connection = new \TwitterOAuth(\Blink\ConfigTwitter::$ConsumerKey, \Blink\ConfigTwitter::$ConsumerSecret, $this->request->session->nmsp("twitter")->get('oauth_token'), $this->request->session->nmsp("twitter")->get('oauth_token_secret'));
+      $connection = new \TwitterOAuth(\Blink\ConfigTwitter::$ConsumerKey, \Blink\ConfigTwitter::$ConsumerSecret, $this->request->session->prefix("twitter-")->get('oauth_token'), $this->request->session->prefix("twitter-")->get('oauth_token_secret'));
       $account = $connection->get('account/verify_credentials');
       if (!isset($account->screen_name)) {
         \Blink\Messages::error("Please log in with Twitter.");

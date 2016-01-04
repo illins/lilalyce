@@ -235,7 +235,7 @@
 //      
 //      // If Twitter, we get the screen_name.
 //      if(in_array($cookies['delivery'], array("atf", "stf"))) {
-//        $connection = new \TwitterOAuth(\Blink\ConfigTwitter::$ConsumerKey, \Blink\ConfigTwitter::$ConsumerSecret, $request->session->nmsp("twitter")->get('oauth_token'), $request->session->nmsp("twitter")->get('oauth_token_secret'));
+//        $connection = new \TwitterOAuth(\Blink\ConfigTwitter::$ConsumerKey, \Blink\ConfigTwitter::$ConsumerSecret, $request->session->prefix("twitter-")->get('oauth_token'), $request->session->prefix("twitter-")->get('oauth_token_secret'));
 //        $account = $connection->get('account/verify_credentials');
 //        $external = $account->screen_name;
 //      }

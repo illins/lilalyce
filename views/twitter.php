@@ -34,7 +34,7 @@ namespace Wp {
     protected function get_context_data() {
       $context = parent::get_context_data();
       
-      $connection = new \TwitterOAuth(\Blink\Config::$TwitterConsumerKey, \Blink\Config::$TwitterConsumerSecret, $this->request->session->nmsp("twitter")->get('oauth_token'), $this->request->session->nmsp("twitter")->get('oauth_token_secret'));
+      $connection = new \TwitterOAuth(\Blink\Config::$TwitterConsumerKey, \Blink\Config::$TwitterConsumerSecret, $this->request->session->prefix("twitter-")->get('oauth_token'), $this->request->session->prefix("twitter-")->get('oauth_token_secret'));
       $follower_list = $connection->get('followers/list', array("page"=>$this->request->get->find("page", 1)));
       
       return $context;
@@ -48,7 +48,7 @@ namespace Wp {
     protected function get_context_data() {
       $context = parent::get_context_data();
       
-      $connection = new \TwitterOAuth(\Blink\Config::$TwitterConsumerKey, \Blink\Config::$TwitterConsumerSecret, $this->request->session->nmsp("twitter")->get('oauth_token'), $this->request->session->nmsp("twitter")->get('oauth_token_secret'));
+      $connection = new \TwitterOAuth(\Blink\Config::$TwitterConsumerKey, \Blink\Config::$TwitterConsumerSecret, $this->request->session->prefix("twitter-")->get('oauth_token'), $this->request->session->prefix("twitter-")->get('oauth_token_secret'));
       $status = $connection->post('statuses/update', array('status' => 'Test message to twitter.'));
       
       return $context;

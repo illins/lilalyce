@@ -25,7 +25,7 @@
 
   {% if module.tag != "announcement" %}
     <ul class="list-group">
-      <li class="list-group-item"><h3>Delivery Method <small>{{ wapo.delivery_method }}</small></h3></li>
+      <li class="list-group-item"><h3>Delivery Method <small>{{ wapo.delivery_method | filenameFilter }}</small></h3></li>
       <li class="list-group-item"><h3>Expiring Date <small>{{ wapo.expiring_date }}</small></h3></li>
       <li class="list-group-item"><h3>Total Cost <small>${{ checkout.gross }}</small></h3></li>
       <li class="list-group-item"><h3>Total/Downloaded <small>{{ wapo.quantity }} / {{ wapo.downloaded }}</small></h3></li>

@@ -1,24 +1,39 @@
 <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
 
 <div class="panel panel-default">
-  <div class="panel-heading">
-    <span ng-if="profile">You are logged in as:</span>
+  <div class="panel-heading text-center">
+    <strong ng-if="profile">You are logged in as</strong>
+    <strong ng-if="!profile">Please log in to your Facebook account</strong>
   </div>
 
   <div class="panel-body">
+    <div class="row" ng-if="profile">
+      <div class="col-md-8 col-md-offset-2 text-center" ng-include="'/apps/wp/templates/wapo/includes/facebook-profile.html'"></div>
+    </div>
+
     <div class="row">
-      <div class="col-md-8 col-md-offset-2 text-center">
-        <ul class="list-unstyled owl-ts-v1">
-          <li class="item">
-            <img class="rounded-x img-bordered" src="{{profile.picture.url}}" alt="">
-            <div class="testimonials-v3-title">
-              <p>{{profile.name}}</p>
-              <!--<span>{{account.screen_name}}</span>-->
-            </div>
-            <!--<p>{{account.description}}<p>-->
-          </li>
-        </ul>
+      <div class="col-xs-offset-4 col-xs-4" ng-if="profile">
+        <button class="btn btn-block btn-twitter" ng-click="setPath('/delivery/any-facebook-friends', '/facebook/logout/?skip=1&return=/wp/wapo/')">
+          <i class="fa fa-facebook"></i> Sign Out
+        </button>
+      </div>
+
+      <div class="col-xs-offset-4 col-xs-4" ng-if="!profile">
+        <button class="btn btn-block btn-twitter" ng-click="setPath('/delivery/any-facebook-friends', '/facebook/?skip=1&return=/wp/wapo/')">
+          <i class="fa fa-facebook"></i> Facebook
+        </button>
       </div>
     </div>
+    
+    <div class="form-group">
+      <label for="quantity">Quantity</label>
+      <input type="number" class="form-control" id="quantity" ng-model="quantity" placeholder="Quantity">
+    </div>
+
+    <div class="form-group">
+      <label>Delivery Message</label>
+      <textarea class="form-control" rows="5" ng-model="delivery_message"></textarea>
+    </div>
+
   </div>
 </div>
