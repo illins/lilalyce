@@ -15,25 +15,26 @@ namespace Wp {
       $wapo = \Wapo\Wapo::get_or_404(array("id"=>$this->request->session->find("wapo_id", null)), "Invalid Wapo id!");
       $notsent = \Wapo\WapoRecipient::queryset()->count(array("wapo"=>$wapo,"sent"=>false));
       
-      // Get marketplace item.
-      $tangocards = null;
-      if($wapo->marketplace == "tangocards") {
-        $tangocards = \Wapo\TangoCardRewards::get_or_null(array("sku"=>$wapo->sku));
+      // If we don't have this data, fetch it and populate it.
+      if(!$wapo->checkout) {
+        if($wapo->payment_method->tag == "wepay") {
+          $checkout = (new \WePay\WepayAPI())->checkout($wapo->checkoutid);
+          $wapo->checkout = json_encode($checkout);
+          $wapo->save(false);
+        }
       }
-      
-      $checkout = (new \WePay\WepayAPI())->checkout($wapo->checkoutid);
       
       // Output data.
       $c['wapo'] = array(
           "id" => $wapo->id,
           "profile" => $wapo->profile,
-          "delivery_method" => $wapo->delivery_method,
+          "delivery_method" => str_replace("-", " ", $wapo->delivery_method),
           "payment_method" => $wapo->payment_method,
           "quantity" => $wapo->quantity,
-          "date_created" => $wapo->date_created,
-          "tangocards" => $tangocards,
+          "timestamp" => $wapo->timestamp,
+          "tangocardrewards" => $wapo->tangocardrewards,
           "notsent" => $notsent,
-          "gross" => $checkout->gross
+          "checkout" => json_decode($wapo->checkout)
       );
       return $c;
     }

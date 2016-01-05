@@ -14,7 +14,7 @@ namespace Wp {
 
       // Set the profile.
       if ($wpd->profile->profile) {
-        $wapo->profile = $wpd->profile->profile->id;
+        $wapo->profile = \Wapo\Profile::get_or_404(array("id"=>$wpd->profile->profile->id), "Profile not found!");
       } else {
         $user_list = \User\User::queryset()->filter(array("email" => $wpd->profile->new->email))->fetch();
 
@@ -59,7 +59,10 @@ namespace Wp {
 
       // Set marketplace extras.
       if ($wpd->marketplace == "tangocards") {
+        $wapo->tangocardrewards = \Wapo\TangoCardRewards::get_or_404(array("sku"=>$wpd->tangocards->sku), "Reward not found!");
         $wapo->sku = $wpd->tangocards->sku;
+      } else if ($wpd->marketplace == "promotion") {
+        
       }
 
       $wapo->marketplace = $wpd->marketplace;
@@ -75,6 +78,8 @@ namespace Wp {
       $wapo->status = "paid";
 
       $wapo->save(false);
+      $wapo->profile->wapo_count += 1;
+      $wapo->profile->save(false);
 
       $order_list = array();
       if ($wpd->marketplace == "tangocards") {
@@ -333,7 +338,7 @@ namespace Wp {
               "name" => "John Doe",
               "email" => \Blink\TangoCardConfig::EMAIL),
           "sku" => 'TNGO-E-V-STD',
-          "amount" => ($reward->unit_price / 100),
+          "amount" => $reward->unit_price,
           "reward_message" => "Thank you for participating in the XYZ survey.",
           "reward_subject" => "XYZ Survey, thank you...",
           "reward_from" => "Jon Survey Doe"

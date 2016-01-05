@@ -39,6 +39,8 @@ namespace Wp {
       $url = sprintf("%s&code=%s", $base_url, $targeturl->code);
       $shortened = $bitlyapi->shorten($url);
       $bitly_url = ($shortened) ? $shortened : $url;
+      
+      $wapo->bitlyurl = $bitly_url;
 
       // Get the tango card api if this is a tango delivery.
       $tangoapi = null;
@@ -128,7 +130,6 @@ namespace Wp {
         $facebook = fb_post_feed($request, $message, $bitly_url);
         if ($facebook) {
           $wapo->resource = $facebook->getProperty('id');
-          $wapo->save(false);
         }
       } else if ($wapo->delivery_method == "facebook-page") {
         $message = "";
@@ -141,7 +142,6 @@ namespace Wp {
         $facebook = fb_page_post_feed($request, $wapo->external, $message, $bitly_url);
         if ($facebook) {
           $wapo->resource = $facebook->getProperty('id');
-          $wapo->save(false);
         }
       } else if ($wapo->delivery_method == "any-twitter-followers") {
         // Prepare the tweet message.
@@ -156,7 +156,6 @@ namespace Wp {
         $tweet = tweet(array("status" => $message), $request);
         if ($tweet) {
           $wapo->resource = $tweet->id;
-          $wapo->save(false);
         }
       } else if ($wapo->delivery_method == "select-twitter-followers") {
         // Prepare the tweet message.
@@ -206,6 +205,9 @@ namespace Wp {
     } catch (\Exception $ex) {
       throw $ex;
     }
+    
+    $wapo->status = "sent";
+    $wapo->save(false);
   }
 
   // Send a Tweet.

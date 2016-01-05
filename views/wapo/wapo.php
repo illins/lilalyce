@@ -604,7 +604,13 @@ namespace Wp {
       return $c;
     }
     protected function form_valid() {
-      $checkout_id = $this->request->session->prefix("wepay")->find("checkout_id", 760173062);
+      $checkout_id = $this->request->session->prefix("wepay")->find("checkout_id", null);
+      
+      if(!$checkout_id) {
+        $this->set_error("Could not verify payment or payment did not complete!");
+        return $this->form_invalid();
+      }
+      
       $checkout = (new \WePay\WepayAPI())->checkout($checkout_id);
       
       if($checkout->state == "captured") {
@@ -630,7 +636,7 @@ namespace Wp {
     }
     
     protected function set_wapo() {
-      $this->wapo = null;
+//      $this->wapo = null;
     }
     
     protected function get_context_data() {
