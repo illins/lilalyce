@@ -34,7 +34,8 @@ namespace Wp {
           "timestamp" => $wapo->timestamp,
           "tangocardrewards" => $wapo->tangocardrewards,
           "notsent" => $notsent,
-          "checkout" => json_decode($wapo->checkout)
+          "checkout" => json_decode($wapo->checkout),
+          "bitlyurl" => $wapo->bitlyurl
       );
       return $c;
     }

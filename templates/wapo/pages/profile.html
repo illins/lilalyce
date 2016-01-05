@@ -17,7 +17,7 @@
     <div class="row" ng-repeat="profile_chunk in profile_chunk_list">
       <div class="col-sm-4" ng-repeat="pf in profile_chunk" ng-click="selectProfile(pf)" style="cursor: pointer;">
         <div class="easy-block-v1">
-          <img class="img-responsive" ng-src="{{pf.image.full_url || '/apps/wp/static/images/placeholder/placehold.png'}}" alt="">
+          <img class="img-responsive" ng-src="{{pf.image.full_url || 'http://placehold.it/350x250?text=Placeholder'}}" alt="">
           <div class="easy-block-v1-badge rgba-red" ng-if="pf.id == profile.id">Selected</div>
         </div>
         <div class="projects">
