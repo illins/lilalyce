@@ -151,7 +151,7 @@
     </div>
 
     <div ng-if="wapo.delivery == 'select-twitter-followers'">
-      <strong>Twitter Followers(s):</strong>
+      <strong>Select Followers(s):</strong>
       <span ng-repeat="follower in wapo.twitter.follower_list track by $index" ng-if="$index < 3">
         <span class="label label-light rounded">{{follower}}</span>
         <span ng-if="!$last && $index < 2">,</span>
