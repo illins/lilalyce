@@ -262,7 +262,7 @@ wapoApp.controller('ProfileNewCtrl', ['$rootScope', '$scope', '$location', '$htt
 //            console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
         });
       } else {
-        if (angular.element('#delete_image')[0].checked) {
+        if (angular.element('#delete_image').length && angular.element('#delete_image')[0].checked) {
           data.delete = 1;
         }
 
