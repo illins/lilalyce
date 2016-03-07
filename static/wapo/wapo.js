@@ -59,6 +59,8 @@ wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$
 
     $rootScope.followers = [];
     $rootScope.pages = [];
+    
+    $rootScope.promotioncategory_list = [];
 
     $rootScope.setPath = function (path, href) {
       $cookies.put('path', path);
@@ -212,6 +214,7 @@ wapoApp.controller('ProfileCtrl', ['$rootScope', '$scope', '$location', '$http',
 
       $http.post('/wp/wapo/set/profile/', {profile_id: $scope.profile.id}).success(function (response) {
         $rootScope.wapo = response.wapo;
+        console.log($rootScope.next_path);
         $location.path($rootScope.next_path);
       });
     };
@@ -311,6 +314,10 @@ wapoApp.controller('TangoCardsCtrl', ['$rootScope', '$scope', '$location', '$htt
     });
 
     $scope.initFilters = function () {
+      if(!$rootScope.tangocards_list.length) {
+        return;
+      }
+      
       // Filter out anything that has 'unit_price' not equal to -1.
       var brand_list = _.filter($rootScope.tangocards_list, function (item) {
         return item.unit_price != -1;
@@ -365,6 +372,91 @@ wapoApp.controller('TangoCardsCtrl', ['$rootScope', '$scope', '$location', '$htt
       }
 
       $http.post('/wp/wapo/set/tangocards/', {tangocards_id: $scope.tangocards.id}).success(function (response) {
+        $rootScope.wapo = response.wapo;
+        $location.path($rootScope.next_path);
+      }).error(function (errorResponse) {
+        alert(errorResponse.message);
+      });
+    };
+  }]);
+
+wapoApp.controller('PromotionCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', 'filterFilter', function ($rootScope, $scope, $location, $http, $routeParams, filterFilter) {
+    $rootScope.setProgress(2);
+
+    $rootScope.previous_path = '/profile';
+    $rootScope.next_path = '/delivery';
+
+    $scope.promotioncategory = {};
+    
+    $scope.promotion = null;
+    $scope.promotion_list = [];
+    
+    $scope.chunked_promotion_list = [];
+    
+    $scope.changePromotionCategory = function() {
+//      $scope.promotioncategory = promotioncategory;
+      console.log($scope.promotioncategory);
+      $scope.getPromotions();
+    };
+    
+    $scope.getPromotions = function() {
+      var url = '/wp/wapo/promotions/?promotioncategory=';
+      
+      if($scope.promotioncategory.id) {
+        url += $scope.promotioncategory.id;
+      } else {
+        if($scope.promotion) {
+          $scope.promotioncategory = $scope.promotion.promotioncategory;
+          url += $scope.promotion.promotioncategory.id;
+        } else {
+          $scope.promotioncategory = $rootScope.promotioncategory_list[0];
+          url += $rootScope.promotioncategory_list[0].id;
+        }
+      }
+      
+      $http.get(url).success(function(response) {
+        $scope.promotion_list = response;
+        $scope.chunked_promotion_list = _.chunk($scope.promotion_list, 3);
+      });
+    };
+
+
+    $scope.init = function () {
+      $scope.promotion = $rootScope.wapo.promotion;
+      
+      if($rootScope.promotioncategory_list.length) {
+        $scope.getPromotions();
+      } else {
+        $http.get('/wp/wapo/promotioncategories/').success(function(response) {
+          $rootScope.promotioncategory_list = response;
+          
+          if($rootScope.promotioncategory_list.length) {
+            $scope.getPromotions();
+          }
+        });
+      }
+
+      if ($rootScope.wapo.promotion) {
+        $rootScope.next_path = '/delivery';
+      }
+    };
+    
+    $rootScope.mainInit(function () {
+      $scope.init();
+    });
+    
+    $scope.selectPromotion = function(promotion) {
+      $scope.promotion = promotion;
+      $rootScope.next_path = '/delivery';
+    };
+    
+    $scope.next = function () {
+      if (!$scope.promotion) {
+        alert('Please select a reward!');
+        return;
+      }
+
+      $http.post('/wp/wapo/set/promotion/', {promotion_id: $scope.promotion.id}).success(function (response) {
         $rootScope.wapo = response.wapo;
         $location.path($rootScope.next_path);
       }).error(function (errorResponse) {
@@ -1156,7 +1248,8 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
 
       $http.post('/wp/wapo/validate/', {payment_method: $scope.payment_method}).success(function (response) {
         if ($scope.payment_method == "wepay") {
-          $rootScope.setPath('/payment', response.wepay.checkout_uri);
+          console.log(response.wepay);
+          $rootScope.setPath('/payment', response.wepay.hosted_checkout.checkout_uri);
         }
       }).error(function (errorResponse) {
         alert(errorResponse.message);
@@ -1190,7 +1283,7 @@ wapoApp.filter('filenameFilter', function () {
         if (response.wapo_id) {
           $scope.send(response.wapo_id);
         } else {
-          alert('Unknown error occured!');
+          alert(response.message);
         }
       }).error(function (errorResponse) {
         alert(errorResponse.message);
@@ -1257,6 +1350,9 @@ wapoApp.config(function ($routeProvider) {
   }).when('/marketplace/tangocards', {
     templateUrl: '/apps/wp/templates/wapo/pages/marketplace-tangocards.html',
     controller: 'TangoCardsCtrl'
+  }).when('/marketplace/promotion', {
+    templateUrl: '/apps/wp/templates/wapo/pages/marketplace-promotion.html',
+    controller: 'PromotionCtrl'
   }).when('/delivery', {
     templateUrl: '/apps/wp/templates/wapo/pages/delivery.html',
     controller: 'DeliveryCtrl'

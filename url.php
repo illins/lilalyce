@@ -32,7 +32,9 @@ namespace Wp {
   require_once 'apps/wp/views/wapo/wapo.php';
   require_once 'apps/wp/views/wapo/module.php';
   require_once 'apps/wp/views/wapo/profile.php';
+  
   require_once 'apps/wp/views/wapo/tangocards.php';
+  require_once 'apps/wp/views/wapo/promotions.php';
   
   require_once 'apps/wp/views/wapo/confirmation.php';
 
@@ -49,6 +51,7 @@ namespace Wp {
   WpSetProfileFormView::register_url(array("pattern" => "/wp/wapo/set/profile/"));
   WpSetNewProfileFormView::register_url(array("pattern" => "/wp/wapo/set/profile/new/"));
   WpSetTangoCardsFormView::register_url(array("pattern" => "/wp/wapo/set/tangocards/"));
+  WpSetPromotionFormView::register_url(array("pattern" => "/wp/wapo/set/promotion/"));
 
   WpSetFreeForAllDeliveryFormView::register_url(array("pattern" => "/wp/wapo/set/delivery/free-for-all/"));
   WpSetEmailDeliveryFormView::register_url(array("pattern" => "/wp/wapo/set/delivery/email/"));
@@ -68,6 +71,8 @@ namespace Wp {
 
   // Tangocards view.
   WpTangoCardRewardsListView::register_url(array("pattern" => "/wp/wapo/tangocards/"));
+  WpPromotionCategoryListView::register_url(array("pattern" => "/wp/wapo/promotioncategories/"));
+  WpPromotionListView::register_url(array("pattern" => "/wp/wapo/promotions/"));
 
   // Validate.
   WpValidateFormView::register_url(array("pattern" => "/wp/wapo/validate/"));

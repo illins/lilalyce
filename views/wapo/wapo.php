@@ -257,6 +257,22 @@ namespace Wp {
     }
   }
   
+  class WpSetPromotionFormView extends WpWapoFormView {
+    protected function form_valid() {
+      $promotion = \Wapo\Promotion::get_or_null(array("id"=>$this->request->post->find("promotion_id")));
+      
+      if(!$promotion) {
+        $this->set_error("Invalid wapo selected!");
+        return $this->form_invalid();
+      }
+      
+      
+      $this->wapo->marketplace = "promotion";
+      $this->wapo->promotion = (object) $promotion->to_plain_array();
+      return parent::form_valid();
+    }
+  }
+  
   /**
    * Base class for *delivery.
    * Set the delivery message.
@@ -515,7 +531,7 @@ namespace Wp {
         return $this->form_invalid();
       }
       
-      if(!in_array($this->wapo->marketplace, array("tangocards"))) {
+      if(!in_array($this->wapo->marketplace, array("tangocards", "promotion"))) {
         $this->set_error("Please select a reward!");
         return $this->form_invalid();
       }
@@ -526,6 +542,12 @@ namespace Wp {
         $tangocards = validate_tangocards($this->request, $this->wapo);
         if($tangocards) {
           $this->set_error($tangocards);
+          return $this->form_invalid();
+        }
+      } else if($this->wapo->marketplace == "promotion") {
+        $promotion = validate_promotion($this->request, $this->wapo);
+        if($promotion) {
+          $this->set_error($promotion);
           return $this->form_invalid();
         }
       }
@@ -579,6 +601,7 @@ namespace Wp {
             throw new Exception("Could not initialize payment method");
           }
         } catch (\Exception $ex) {
+          exit($ex->getMessage());
           $this->set_error("Could not initialize payment method!");
           return $this->form_invalid();
         }
@@ -589,7 +612,7 @@ namespace Wp {
       }
       
 //      $this->request->session->set("checkoutid", 760173062);760173062
-      $this->request->session->prefix("wepay")->set("checkout_id", $this->wepay->checkout_id);
+      $this->request->session->prefix("wepay-")->set("checkout_id", $this->wepay->checkout_id);
       
       return parent::form_valid();
     }
@@ -604,7 +627,7 @@ namespace Wp {
       return $c;
     }
     protected function form_valid() {
-      $checkout_id = $this->request->session->prefix("wepay")->find("checkout_id", null);
+      $checkout_id = $this->request->session->prefix("wepay-")->find("checkout_id", null);
       
       if(!$checkout_id) {
         $this->set_error("Could not verify payment or payment did not complete!");

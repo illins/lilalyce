@@ -2,12 +2,10 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <!--<select ng-options="brand as brand.brand_description for brand in brand_list track by brand.id"></select>-->
-    
     <div class="row">
       <div class="col-xs-4">
         <div class="btn-group">
-          <button type="button" class="btn btn-default">Gift Cards</button>
+          <button type="button" class="btn btn-default">Goods</button>
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="caret"></span>
             <span class="sr-only">Toggle Dropdown</span>
@@ -19,23 +17,21 @@
         </div>
       </div>
       <div class="col-xs-8">
-        <select ng-model="selected_brand_description" class="form-control">
-          <option ng-repeat="brand in brand_list">{{brand.brand_description}}</option>
-        </select>
+        <select class="form-control" ng-options="item as item.name for item in promotioncategory_list track by item.id" ng-model="promotioncategory" ng-change="changePromotionCategory()"></select>
       </div>
     </div>
   </div>
 
   <div class="panel-body profile">
-    <div class="row" ng-repeat="tangocards_group in tangocards_group_list">
-      <div class="col-sm-4" ng-repeat="tcards in tangocards_group" ng-click="selectTangoCards(tcards)" style="cursor: pointer;">
+    <div class="row" ng-repeat="chunked_promotion in chunked_promotion_list">
+      <div class="col-sm-4" ng-repeat="prom in chunked_promotion" ng-click="selectPromotion(prom)" style="cursor: pointer;">
         <div class="easy-block-v1">
-          <img class="img-responsive" ng-src="{{tcards.brand_image_url}}" alt="">
-          <div class="easy-block-v1-badge rgba-red" ng-if="tcards.id == tangocards.id">Selected</div>
+          <img class="img-responsive" ng-src="{{prom.icon.full_url}}" alt="">
+          <div class="easy-block-v1-badge rgba-red" ng-if="prom.id == promotion.id">Selected</div>
         </div>
         <div class="projects">
-          <h2><span class="color-dark">{{tcards.name}}</span></h2>
-          <p>{{tcards.description}}</p>
+          <h2><span class="color-dark">{{prom.name}}</span></h2>
+          <p>{{prom.description}}</p>
         </div>
       </div>
     </div>

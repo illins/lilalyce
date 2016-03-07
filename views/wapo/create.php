@@ -16,16 +16,16 @@ namespace Wp {
       if ($wpd->profile->profile) {
         $wapo->profile = \Wapo\Profile::get_or_404(array("id"=>$wpd->profile->profile->id), "Profile not found!");
       } else {
-        $user_list = \User\User::queryset()->filter(array("email" => $wpd->profile->new->email))->fetch();
+        $user_list = \User\User::queryset()->filter(array("email" => trim($wpd->profile->new->email)))->fetch();
 
         $user = null;
         if (count($user_list)) {
           $user = $user_list[0];
         } else {
           // If not logged in, means they are using email so create an account.
-          list($error, $message, $user) = \User\Api::create_user(array("email" => $wpd->profile->new->email), true);
+          list($error, $message, $user) = \User\Api::create_user(array("email" => trim($wpd->profile->new->email)), true);
         }
-
+        
         // Create their distributor and profile using the name.
         $distributor = \Wapo\Distributor::get_or_create_save(array("user" => $user), array(), false);
         $profile = \Wapo\Profile::get_or_create(array("distributor" => $distributor, "name" => $wpd->profile->new->name));
@@ -76,7 +76,7 @@ namespace Wp {
       $wapo->delivery_message = $wpd->delivery_message;
       $wapo->quantity = $wpd->quantity;
       $wapo->status = "paid";
-
+      
       $wapo->save(false);
       $wapo->profile->wapo_count += 1;
       $wapo->profile->save(false);
@@ -259,28 +259,23 @@ namespace Wp {
   }
 
   function create_delivery_text($wapo, $wpd, $order_list) {
-    if (!count($wapo->text->number_list)) {
-      return "Please enter at least 1 phone number!";
-    }
+    $targeturl = \Wapo\WapoTargetUrl::new_code($wapo, "text");
 
-    $error = false;
-    $number_list = array();
-    foreach ($wapo->text->number_list as $number) {
-      $number = str_replace(array("-", " ", "(", ")"), "", $number);
-      if (!is_int((int) $number)) {
-        $error = true;
-        break;
+    // Add each of them to the database, sent is false and will be updated once it has been sent.
+    foreach ($wpd->text->number_list as $number) {
+      $recipient = array(
+          "wapo" => $wapo,
+          "targeturl" => $targeturl,
+          "contact" => trim($number),
+      );
+
+      // Check that we still have orders.
+      if (count($order_list)) {
+        $recipient['extra'] = array_pop($order_list);
       }
-      $number_list[] = $number;
+
+      \Wapo\WapoRecipient::create_save($recipient, false);
     }
-
-    if ($error) {
-      return "You have some invalid phone numbers!";
-    }
-
-    $wapo->text->number_list = $number_list;
-
-    return null;
   }
   
   // Rewards.

@@ -334,7 +334,7 @@ namespace Wp {
     }
 
     $wapo->text->number_list = $number_list;
-
+    
     return null;
   }
 

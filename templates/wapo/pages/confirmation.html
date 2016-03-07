@@ -5,12 +5,12 @@
 <div class="row">
   <div class="col-xs-6">
     <ul class="list-group" ng-if="wapo.payment_method.tag == 'wepay'">
-      <li class="list-group-item"><h3>Payer Name <small>{{ wapo.checkout.payer_name}}</small></h3></li>
-      <li class="list-group-item"><h3>Payer Email <small>{{ wapo.checkout.payer_email}}</small></h3></li>
+      <li class="list-group-item"><h3>Payer Name <small>{{ wapo.checkout.payer.name}}</small></h3></li>
+      <li class="list-group-item"><h3>Payer Email <small>{{ wapo.checkout.payer.email}}</small></h3></li>
       <li class="list-group-item"><h3>Descriptor <small>{{ wapo.checkout.soft_descriptor}}</small></h3></li>
       <li class="list-group-item"><h3>Charge <small>{{ wapo.checkout.gross | currency:"$":2}}</small></h3></li>
       <li class="list-group-item"><h3>Cost <small>{{ wapo.checkout.amount | currency:"$":2}}</small></h3></li>
-      <li class="list-group-item"><h3>Fee <small>{{ wapo.checkout.fee | currency:"$":2}}</small></h3></li>
+      <li class="list-group-item"><h3>Fee <small>{{ wapo.checkout.fee.processing_fee | currency:"$":2}}</small></h3></li>
     </ul>
   </div>
   <div class="col-md-6">
