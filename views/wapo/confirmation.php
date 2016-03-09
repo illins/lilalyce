@@ -11,6 +11,8 @@ namespace Wp {
     protected function get_context_data() {
       $c = parent::get_context_data();
       
+      $this->request->session->delete("wapo");
+      
       // Make sure it is in the session and that it is sent.
       $wapo = \Wapo\Wapo::get_or_404(array("id"=>$this->request->session->find("wapo_id", null)), "Invalid Wapo id!");
       $notsent = \Wapo\WapoRecipient::queryset()->count(array("wapo"=>$wapo,"sent"=>false));
@@ -33,6 +35,8 @@ namespace Wp {
           "quantity" => $wapo->quantity,
           "timestamp" => $wapo->timestamp,
           "tangocardrewards" => $wapo->tangocardrewards,
+          "promotion" => $wapo->promotion,
+          "marketplace" => $wapo->marketplace,
           "notsent" => $notsent,
           "checkout" => json_decode($wapo->checkout),
           "bitlyurl" => $wapo->bitlyurl

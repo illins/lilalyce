@@ -98,7 +98,7 @@ namespace Wp {
       return "Please select a reward!";
     }
 
-    $promotion = \Wapo\Promotion::get_or_null(array("id" => $wapo->promotion));
+    $promotion = \Wapo\Promotion::get_or_null(array("id" => $wapo->promotion->id));
     if (!$promotion) {
       return "Invalid reward selected!";
     }

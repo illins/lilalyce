@@ -27,7 +27,7 @@ namespace Wp {
   function send_wapo($request, $wapo) {
     // Set the bitly api for urls and the base url for anything that needs it.
     $bitlyapi = new \BlinkBitly\BlinkBitlyAPI();
-    $base_url = sprintf("%s/wp/download/?wapo_id=%s", \Blink\SiteConfig::SITE, $wapo->id);
+    $base_url = sprintf("%s/wp/wapo/download/?wapo_id=%s", \Blink\SiteConfig::SITE, $wapo->id);
 
     try {
       // General data.
@@ -44,13 +44,14 @@ namespace Wp {
 
       // Get the tango card api if this is a tango delivery.
       $tangoapi = null;
+      $tc = null;
       if ($wapo->marketplace == "tangocards") {
         $tangoapi = new \BlinkTangoCard\TangoCardAPI(array("request" => $request));
+        $tc = \Wapo\TangoCardRewards::get_or_404(array("sku" => $wapo->sku), "Tango Card not found.");
       }
 
       if ($wapo->delivery_method == "email" || $wapo->delivery_method == "email-list" || $wapo->delivery_method == "mailchimp") {
         $mandrill = new \Mandrill(\Blink\MandrillConfig::API_KEY);
-        $tc = \Wapo\TangoCardRewards::get_or_404(array("sku" => $wapo->sku), "Tango Card not found.");
 
         $struct = array(
             'html' => '',
@@ -105,9 +106,7 @@ namespace Wp {
 //                $recipient->sent = @mail($recipient->contact, "You have been sent a Wapo.", $message);
               }
             }
-          } else if ($wapo->marketplace == "i-feel-goods") {
-            
-          } else if ($wapo->marketplace == "wapo") {
+          } else if ($wapo->marketplace == "promotion") {
             if ($wapo->delivery_message) {
               $message = sprintf("%s Click here '%s' to download your Wapo. ", $wapo->delivery_message, $bitly_url);
             } else {

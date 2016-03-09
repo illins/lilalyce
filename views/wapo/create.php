@@ -62,14 +62,16 @@ namespace Wp {
         $wapo->tangocardrewards = \Wapo\TangoCardRewards::get_or_404(array("sku"=>$wpd->tangocards->sku), "Reward not found!");
         $wapo->sku = $wpd->tangocards->sku;
       } else if ($wpd->marketplace == "promotion") {
-        
+        $wapo->promotion = \Wapo\Promotion::get_or_404(array("id"=>$wpd->promotion->id), "Reward not found!");
       }
 
       $wapo->marketplace = $wpd->marketplace;
-      $wapo->payment_method = \Wapo\PaymentMethod::queryset()->get(array("tag" => "wepay"));
       
       if($wpd->payment_method == "wepay") {
-        $wapo->checkoutid = $request->session->prefix('wepay')->find("checkout_id");
+        $wapo->payment_method = \Wapo\PaymentMethod::queryset()->get(array("tag" => "wepay"));
+        $wapo->checkoutid = $request->session->prefix('wepay-')->find("checkout_id");
+      } else if($wpd->payment_method == "free") {
+        $wapo->payment_method = \Wapo\PaymentMethod::queryset()->get(array("tag" => "free"));
       }
       
       $wapo->delivery_method = $wpd->delivery;

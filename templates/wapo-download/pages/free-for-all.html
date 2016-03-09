@@ -1,0 +1,19 @@
+<div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
+
+<form>
+  <div class="form-group">
+    <label for="quantity">Quantity</label>
+    <input type="number" class="form-control" id="quantity" ng-model="quantity" placeholder="Quantity">
+  </div>
+
+  <div class="form-group">
+    <label>Delivery Message</label>
+    <textarea class="form-control" rows="5" ng-model="delivery_message"></textarea>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-offset-10 col-xs-2">
+      <a class="btn btn-primary btn-block" href="#/delivery">Change Delivery</a>
+    </div>
+  </div>
+</form>

@@ -37,6 +37,9 @@ namespace Wp {
   require_once 'apps/wp/views/wapo/promotions.php';
   
   require_once 'apps/wp/views/wapo/confirmation.php';
+  
+  // Download urls.
+  require_once 'apps/wp/views/wapo-download/wapo-download-url.php';
 
   // Base template
   WpBaseView::register_url(array("pattern" => "/wp/wapo/"));
@@ -78,12 +81,14 @@ namespace Wp {
   WpValidateFormView::register_url(array("pattern" => "/wp/wapo/validate/"));
 
   // Post checkout routes.
+  WpFreeFormView::register_url(array("pattern"=>"/wp/wapo/free/"));
   WpPaymentFormView::register_url(array("pattern"=>"/wp/wapo/payment/"));
   WpCreateFormView::register_url(array("pattern"=>"/wp/wapo/create/"));
   WpSendFormView::register_url(array("pattern" => "/wp/wapo/send/"));
   
   // Confirmation page.
   WpWapoConfirmationDetailView::register_url(array("pattern"=>"/wp/wapo/confirmation/"));
+  
   
 //  class RequestTestView extends \Blink\JSONView {
 //    protected function get_context_data() {

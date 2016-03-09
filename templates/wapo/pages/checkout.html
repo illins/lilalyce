@@ -7,7 +7,7 @@
   <div class="panel-body">
     <h2>Payment Method</h2>
     
-    <div class="row">
+    <div class="row" ng-if="wapo.marketplace == 'tangocards' || (wapo.marketplace == 'promotion' && wapo.promotion.price != 0)">
       <div class="col-xs-4">
         <div class="service-block service-block-default" ng-class="{'service-block-aqua': payment_method == 'wepay'}" ng-click="setPaymentMethod('wepay')">
           <i class="icon-custom icon-lg icon-color-dark icon-line icon-credit-card"></i>
@@ -23,7 +23,7 @@
       <div class="col-xs-3 text-center">
         Local
       </div>
-      <div class="col-xs-3 text-center" ng-if="wapo.profile.new.name">
+      <div class="col-xs-3 text-center" ng-if="wapo.profile.new.name && !wapo.profile.profile">
         New Wapo Profile
       </div>
       <div class="col-xs-3 text-center" ng-if="wapo.profile.profile">
@@ -57,7 +57,7 @@
         </div>
       </div>
 
-      <div class="col-xs-3 text-center" ng-if="wapo.profile.new.name">
+      <div class="col-xs-3 text-center" ng-if="wapo.profile.new.name && !wapo.profile.profile">
         <div class="panel panel-default">
           <div class="panel-body">
             <div class="profile-blog blog-border">
@@ -174,8 +174,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td class="product-in-table" ng-if="wapo.marketplace == 'tangocards'">
+        <tr ng-if="wapo.marketplace == 'tangocards'">
+          <td class="product-in-table">
             <img class="img-responsive" ng-src="{{wapo.tangocards.brand_image_url}}" alt="">
             <div class="product-it-in">
               <h3>{{wapo.tangocards.name}}</h3>
@@ -188,6 +188,22 @@
           </td>
           <td class="shop-red">$ {{ (wapo.tangocards.unit_price / 100) * wapo.quantity}}</td>
         </tr>
+        
+        <tr ng-if="wapo.marketplace == 'promotion'">
+          <td class="product-in-table col-xs-4">
+            <img class="img-responsive" ng-src="/media/wapo/promotion/image/{{wapo.promotion.icon}}" alt="">
+            <div class="product-it-in">
+              <h3>{{wapo.promotion.name}}</h3>
+              <span>{{wapo.promotion.description}}</span>
+            </div>    
+          </td>
+          <td>{{wapo.promotion.price}}</td>
+          <td>
+            {{wapo.quantity}}
+          </td>
+          <td class="shop-red">$ {{ wapo.promotion.price * wapo.quantity}}</td>
+        </tr>
+        
       </tbody>
     </table>
   </div>

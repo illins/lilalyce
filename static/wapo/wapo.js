@@ -414,6 +414,7 @@ wapoApp.controller('PromotionCtrl', ['$rootScope', '$scope', '$location', '$http
         }
       }
       
+      url = '/wp/wapo/promotions/';
       $http.get(url).success(function(response) {
         $scope.promotion_list = response;
         $scope.chunked_promotion_list = _.chunk($scope.promotion_list, 3);
@@ -490,7 +491,11 @@ wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http'
           $scope.main_delivery = 'facebook';
         } else if ($scope.delivery.search(/twitter/) != -1) {
           $scope.main_delivery = 'twitter';
+        } else {
+          $scope.main_delivery = 'email';
         }
+      } else {
+        $scope.main_delivery = 'email';
       }
     };
     $rootScope.mainInit(function () {
@@ -1225,11 +1230,27 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
     $rootScope.next_path = null;
     $scope.hide_next = true;
     $scope.payment_method = "";
+    
+    // Check if wapo is free!
+    $scope.isFree = function() {
+      if($scope.wapo.marketplace == 'promotion') {
+        if($scope.wapo.promotion.price == 0) {
+          return true;
+        }
+      }
+      
+      return false;
+    };
 
     $scope.init = function () {
       $scope.account = $rootScope.wapo.twitter.account;
       $scope.profile = $rootScope.wapo.facebook.profile;
       $rootScope.previous_path += '/' + $rootScope.wapo.delivery;
+      
+      
+      if($scope.isFree()) {
+        $rootScope.next_path = '/free';
+      }
     };
     $rootScope.mainInit(function () {
       $scope.init();
@@ -1237,23 +1258,26 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
 
     $scope.setPaymentMethod = function (payment_method) {
       $scope.payment_method = payment_method;
-      $scope.next_path = '/payment';
+      $rootScope.next_path = '/payment';
     };
 
     $scope.next = function () {
-      if (!$scope.payment_method) {
-        alert('Please select a payment method!');
-        return;
-      }
-
-      $http.post('/wp/wapo/validate/', {payment_method: $scope.payment_method}).success(function (response) {
-        if ($scope.payment_method == "wepay") {
-          console.log(response.wepay);
-          $rootScope.setPath('/payment', response.wepay.hosted_checkout.checkout_uri);
+      if($scope.isFree()) {
+        $location.path($rootScope.next_path);
+      } else {
+        if (!$scope.payment_method) {
+          alert('Please select a payment method!');
+          return;
         }
-      }).error(function (errorResponse) {
-        alert(errorResponse.message);
-      });
+
+        $http.post('/wp/wapo/validate/', {payment_method: $scope.payment_method}).success(function (response) {
+          if ($scope.payment_method == "wepay") {
+            $rootScope.setPath('/payment', response.wepay.hosted_checkout.checkout_uri);
+          }
+        }).error(function (errorResponse) {
+          alert(errorResponse.message);
+        });
+      }
     };
   }]);
 
@@ -1268,6 +1292,45 @@ wapoApp.filter('filenameFilter', function () {
 
     $scope.init = function () {
       $http.post('/wp/wapo/payment/').success(function (response) {
+        $scope.create();
+      }).error(function (errorResponse) {
+        alert(errorResponse.message);
+      });
+    };
+    $rootScope.mainInit(function () {
+      $scope.init();
+    });
+
+    $scope.create = function () {
+      $scope.message = "Creating Wapo...";
+      $http.post('/wp/wapo/create/').success(function (response) {
+        if (response.wapo_id) {
+          $scope.send(response.wapo_id);
+        } else {
+          alert(response.message);
+        }
+      }).error(function (errorResponse) {
+        alert(errorResponse.message);
+      });
+    };
+
+    $scope.send = function (wapo_id) {
+      $scope.message = "Sending Wapo...";
+      $http.post('/wp/wapo/send/', {wapo_id: wapo_id}).success(function (response) {
+        $location.path('/confirmation');
+      }).error(function (errorResponse) {
+        alert(errorResponse.message);
+      });
+    };
+  }]);
+
+wapoApp.controller('FreeCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
+    $rootScope.setProgress(4);
+
+    $scope.message = "Checking free...";
+
+    $scope.init = function () {
+      $http.post('/wp/wapo/free/').success(function (response) {
         $scope.create();
       }).error(function (errorResponse) {
         alert(errorResponse.message);
@@ -1389,6 +1452,9 @@ wapoApp.config(function ($routeProvider) {
   }).when('/payment', {
     templateUrl: '/apps/wp/templates/wapo/pages/payment.html',
     controller: 'PaymentCtrl'
+  }).when('/free', {
+    templateUrl: '/apps/wp/templates/wapo/pages/free.html',
+    controller: 'FreeCtrl'
   }).when('/confirmation', {
     templateUrl: '/apps/wp/templates/wapo/pages/confirmation.html',
     controller: 'ConfirmationCtrl'

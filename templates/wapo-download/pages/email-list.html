@@ -1,0 +1,25 @@
+<div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
+
+<form>
+  <div class="form-group">
+    <label>Email addresses</label>
+    <textarea class="form-control" rows="5" ng-model="emails" ng-change="change()"></textarea>
+  </div>
+  <div class="well well-sm">
+    {{count}} of {{wapo.email_list.max}}
+  </div>
+
+  <div class="form-group">
+    <label>Delivery Message</label>
+    <textarea class="form-control" rows="5" ng-model="delivery_message"></textarea>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-offset-8 col-xs-2">
+      <a class="btn btn-primary btn-block" href="#/delivery">Change Delivery</a>
+    </div>
+    <div class="col-xs-2">
+      <button class="btn btn-warning btn-block" ng-click="clear()">Clear</button>
+    </div>
+  </div>
+</form>

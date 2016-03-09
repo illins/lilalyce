@@ -150,6 +150,20 @@ namespace Wp {
     protected function form_invalid() {
       return $this->get();
     }
+    
+    protected function is_free() {
+      if($this->wapo->marketplace == "promotion") {
+        if($this->wapo->promotion->price == 0) {
+          return true;
+        }
+      }
+      
+      return false;
+    }
+    
+    protected function has_checkout_id() {
+      return ($this->request->session->prefix("wepay-")->find("checkout_id", null));
+    }
   }
   
   /**
@@ -589,6 +603,9 @@ namespace Wp {
       if($this->wapo->marketplace == "tangocards") {
         $short_description = $this->wapo->tangocards->sku;
         $amount += ($this->wapo->quantity * ($this->wapo->tangocards->unit_price / 100));
+      } else if($this->wapo->marketplace == "promotion") {
+        $short_description = $this->wapo->promotion->name;
+        $amount += ($this->wapo->quantity * $this->wapo->promotion->price);
       }
       
       // Create the checkout.
@@ -642,6 +659,28 @@ namespace Wp {
         $this->set_error("Could not verify payment or payment did not complete!");
         return $this->form_invalid();
       }
+      
+      return parent::form_valid();
+    }
+  }
+  
+  class WpFreeFormView extends WpWapoFormView {
+    protected $verified = false;
+    
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      $c['verified'] = $this->verified;
+      return $c;
+    }
+    protected function form_valid() {
+      if($this->is_free()) {
+        $this->verified = true;
+      } else {
+        $this->set_error("Could not verify promotion!");
+        return $this->form_invalid();
+      }
+      
+      $this->wapo->payment_method = "free";
       
       return parent::form_valid();
     }

@@ -1,0 +1,64 @@
+<div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
+
+<div class="panel panel-default">
+  <div class="panel-heading text-center">
+    <strong ng-if="account">You are logged in as</strong>
+    <strong ng-if="!account">Please log in to your Twitter account</strong>
+  </div>
+
+  <div class="panel-body">
+    <div class="row" ng-if="account">
+      <div class="col-md-8 col-md-offset-2 text-center" ng-include="'/apps/wp/templates/wapo/includes/twitter-profile.html'"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-offset-4 col-xs-4" ng-if="account">
+        <button class="btn btn-block btn-twitter" ng-click="setPath('/delivery/select-twitter-followers', '/twitter/logout/?skip=1&return=/wp/wapo/')">
+          <i class="fa fa-twitter"></i> Sign Out
+        </button>
+      </div>
+
+      <div class="col-xs-offset-4 col-xs-4" ng-if="!account">
+        <button class="btn btn-block btn-twitter" ng-click="setPath('/delivery/select-twitter-followers', '/twitter/?skip=1&return=/wp/wapo/')">
+          <i class="fa fa-twitter"></i> Twitter
+        </button>
+      </div>
+    </div>
+    
+    <hr ng-if="account" />
+    
+    <div class="form-group">
+      <label>Delivery Message</label>
+      <textarea class="form-control" rows="5" ng-model="delivery_message"></textarea>
+    </div>
+
+    <div>
+      <span ng-repeat="item in selected_follower_list">
+        <span class="label label-light">
+          {{item.name}} <em>({{item.screen_name}})</em>
+          <i class="fa fa-times" ng-click="removeFollower(item)" style='cursor: pointer;'></i>
+        </span>
+        <span ng-if="!$last">,</span>
+      </span>
+    </div>
+    <br />
+
+    <div class="form-group" ng-if="account">
+      <input type="text" class="form-control" placeholder="Filter Followers" ng-model="search_text" ng-change="search(search_text)">
+    </div>
+
+    <div class="row" ng-repeat="chunk in chunked_follower_list">
+      <div class="col-xs-4" ng-repeat="item in chunk">
+        <div class="alert-blocks alert-dismissable">
+          <button aria-hidden="true" class="close" type="button" ng-click="addFollower(item)">+</button>
+          <img class="rounded-x" src="{{item.profile_image_url_https}}" alt="">
+          <div class="overflow-h">
+            <strong class="color-dark">{{item.screen_name}}</strong>
+            <p>{{item.screen_name}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
