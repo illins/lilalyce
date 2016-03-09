@@ -397,13 +397,13 @@ namespace Wp {
       $number_list = array();
       $error = false;
       foreach(explode(",", $numbers) as $number) {
-        $trimmed = (int) trim($number);
-        if(!is_int($trimmed)) {
+        $cleaned = trim(str_replace(array(" ", ")", "(", "-"), "", $number));
+        if(!is_int((int) $cleaned) || strlen($cleaned) != 10) {
           $error = true;
           break;
         }
-        if($trimmed) {
-          $number_list[] = $trimmed;
+        if($cleaned) {
+          $number_list[] = $cleaned;
         }
       }
       

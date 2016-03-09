@@ -854,6 +854,7 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
 wapoApp.controller('TextCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(3);
 
+    $scope.error_number = '';
     $scope.number_list = [];
     $scope.max_count = 1;
 
@@ -871,6 +872,11 @@ wapoApp.controller('TextCtrl', ['$rootScope', '$scope', '$location', '$http', '$
       // Clean the numbers.
       var number_list = $scope.numbers.split(',');
       _.map(number_list, function (number) {
+        var cleaned = number.trim().replace(')', '').replace('(', '').replace('-', '').replace(' ', '');
+        if(cleaned.length != 10) {
+          $scope.error_number = number;
+        }
+        
         if (number.trim()) {
           $scope.number_list.push(number.trim());
         }
@@ -895,7 +901,13 @@ wapoApp.controller('TextCtrl', ['$rootScope', '$scope', '$location', '$http', '$
     });
 
     $scope.next = function () {
+      $scope.error_number = '';
       $scope.change();
+      
+      if($scope.error_number) {
+        alert('Invalid number!', $scope.error_number);
+        return;
+      }
 
       // Validate the max count.
       if ($scope.number_list.length > $rootScope.wapo.text.max) {

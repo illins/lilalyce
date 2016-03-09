@@ -5,6 +5,7 @@ namespace Wp {
   require_once 'apps/wapo/model.php';
   
   class WpPromotionCategoryListView extends \Blink\CRUDListView {
+    
     protected $class = "\Wapo\PromotionCategory";
   }
   

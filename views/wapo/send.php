@@ -189,7 +189,8 @@ namespace Wp {
         $recipient_list = \Wapo\WapoRecipient::queryset()->depth(1)->filter(array("wapo" => $wapo))->fetch();
         foreach ($recipient_list as $recipient) {
           // Send message and check for results.
-          $result = $bulksms->send_seven_bit_sms($message, "+1".$recipient->contact);
+          $cleaned = trim(str_replace(array(" ", ")", "(", "-"), "", $recipient->contact));
+          $result = $bulksms->send_seven_bit_sms($message, "+1".$cleaned);
 
           // Check results and update the ricipient object.
           if ($result[0]) {

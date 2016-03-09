@@ -321,8 +321,8 @@ namespace Wp {
     $error = false;
     $number_list = array();
     foreach ($wapo->text->number_list as $number) {
-      $number = str_replace(array("-", " ", "(", ")"), "", $number);
-      if (!is_int((int) $number)) {
+      $cleaned = trim(str_replace(array("-", " ", "(", ")"), "", $number));
+      if (!is_int((int) $cleaned) || strlen($cleaned) != 10) {
         $error = true;
         break;
       }
