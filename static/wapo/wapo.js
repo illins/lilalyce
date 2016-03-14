@@ -1338,19 +1338,32 @@ wapoApp.filter('filenameFilter', function () {
 
 wapoApp.controller('FreeCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(4);
+    $scope.progress = true;
 
-    $scope.message = "Checking free...";
+    $scope.previous_path = '/checkout';
+    $scope.message = "Validating...";
 
     $scope.init = function () {
-      $http.post('/wp/wapo/free/').success(function (response) {
-        $scope.create();
+      $http.post('/wp/wapo/validate/', {payment_method: 'free'}).success(function (response) {
+        $scope.checkFree();
       }).error(function (errorResponse) {
-        alert(errorResponse.message);
+        $scope.progress = false;
+        $scope.message = errorResponse.message;
       });
     };
     $rootScope.mainInit(function () {
       $scope.init();
     });
+    
+    $scope.checkFree = function() {
+      $scope.message = "Checking free...";
+      $http.post('/wp/wapo/free/').success(function (response) {
+        $scope.create();
+      }).error(function (errorResponse) {
+        $scope.progress = false;
+        $scope.message = errorResponse.message;
+      });
+    };
 
     $scope.create = function () {
       $scope.message = "Creating Wapo...";
@@ -1358,10 +1371,12 @@ wapoApp.controller('FreeCtrl', ['$rootScope', '$scope', '$location', '$http', '$
         if (response.wapo_id) {
           $scope.send(response.wapo_id);
         } else {
-          alert(response.message);
+          $scope.progress = false;
+          $scope.message = "Could not create wapo!";
         }
       }).error(function (errorResponse) {
-        alert(errorResponse.message);
+        $scope.progress = false;
+        $scope.message = errorResponse.message;
       });
     };
 
@@ -1370,7 +1385,8 @@ wapoApp.controller('FreeCtrl', ['$rootScope', '$scope', '$location', '$http', '$
       $http.post('/wp/wapo/send/', {wapo_id: wapo_id}).success(function (response) {
         $location.path('/confirmation');
       }).error(function (errorResponse) {
-        alert(errorResponse.message);
+        $scope.progress = false;
+        $scope.message = errorResponse.message;
       });
     };
   }]);

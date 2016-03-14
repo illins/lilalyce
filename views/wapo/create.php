@@ -3,6 +3,8 @@
 namespace Wp {
   require_once 'apps/wapo/model.php';
   require_once 'blink/base/validation/validator.php';
+  
+  require_once 'apps/wp/helper.php';
 
   function create_wapo($request, $wpd) {
     try {
@@ -268,7 +270,7 @@ namespace Wp {
       $recipient = array(
           "wapo" => $wapo,
           "targeturl" => $targeturl,
-          "contact" => trim($number),
+          "contact" => Helper::CleanNumber($number),
       );
 
       // Check that we still have orders.

@@ -148,6 +148,7 @@ namespace Wp {
     }
     
     protected function form_invalid() {
+      $this->response_code = \Blink\Response::BAD_REQUEST;
       return $this->get();
     }
     
@@ -525,15 +526,12 @@ namespace Wp {
     }
     
     protected function form_valid() {
-      $payment_method = $this->request->post->find("payment_method");
-      $message = "";
-      
-      if(!in_array($payment_method, array("wepay"))) {
-        $this->set_error("Invalid payment method!");
-        return $this->form_invalid();
-      }
+      $delivery_methods = array("email", "email-list", "text");
+      $payment_methods = array("wepay", "free");
+      $payment_method = $this->request->post->find("payment_method", "free");
       
       $message = validate_module($this->request, $this->wapo);
+      
       if($message) {
         $this->set_error($message);
         return $this->form_invalid();
@@ -550,8 +548,6 @@ namespace Wp {
         return $this->form_invalid();
       }
       
-//      \Blink\blink_log($this->wapo->marketplace);
-      
       if($this->wapo->marketplace == "tangocards") {
         $tangocards = validate_tangocards($this->request, $this->wapo);
         if($tangocards) {
@@ -566,8 +562,13 @@ namespace Wp {
         }
       }
       
-      // Validate delivery method.
+      // Validate which delivery methods are allowed for now.
+      if(!in_array($this->wapo->delivery, $delivery_methods)) {
+        $this->set_error("Delivery method not allowed!");
+        return $this->form_invalid();
+      }
       
+      // Validate delivery method.
       if($this->wapo->delivery == "free-for-all") {
         $message = validate_delivery_ffa($this->request, $this->wapo);
       } else if($this->wapo->delivery == "email") {
@@ -608,6 +609,15 @@ namespace Wp {
         $amount += ($this->wapo->quantity * $this->wapo->promotion->price);
       }
       
+      if($amount == 0) {
+        $payment_method = "free";
+      }
+      
+      if(!in_array($payment_method, $payment_methods)) {
+        $this->set_error("Invalid payment method!");
+        return $this->form_invalid();
+      }
+      
       // Create the checkout.
       if($payment_method == "wepay") {
         try {
@@ -617,19 +627,22 @@ namespace Wp {
           if(!$this->wepay->checkout_id) {
             throw new Exception("Could not initialize payment method");
           }
+          
+          //      $this->request->session->set("checkoutid", 760173062);760173062
+          $this->request->session->prefix("wepay-")->set("checkout_id", $this->wepay->checkout_id);
         } catch (\Exception $ex) {
           exit($ex->getMessage());
           $this->set_error("Could not initialize payment method!");
           return $this->form_invalid();
         }
-        $this->wapo->payment_method = $payment_method;
+        
+      } else if($payment_method == "free") {
+        ;
       } else {
         $this->set_error("Invalid payment method!");
         return $this->form_invalid();
       }
-      
-//      $this->request->session->set("checkoutid", 760173062);760173062
-      $this->request->session->prefix("wepay-")->set("checkout_id", $this->wepay->checkout_id);
+      $this->wapo->payment_method = $payment_method;
       
       return parent::form_valid();
     }
@@ -672,6 +685,7 @@ namespace Wp {
       $c['verified'] = $this->verified;
       return $c;
     }
+    
     protected function form_valid() {
       if($this->is_free()) {
         $this->verified = true;

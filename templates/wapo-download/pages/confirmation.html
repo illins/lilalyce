@@ -1,43 +1,27 @@
-<div class="alert alert-success">
-  <i class="fa fa-2x fa-check-circle"></i> Congratulations!. Wapo has been prepared.
-</div>
-
-<div class="row">
-  <div class="col-xs-6">
-    <ul class="list-group" ng-if="wapo.payment_method.tag == 'wepay'">
-      <li class="list-group-item"><h3>Payer Name <small>{{ wapo.checkout.payer.name}}</small></h3></li>
-      <li class="list-group-item"><h3>Payer Email <small>{{ wapo.checkout.payer.email}}</small></h3></li>
-      <li class="list-group-item"><h3>Descriptor <small>{{ wapo.checkout.soft_descriptor}}</small></h3></li>
-      <li class="list-group-item"><h3>Charge <small>{{ wapo.checkout.gross | currency:"$":2}}</small></h3></li>
-      <li class="list-group-item"><h3>Cost <small>{{ wapo.checkout.amount | currency:"$":2}}</small></h3></li>
-      <li class="list-group-item"><h3>Fee <small>{{ wapo.checkout.fee.processing_fee | currency:"$":2}}</small></h3></li>
-    </ul>
-    
-    <ul class="list-group" ng-if="wapo.payment_method.tag == 'free'">
-      <li class="list-group-item"><h3>Charge <small>{{ 0.00 | currency:"$":2}}</small></h3></li>
-    </ul>
-    
+<div class="panel panel-default">
+  <div class="panel-heading">
+    &nbsp;
   </div>
-  <div class="col-md-6">
-    <div class="text-center" style="width: 100%;" ng-if="wapo.marketplace == 'tangocards'">
-      <img class="img-responsive" ng-src="{{wapo.tangocardrewards.brand_image_url}}" alt="">
+  <div class="panel-body">
+
+    <div class="row">
+      <div class="col-xs-offset-4 col-xs-4 text-center">
+        <md-progress-linear md-mode="indeterminate" ng-show="progress"></md-progress-linear>
+        <em>{{message}}</em>
+
+        <br />
+        <div class="form-group" ng-show="!progress">
+          <!--<label for="code">Code</label>-->
+          <input type="code" class="form-control" ng-model="confirmation" placeholder="Code">
+        </div>
+        
+        <br />
+        <button class="btn btn-primary" ng-click="confirm()" ng-show="!progress">
+          Confirm Code
+        </button>
+        
+      </div>
     </div>
-    <ul class="list-group" ng-if="wapo.marketplace == 'tangocards'">
-      <li class="list-group-item"><h3>Reward <small>{{wapo.tangocardrewards.description}}</small></h3></li>
-      <li class="list-group-item"><h3>Delivery Method <small>{{ wapo.delivery_method}}</small></h3></li>
-      <li class="list-group-item"><h3>Quantity <small>{{ wapo.quantity}}</small></h3></li>
-      <li class="list-group-item"><h3>Download URL <small>{{ wapo.bitlyurl}}</small></h3></li>
-    </ul>
-    
-    <div class="text-center" style="width: 100%;" ng-if="wapo.marketplace == 'promotion'">
-      <img class="img-responsive" ng-src="{{wapo.promotion.icon.full_url}}" alt="">
-    </div>
-    <ul class="list-group" ng-if="wapo.marketplace == 'promotion'">
-      <li class="list-group-item"><h3>Reward <small>{{wapo.promotion.description}}</small></h3></li>
-      <li class="list-group-item"><h3>Description <small>{{wapo.promotion.name}}</small></h3></li>
-      <li class="list-group-item"><h3>Delivery Method <small>{{ wapo.delivery_method}}</small></h3></li>
-      <li class="list-group-item"><h3>Quantity <small>{{ wapo.quantity}}</small></h3></li>
-      <li class="list-group-item"><h3>Download URL <small>{{ wapo.bitlyurl}}</small></h3></li>
-    </ul>
+
   </div>
 </div>

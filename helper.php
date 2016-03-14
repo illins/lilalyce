@@ -288,8 +288,12 @@ namespace Wp {
      * @return string
      */
     public static function DigitalDownloadHash($recipient) {
-      $extra = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      $extra = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" . uniqid();
       return hash('ripemd160', str_shuffle($recipient->id . $recipient->contact . $extra));
+    }
+    
+    public static function CleanNumber($number) {
+      return str_replace(array(" ", "-", ")", "("), "", $number);
     }
   }
 }

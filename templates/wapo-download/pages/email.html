@@ -1,22 +1,27 @@
-<div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
-
-<form>
-  <div class="form-group" ng-repeat="email in email_list track by $index" ng-if="$index < max_count">
-    <label for="email-{{$index}}">Email address</label>
-    <input type="email" class="form-control" id="email-{{$index}}" ng-model="email_list[$index]" placeholder="Email {{$index + 1}}">
+<div class="panel panel-default">
+  <div class="panel-heading">
+    &nbsp;
   </div>
+  <div class="panel-body">
 
-  <div class="form-group">
-    <label>Delivery Message</label>
-    <textarea class="form-control" rows="5" ng-model="delivery_message"></textarea>
-  </div>
+    <div class="row">
+      <div class="col-xs-offset-4 col-xs-4 text-center">
+        <md-progress-linear md-mode="indeterminate" ng-show="progress"></md-progress-linear>
+        <em>{{message}}</em>
 
-  <div class="row">
-    <div class="col-xs-offset-8 col-xs-2">
-      <a class="btn btn-primary btn-block" href="#/delivery">Change Delivery</a>
+        <br />
+        <div class="form-group" ng-show="!progress">
+          <!--<label for="code">Code</label>-->
+          <input type="email" class="form-control" ng-model="email" placeholder="Email">
+        </div>
+        
+        <br />
+        <button class="btn btn-primary" ng-click="checkEmail()" ng-show="!progress">
+          Send Confirmation Code
+        </button>
+        
+      </div>
     </div>
-    <div class="col-xs-2">
-      <button class="btn btn-warning btn-block" ng-click="clear()">Clear</button>
-    </div>
+
   </div>
-</form>
+</div>
