@@ -5,19 +5,34 @@
     &nbsp;
   </div>
   <div class="panel-body">
-    <h2>Payment Method</h2>
+    <h4>Select Payment Method</h4>
     
-    <div class="row" ng-if="wapo.marketplace == 'tangocards' || (wapo.marketplace == 'promotion' && wapo.promotion.price != 0)">
+    <div class="row">
       <div class="col-xs-4">
-        <div class="service-block service-block-default" ng-class="{'service-block-aqua': payment_method == 'wepay'}" ng-click="setPaymentMethod('wepay')">
-          <i class="icon-custom icon-lg icon-color-dark icon-line icon-credit-card"></i>
-          <h2 class="heading-md">WePay</h2>
-          <p>Redirect to WePay site to for payment</p>
-        </div>
+        <ul class="list-group">
+          <li class="list-group-item" ng-if="wapo.marketplace == 'tangocards' || (wapo.marketplace == 'promotion' && wapo.promotion.price != 0)" ng-class="{'active': payment_method == 'wepay'}" ng-click="setPaymentMethod('wepay')" style="cursor: pointer;">
+            WePay
+          </li>
+          <li class="list-group-item" ng-if="wapo.marketplace == 'promotion' && wapo.promotion.price == 0" ng-class="{'active': wapo.marketplace == 'promotion' && wapo.promotion.price == 0}" ng-click="setPaymentMethod('free')" style="cursor: pointer;">
+            Free
+          </li>
+        </ul>
       </div>
     </div>
     
-    <h2>Account (s)</h2>
+<!--    <div class="row" ng-if="wapo.marketplace == 'tangocards' || (wapo.marketplace == 'promotion' && wapo.promotion.price != 0)">
+      <div class="col-xs-4">
+        <div class="service-block service-block-default" ng-class="{'service-block-aqua': payment_method == 'wepay'}" ng-click="setPaymentMethod('wepay')">
+          <i class="icon-custom icon-lg icon-color-dark icon-line icon-credit-card"></i>
+          <h4 class="heading-md">WePay</h4>
+          <p>Redirect to WePay site to for payment</p>
+        </div>
+      </div>
+    </div>-->
+    
+    <div style="border-bottom: 1px #ccc solid; margin: 6px;"></div>
+    
+    <h4>Account (s)</h4>
 
     <div class="row">
       <div class="col-xs-3 text-center">
@@ -98,9 +113,9 @@
       </div>
     </div>
 
-    <hr />
+    <div style="border-bottom: 1px #ccc solid; margin: 6px;"></div>
 
-    <h2>Delivery</h2>
+    <h4>Delivery</h4>
     <div ng-if="wapo.delivery == 'free-for-all'">
       <strong>Free for all</strong>
     </div>
@@ -158,12 +173,13 @@
       </span>
       <span ng-if="wapo.twitter.follower_list.length > 3">...</span>
     </div>
-    <hr />
     
-    <h2>Delivery Message</h2>
+    <div style="border-bottom: 1px #ccc solid; margin: 6px;"></div>
+    
+    <h4>Delivery Message</h4>
     <blockquote>{{wapo.delivery_message}}</blockquote>
 
-    <h2>Reward</h2>
+    <h4>Reward</h4>
     <table class="table table-striped">
       <thead>
         <tr>
@@ -178,7 +194,7 @@
           <td class="product-in-table">
             <img class="img-responsive" ng-src="{{wapo.tangocards.brand_image_url}}" alt="">
             <div class="product-it-in">
-              <h3>{{wapo.tangocards.name}}</h3>
+              <h4>{{wapo.tangocards.name}}</h4>
               <span>{{wapo.tangocards.description}}</span>
             </div>    
           </td>
@@ -193,7 +209,7 @@
           <td class="product-in-table col-xs-4">
             <img class="img-responsive" ng-src="/media/wapo/promotion/image/{{wapo.promotion.icon}}" alt="">
             <div class="product-it-in">
-              <h3>{{wapo.promotion.name}}</h3>
+              <h4>{{wapo.promotion.name}}</h4>
               <span>{{wapo.promotion.description}}</span>
             </div>    
           </td>
