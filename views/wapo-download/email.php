@@ -69,7 +69,7 @@ namespace Wp {
       $bulksms = new \BlinkBulkSMS\BulkSMSAPI();
       $message = sprintf("Use this code '%s' to confirm your phone number.", $wr->confirm);
       $result = $bulksms->send_to_us_number($message, $cleaned);
-
+      
       if (!$result[0]) {
         $this->set_error("Could not send the confirmation code.");
         return $this->form_invalid();
