@@ -1,5 +1,7 @@
 <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
 
+<div ng-include="'/apps/wp/templates/wapo/includes/navigation-buttons.html'"></div>
+
 <div class="panel panel-default">
   <div class="panel-heading">
     <div class="row">
@@ -22,16 +24,18 @@
     </div>
   </div>
 
-  <div class="panel-body profile">
+  <div class="panel-body">
     <div class="row" ng-repeat="chunked_promotion in chunked_promotion_list">
-      <div class="col-sm-4" ng-repeat="prom in chunked_promotion" ng-click="selectPromotion(prom)" style="cursor: pointer;">
-        <div class="easy-block-v1">
-          <img class="img-responsive" ng-src="{{prom.icon.full_url}}" alt="">
-          <div class="easy-block-v1-badge rgba-red" ng-if="prom.id == promotion.id">Selected</div>
-        </div>
-        <div class="projects">
-          <h2><span class="color-dark">{{prom.name}}</span></h2>
-          <p>{{prom.description}}</p>
+      <div class="col-sm-12 col-md-4" ng-repeat="prom in chunked_promotion">
+        <div class="panel panel-default" ng-class="{'panel-contrast': prom.id == promotion.id}" ng-click="selectPromotion(prom)" style="cursor: pointer;">
+          <div class="panel-body" style="overflow: auto;">
+            <img class="img-responsive" ng-src="{{prom.icon.full_url}}" alt="">
+        
+            <div>
+              <h2><span class="color-dark">{{prom.name}}</span></h2>
+              <small>{{prom.description}}</small>
+            </div>
+          </div>
         </div>
       </div>
     </div>

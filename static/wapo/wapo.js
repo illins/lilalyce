@@ -123,6 +123,10 @@ wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$
 //        .targetEvent(ev)
               );
     };
+    
+    $rootScope.setTitle = function(title, sub_title) {
+      $('#main-content-header').find('.title').html(title + '<small>' + sub_title + '</small>');
+    };
   }]);
 
 wapoApp.controller('ModuleCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
@@ -173,8 +177,9 @@ wapoApp.controller('ModuleCtrl', ['$rootScope', '$scope', '$location', '$http', 
   }]);
 
 wapoApp.controller('ProfileCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
+    $rootScope.setTitle('Profile Selector', 'Select one of your profiles');
     $rootScope.setProgress(1);
-
+    
     $rootScope.previous_path = null;
     $rootScope.next_path = '/marketplace';
 
@@ -221,6 +226,7 @@ wapoApp.controller('ProfileCtrl', ['$rootScope', '$scope', '$location', '$http',
   }]);
 
 wapoApp.controller('ProfileNewCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', 'Upload', function ($rootScope, $scope, $location, $http, $routeParams, Upload) {
+    $rootScope.setTitle('Profile Creator', 'Create a new profile');
     $rootScope.setProgress(1);
 
     $rootScope.previous_path = null;

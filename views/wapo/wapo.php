@@ -30,7 +30,7 @@ namespace Wp {
         "delivery" => null,
         "email" => array(
             "email_list" => array(),
-            "max" => 1
+            "max" => 4
         ),
         "email_list" => array(
             "email_list" => array(),
