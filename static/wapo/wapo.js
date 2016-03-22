@@ -1,4 +1,4 @@
-var wapoApp = angular.module('wapoApp', ['ngRoute', 'ngResource', 'ngMaterial', 'ngFileUpload', 'ui.bootstrap', 'ngCookies'], function ($httpProvider) {
+var wapoApp = angular.module('wapoApp', ['ngRoute', 'ngResource', 'ngFileUpload', 'ui.bootstrap', 'ngCookies'], function ($httpProvider) {
   // Use x-www-form-urlencoded Content-Type
   $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 
@@ -44,7 +44,7 @@ var wapoApp = angular.module('wapoApp', ['ngRoute', 'ngResource', 'ngMaterial', 
     }];
 });
 
-wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', '$mdDialog', '$cookies', function ($rootScope, $scope, $location, $http, $routeParams, $mdDialog, $cookies) {
+wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', '$cookies', function ($rootScope, $scope, $location, $http, $routeParams, $cookies) {
     $scope.progress = 0;
 
     $rootScope.user = null;
@@ -96,10 +96,6 @@ wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$
       }
     };
 
-    $rootScope.setProgress = function (progress) {
-      $scope.progress = progress;
-    };
-
     $rootScope.next_path = null;
     $rootScope.next = function (path) {
       var path = path || $rootScope.next_path;
@@ -112,16 +108,11 @@ wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$
     };
 
     $rootScope.showDialog = function (title, text) {
-      $mdDialog.show(
-              $mdDialog.alert()
-              .parent(angular.element(document.body))
-              .clickOutsideToClose(true)
-              .title(title)
-              .textContent(text)
-              .ariaLabel('Alert Dialog Demo')
-              .ok('Got it!')
-//        .targetEvent(ev)
-              );
+      alert(text);
+    };
+
+    $rootScope.setProgress = function (progress) {
+      $scope.progress = progress;
     };
     
     $rootScope.setTitle = function(title, sub_title) {
@@ -132,6 +123,9 @@ wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$
 wapoApp.controller('ModuleCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.previous_path = null;
     $rootScope.next_path = '/profile';
+    
+    $rootScope.setTitle('Module', 'Select module');
+    $rootScope.setTitle('', '');
 
     $scope.md_group_list = [];
 
@@ -290,6 +284,7 @@ wapoApp.controller('ProfileNewCtrl', ['$rootScope', '$scope', '$location', '$htt
 
 wapoApp.controller('MarketplaceCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(2);
+    $rootScope.setTitle('Marketplace', '');
 
     // Redirect to the correct marketplace.
     $scope.init = function () {
@@ -303,6 +298,7 @@ wapoApp.controller('MarketplaceCtrl', ['$rootScope', '$scope', '$location', '$ht
 
 wapoApp.controller('TangoCardsCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', 'filterFilter', function ($rootScope, $scope, $location, $http, $routeParams, filterFilter) {
     $rootScope.setProgress(2);
+    $rootScope.setTitle('Rewards', 'Select a gift card!');
 
     $rootScope.previous_path = '/profile';
     $rootScope.next_path = '/delivery';
@@ -388,6 +384,7 @@ wapoApp.controller('TangoCardsCtrl', ['$rootScope', '$scope', '$location', '$htt
 
 wapoApp.controller('PromotionCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', 'filterFilter', function ($rootScope, $scope, $location, $http, $routeParams, filterFilter) {
     $rootScope.setProgress(2);
+    $rootScope.setTitle('Reward', 'Select a Gift!');
 
     $rootScope.previous_path = '/profile';
     $rootScope.next_path = '/delivery';
@@ -474,6 +471,7 @@ wapoApp.controller('PromotionCtrl', ['$rootScope', '$scope', '$location', '$http
 
 wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(3);
+    $rootScope.setTitle('Delivery', 'Select a delivery method');
 
     $scope.delivery = null;
     $scope.main_delivery = 'free-for-all';
@@ -522,8 +520,9 @@ wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http'
 
   }]);
 
-wapoApp.controller('FFACtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', '$mdDialog', function ($rootScope, $scope, $location, $http, $routeParams, $mdDialog) {
+wapoApp.controller('FFACtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(3);
+    $rootScope.setTitle('Free for All', 'Enter Quantity and Delivery Message');
 
     $rootScope.previous_path = '/delivery';
     $rootScope.next_path = '/checkout';
@@ -559,6 +558,7 @@ wapoApp.controller('FFACtrl', ['$rootScope', '$scope', '$location', '$http', '$r
 
 wapoApp.controller('EmailCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(3);
+    $rootScope.setTitle('Email', 'Enter up to 4 emails to send to!');
 
     $scope.email_list = [];
     $scope.max_count = 1;
@@ -568,6 +568,7 @@ wapoApp.controller('EmailCtrl', ['$rootScope', '$scope', '$location', '$http', '
     $rootScope.next_path = '/checkout';
 
     $scope.init = function () {
+      console.log($rootScope.wapo.email.max);
       $scope.max_count = $rootScope.wapo.email.max;
       $scope.email_list = $rootScope.wapo.email.email_list;
 
@@ -620,6 +621,7 @@ wapoApp.controller('EmailCtrl', ['$rootScope', '$scope', '$location', '$http', '
 
 wapoApp.controller('EmailListCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(3);
+    $rootScope.setTitle('Email List', 'Enter up to 25 emails to send to!');
 
     $scope.email_list = [];
     $scope.max_count = 1;
@@ -685,6 +687,7 @@ wapoApp.controller('EmailListCtrl', ['$rootScope', '$scope', '$location', '$http
 
 wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(3);
+    $rootScope.setTitle('', '');
 
     $scope.account = null;
 
@@ -859,6 +862,7 @@ wapoApp.controller('MailChimpCtrl', ['$rootScope', '$scope', '$location', '$http
 
 wapoApp.controller('TextCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(3);
+    $rootScope.setTitle('Text SMS', 'Enter Phone numbers to send to!');
 
     $scope.error_number = '';
     $scope.number_list = [];
@@ -940,6 +944,7 @@ wapoApp.controller('TextCtrl', ['$rootScope', '$scope', '$location', '$http', '$
 
 wapoApp.controller('AnyTwitterFollowersCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(3);
+    $rootScope.setTitle('', '');
 
     $scope.account = null;
     $rootScope.previous_path = '/delivery';
@@ -979,6 +984,7 @@ wapoApp.controller('AnyTwitterFollowersCtrl', ['$rootScope', '$scope', '$locatio
 
 wapoApp.controller('SelectTwitterFollowersCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(3);
+    $rootScope.setTitle('', '');
 
     $rootScope.previous_path = '/delivery';
     $rootScope.next_path = '/checkout';
@@ -1110,6 +1116,7 @@ wapoApp.controller('SelectTwitterFollowersCtrl', ['$rootScope', '$scope', '$loca
 
 wapoApp.controller('AnyFacebookFriendsCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(3);
+    $rootScope.setTitle('', '');
 
     $scope.profile = null;
     $rootScope.previous_path = '/delivery';
@@ -1145,6 +1152,7 @@ wapoApp.controller('AnyFacebookFriendsCtrl', ['$rootScope', '$scope', '$location
 
 wapoApp.controller('FacebookPageCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(3);
+    $rootScope.setTitle('', '');
 
     $rootScope.previous_path = '/delivery';
     $rootScope.next_path = '/checkout';
@@ -1241,13 +1249,16 @@ wapoApp.controller('FacebookPageCtrl', ['$rootScope', '$scope', '$location', '$h
 
 wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(4);
+    $rootScope.setTitle('Checkout', '');
 
     $scope.valid = false;
 
     $rootScope.previous_path = '/delivery';
     $rootScope.next_path = null;
     $scope.hide_next = true;
-    $scope.payment_method = "";
+    $scope.payment_method = "wepay";
+    
+    $scope.payment_method_list = [];
     
     // Check if wapo is free!
     $scope.isFree = function() {
@@ -1268,6 +1279,12 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
       
       if($scope.isFree()) {
         $rootScope.next_path = '/free';
+        $scope.payment_method = "free";
+        $scope.payment_method_list.push('free');
+      } else {
+        $rootScope.next_path = '/payment';
+        $scope.payment_method = "wepay";
+        $scope.payment_method_list.push('wepay');
       }
     };
     $rootScope.mainInit(function () {
@@ -1305,6 +1322,7 @@ wapoApp.filter('filenameFilter', function () {
   };
 }).controller('PaymentCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(4);
+    $rootScope.setTitle('Processing', '');
 
     $scope.message = "Checking payment...";
 
@@ -1345,6 +1363,7 @@ wapoApp.filter('filenameFilter', function () {
 wapoApp.controller('FreeCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(4);
     $scope.progress = true;
+    $rootScope.setTitle('Processing', '');
 
     $scope.previous_path = '/checkout';
     $scope.message = "Validating...";
@@ -1399,6 +1418,7 @@ wapoApp.controller('FreeCtrl', ['$rootScope', '$scope', '$location', '$http', '$
 
 wapoApp.controller('ConfirmationCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.setProgress(5);
+    $rootScope.setTitle('Confirmation', 'Thank you for your order!');
 
     $scope.init = function () {
       $http.get('/wp/wapo/confirmation/').success(function (response) {

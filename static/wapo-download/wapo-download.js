@@ -1,4 +1,4 @@
-var wapoDownloadApp = angular.module('wapoDownloadApp', ['ngRoute', 'ngResource', 'ngMaterial', 'ui.bootstrap', 'ngCookies'], function ($httpProvider) {
+var wapoDownloadApp = angular.module('wapoDownloadApp', ['ngRoute', 'ngResource', 'ui.bootstrap', 'ngCookies'], function ($httpProvider) {
   // Use x-www-form-urlencoded Content-Type
   $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 

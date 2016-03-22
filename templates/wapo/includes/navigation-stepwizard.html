@@ -4,12 +4,12 @@
     <div class="stepwizard">
       <div class="stepwizard-row">
 
-        {#<div class="stepwizard-step">
+<!--          <div class="stepwizard-step">
           <button type="button" class="btn {% if main_step == "modules" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">
                   <i class="fa fa-list"></i>
                </button>
                <p style="font-size: xx-small;" class="hidden-xs">Modules</p>
-          </div>#}
+          </div>-->
 
           <div class="stepwizard-step">
             <button type="button" class="btn btn-circle" ng-class="{'btn-primary': progress > 0}" disabled="disabled">
@@ -18,12 +18,12 @@
             <p style="font-size: xx-small;" class="hidden-xs">Profile</p>
           </div>
 
-          {#<div class="stepwizard-step">
+<!--          <div class="stepwizard-step">
             <button type="button" class="btn {% if main_step == "announcement" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">
                     <i class="fa fa-bullhorn"></i>
                  </button>
                  <p style="font-size: xx-small;">Announcement</p>
-            </div>#}
+            </div>-->
 
             <div class="stepwizard-step">
               <button type="button" class="btn btn-circle" ng-class="{'btn-primary': progress > 1}" disabled="disabled">

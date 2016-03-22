@@ -172,6 +172,7 @@ namespace Wp {
    */
   class WpStartOverFormView extends WpWapoFormView {
     protected function get_wapo() {
+      $this->request->session->delete("wapo");
       $this->wapo = $this->get_new_wapo();
     }
   }
