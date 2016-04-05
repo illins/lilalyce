@@ -30,7 +30,7 @@ namespace Wp {
     
     // How many emails a guest user can send a wapo to.
     public static $NotLoggedInMaxEmailDeliveryCount = 1;
-    const MAX_EMAIL_DELIVERY_COUNT_GUEST = 1;
+    const MAX_EMAIL_DELIVERY_COUNT_GUEST = 3;
     
     /**
      * - List of delivery methods available. 

@@ -6,7 +6,7 @@
       <div class="col-xs-4">
         <div class="btn-group">
           <button type="button" class="btn btn-default">Goods</button>
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true">
             <span class="caret"></span>
             <span class="sr-only">Toggle Dropdown</span>
           </button>
@@ -24,8 +24,24 @@
 
   <div class="panel-body">
     <div class="row" ng-repeat="chunked_promotion in chunked_promotion_list">
-      <div class="col-sm-12 col-md-4" ng-repeat="prom in chunked_promotion">
-        <div class="panel panel-default" ng-class="{'panel-contrast': prom.id == promotion.id}" ng-click="selectPromotion(prom)" style="cursor: pointer;">
+      <div class="col-sm-12 col-md-4" ng-repeat="prom in chunked_promotion" ng-click="selectPromotion(prom)" style="cursor: pointer;">
+        
+        <div class="panel panel-default" style="height: 400px; padding: 5px; overflow: hidden;">
+          <div class="easy-block-v1">
+            <img class="img-responsive" ng-src="{{prom.icon.full_url}}" alt="">
+            <div class="easy-block-v1-badge rgba-red" ng-if="prom.id == promotion.id">Selected</div>
+          </div>
+          <div class="projects">
+            <h2><span class="color-dark">{{prom.name}}</span></h2>
+            <h6>$ {{prom.price}}</h6>
+            <small>{{prom.description}}</small>
+          </div>
+        </div>
+        
+        
+        
+        
+<!--        <div class="panel panel-default" ng-class="{'panel-contrast': prom.id == promotion.id}" ng-click="selectPromotion(prom)" style="cursor: pointer;">
           <div class="panel-body" style="overflow: auto;">
             <img class="img-responsive" ng-src="{{prom.icon.full_url}}" alt="">
         
@@ -35,7 +51,7 @@
               <small>{{prom.description}}</small>
             </div>
           </div>
-        </div>
+        </div>-->
       </div>
     </div>
   </div>

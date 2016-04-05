@@ -28,14 +28,20 @@
 
   <div class="panel-body profile">
     <div class="row" ng-repeat="tangocards_group in tangocards_group_list">
-      <div class="col-sm-12 col-md-4" ng-repeat="tcards in tangocards_group">
-        <div class="panel panel-default" ng-class="{'panel-contrast': tcards.id == tangocards.id}" ng-click="selectTangoCards(tcards)" style="cursor: pointer;">
-          <img class="img-responsive" ng-src="{{tcards.brand_image_url}}" alt="">
-          <div style="padding-left: 5px;">
+      <div class="col-sm-12 col-md-4" ng-repeat="tcards in tangocards_group" ng-click="selectTangoCards(tcards)" style="cursor: pointer;">
+        
+        <div class="panel panel-default" style="height: 300px; padding: 5px; overflow: hidden;">
+          <div class="easy-block-v1">
+            <img class="img-responsive" ng-src="{{tcards.brand_image_url}}" alt="">
+            <div class="easy-block-v1-badge rgba-red" ng-if="tcards.id == tangocards.id">Selected</div>
+          </div>
+
+          <div class="projects">
+            <h2><span class="color-dark">{{pf.name}}</span></h2>
             <h4><span class="color-dark">{{tcards.description}}</span></h4>
-            <!--<p>{{tcards.description}}</p>-->
           </div>
         </div>
+        
       </div>
     </div>
   </div>

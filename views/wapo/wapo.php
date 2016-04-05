@@ -30,7 +30,7 @@ namespace Wp {
         "delivery" => null,
         "email" => array(
             "email_list" => array(),
-            "max" => 4
+            "max" => 3
         ),
         "email_list" => array(
             "email_list" => array(),
@@ -205,6 +205,13 @@ namespace Wp {
       }
       
       $this->wapo->profile->profile = (object) $profile->to_plain_array();
+      $this->wapo->profile->new = (object) array(
+                  "name" => "",
+                  "email" => "",
+                  "password" => "",
+                  "image" => ""
+      );
+      
       return parent::form_valid();
     }
   }
@@ -252,6 +259,8 @@ namespace Wp {
 //      $this->wapo->profile->id = $this->wapo_json->id;
       $this->wapo->profile->new->name = $name;
       $this->wapo->profile->new->email = $email;
+      $this->wapo->profile->profile = null;
+      
 //      $this->wapo->profile->new->password = $password;
       return parent::form_valid();
     }

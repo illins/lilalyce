@@ -189,7 +189,7 @@ wapoApp.controller('ProfileCtrl', ['$rootScope', '$scope', '$location', '$http',
           $scope.profile_chunk_list = _.chunk($rootScope.profile_list, 3);
 
           // If no profile, show new profile form.
-          if (!$rootScope.profile_list.length) {
+          if ($rootScope.user && !$rootScope.profile_list.length) {
             $location.path('/profile-new');
           }
         });
@@ -213,7 +213,6 @@ wapoApp.controller('ProfileCtrl', ['$rootScope', '$scope', '$location', '$http',
 
       $http.post('/wp/wapo/set/profile/', {profile_id: $scope.profile.id}).success(function (response) {
         $rootScope.wapo = response.wapo;
-        console.log($rootScope.next_path);
         $location.path($rootScope.next_path);
       });
     };
