@@ -83,9 +83,11 @@ namespace Wp {
                 }
                 
                 $message .= sprintf("Your number is: %s\n", $order->order->reward->number);
-
+                
                 if (isset($order->order->reward->pin)) {
                   $message .= sprintf("Your pin number is: %s\n\n", $order->order->reward->pin);
+                } else if (isset($order->order->reward->token)) {
+                  $message .= sprintf("Your token is: %s\n\n", $order->order->reward->token);
                 } else {
                   $message .= sprintf("Redemption url is: %s\n\n", $order->order->reward->redemption_url);
                 }
