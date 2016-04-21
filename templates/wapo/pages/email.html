@@ -1,9 +1,15 @@
-<div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
-
 <form>
   <div class="row">
-    <div class="col-xs-12 col-sm-12 col-md-offset-3 col-md-6">
-      <div class="form-group" ng-repeat="email in email_list track by $index" ng-if="$index < max_count">
+    <div class="col-sm-12 col-md-offset-2 col-md-8">
+      
+      <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
+      
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title text-center">Enter Recipient Emails</h3>
+        </div>
+        <div class="panel-body">
+          <div class="form-group" ng-repeat="email in email_list track by $index" ng-if="$index < max_count">
         <label for="email-{{$index}}">Email address</label>
         <input type="email" class="form-control" id="email-{{$index}}" ng-model="email_list[$index]" placeholder="Email {{$index + 1}}">
       </div>
@@ -19,6 +25,8 @@
         </div>
         <div class="col-xs-6 col-sm-6 col-md-6">
           <button class="btn btn-warning btn-block" ng-click="clear()">Clear</button>
+        </div>
+      </div>
         </div>
       </div>
     </div>

@@ -102,6 +102,7 @@ namespace Wp {
                 if (in_array($result[0]['status'], array("sent", "queued", "scheduled"))) {
                   $recipient->sent = true;
                 }
+                
 
 //                $recipient->sent = @mail($recipient->contact, "You have been sent a Wapo.", $message);
               }

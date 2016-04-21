@@ -61,7 +61,8 @@ namespace Wp {
 
       // Set marketplace extras.
       if ($wpd->marketplace == "tangocards") {
-        $wapo->tangocardrewards = \Wapo\TangoCardRewards::get_or_404(array("sku"=>$wpd->tangocards->sku), "Reward not found!");
+        // Find only active tangocards.
+        $wapo->tangocardrewards = \Wapo\TangoCardRewards::get_or_404(array("sku"=>$wpd->tangocards->sku, "status" => true), "Reward not found!");
         $wapo->sku = $wpd->tangocards->sku;
       } else if ($wpd->marketplace == "promotion") {
         $wapo->promotion = \Wapo\Promotion::get_or_404(array("id"=>$wpd->promotion->id), "Reward not found!");
@@ -295,18 +296,16 @@ namespace Wp {
     $tc = new \BlinkTangoCard\TangoCardAPI();
     
     // Get the total cost of the product.
-    $reward = \Wapo\TangoCardRewards::get_or_404(array("sku"=>$sku), "Reward not found.");
-    $total_cost = ($reward->unit_price / 100) * $quantity;
+    $reward = \Wapo\TangoCardRewards::get_or_404(array("sku"=>$sku, "status" => true), "Reward not found.");
+//    $total_cost = ($reward->unit_price / 100) * $quantity;
+    $total_cost = $reward->unit_price * $quantity;
 
     // Make sure that we are requesting at least $100.
-    if($total_cost < 100) {
-      $total_cost = 100;
-    }
     
     // Create information to fund account.
     $cc_fund = array(
           "customer" => \Blink\TangoCardConfig::CUSTOMER,
-          "identifier" => \Blink\TangoCardConfig::IDENTIFIER,
+          "account_identifier" => \Blink\TangoCardConfig::IDENTIFIER,
           "amount" => $total_cost,
           "client_ip" => "55.44.33.22",// ????
           "security_code" => \Blink\TangoCardConfig::SECURITY_CODE,
@@ -314,19 +313,25 @@ namespace Wp {
       );
     
     // Create a request to check for funds.
-    $request = "accounts/" . \Blink\TangoCardConfig::CUSTOMER . "/" . \Blink\TangoCardConfig::IDENTIFIER;
-    $account = $tc->request($request);
+//    $request = "accounts/" . \Blink\TangoCardConfig::CUSTOMER . "/" . \Blink\TangoCardConfig::IDENTIFIER;
+//    $account = $tc->request($request);
     
     // If funds < 100, add new funds.
-    if($account->account->available_balance < 100) {
-      $fund = $tc->request("cc_fund", $cc_fund);
-      
-      // Check success.
-      if(!$fund->success) {
-        \Blink\raise500("Order could not be completed.");
-      }
-    }
+//    if($account->account->available_balance < 100) {
+//      $fund = $tc->request("cc_fund", $cc_fund);
+//      
+//      // Check success.
+//      if(!$fund->success) {
+//        \Blink\raise500("Order could not be completed.");
+//      }
+//    }
     
+    $fund = $tc->request("cc_fund", $cc_fund);
+    // Check success.
+    if (!$fund->success) {
+      \Blink\raise500("Order could not be completed.");
+    }
+
     $orders = array();
     for($i = 1; $i <= $quantity; $i++) {
       $info = array(
@@ -336,8 +341,8 @@ namespace Wp {
           "recipient" => array(
               "name" => "John Doe",
               "email" => \Blink\TangoCardConfig::EMAIL),
-          "sku" => 'TNGO-E-V-STD',
-          "amount" => $reward->unit_price,
+          "sku" => $sku, //'TNGO-E-V-STD',
+//          "amount" => $reward->unit_price,
           "reward_message" => "Thank you for participating in the XYZ survey.",
           "reward_subject" => "XYZ Survey, thank you...",
           "reward_from" => "Jon Survey Doe"

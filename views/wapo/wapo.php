@@ -44,7 +44,7 @@ namespace Wp {
         ),
         "text" => array(
             "number_list" => array(),
-            "max" => 50
+            "max" => 25
         ),
         "twitter" => array(
             "account" => null,
