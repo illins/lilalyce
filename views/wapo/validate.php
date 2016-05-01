@@ -84,6 +84,18 @@ namespace Wp {
     if (!$tangocards) {
       return "Invalid reward selected!";
     }
+    
+    if(!$wapo->unit_price) {
+      return "Please select a unit price!";
+    }
+    
+    // Make sure the 'unit_price' is a multiple of 5 and within the ranges.
+    $unit_price = $wapo->unit_price / 100;
+    if($tangocards->unit_price == -1 && (($unit_price % 5) || ($wapo->unit_price < $tangocards->min_price) || ($wapo->unit_price > $tangocards->max_price))) {
+      return "Please select a valid unit price!";
+    } else if(($tangocards->unit_price != -1) && ($tangocards->unit_price != $wapo->unit_price)) {
+      return "Please select a valid unit price!";
+    }
 
     return null;
   }

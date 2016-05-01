@@ -26,6 +26,7 @@ namespace Wp {
         ),
         "marketplace" => null,
         "tangocards" => null,
+        "unit_price" => 0,
         "promotion" => null,
         "delivery" => null,
         "email" => array(
@@ -275,9 +276,15 @@ namespace Wp {
         return $this->form_invalid();
       }
       
+      if(!$this->request->post->int("unit_price", 0)) {
+        $this->set_error("Please select a unit price!");
+        return $this->form_invalid();
+      }
       
       $this->wapo->marketplace = "tangocards";
       $this->wapo->tangocards = (object) $tangocards->to_plain_array();
+      $this->wapo->unit_price = $this->request->post->int("unit_price");
+      
       return parent::form_valid();
     }
   }
@@ -613,7 +620,7 @@ namespace Wp {
       
       if($this->wapo->marketplace == "tangocards") {
         $short_description = $this->wapo->tangocards->sku;
-        $amount += ($this->wapo->quantity * ($this->wapo->tangocards->unit_price / 100));
+        $amount += ($this->wapo->quantity * ($this->wapo->unit_price / 100));
       } else if($this->wapo->marketplace == "promotion") {
         $short_description = $this->wapo->promotion->name;
         $amount += ($this->wapo->quantity * $this->wapo->promotion->price);

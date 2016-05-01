@@ -36,12 +36,13 @@
             <div class="panel panel-default" style="height: 300px; padding: 5px; overflow: hidden;">
               <div class="easy-block-v1">
                 <img class="img-responsive" ng-src="{{tcards.brand_image_url}}" alt="">
-                <div class="easy-block-v1-badge rgba-red" ng-if="tcards.id == tangocards.id">Selected</div>
+                <div class="easy-block-v1-badge rgba-red" ng-if="(tcards.min_price != 0 && tcards.id == tangocards.id && unit_price == tcards.unit_price) || (tcards.min_price == 0 && tcards.id == tangocards.id)">Selected</div>
               </div>
 
               <div class="projects">
-                <h2><span class="color-dark">{{pf.name}}</span></h2>
+                <h2><span class="color-dark">{{tcards.name}}</span></h2>
                 <h4><span class="color-dark">{{tcards.description}}</span></h4>
+                <h4><span class="color-dark">$ {{tcards.unit_price / 100}}</span></h4>
               </div>
             </div>
 

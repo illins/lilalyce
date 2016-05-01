@@ -9,6 +9,7 @@
       <li class="list-group-item"><h3>Payer Email <small>{{ wapo.checkout.payer.email}}</small></h3></li>
       <li class="list-group-item"><h3>Descriptor <small>{{ wapo.checkout.soft_descriptor}}</small></h3></li>
       <li class="list-group-item"><h3>Charge <small>{{ wapo.checkout.gross | currency:"$":2}}</small></h3></li>
+      
       <li class="list-group-item"><h3>Cost <small>{{ wapo.checkout.amount | currency:"$":2}}</small></h3></li>
       <li class="list-group-item"><h3>Fee <small>{{ wapo.checkout.fee.processing_fee | currency:"$":2}}</small></h3></li>
     </ul>
@@ -26,6 +27,7 @@
       <li class="list-group-item"><h3>Reward <small>{{wapo.tangocardrewards.description}}</small></h3></li>
       <li class="list-group-item"><h3>Delivery Method <small>{{ wapo.delivery_method}}</small></h3></li>
       <li class="list-group-item"><h3>Quantity <small>{{ wapo.quantity}}</small></h3></li>
+      <li class="list-group-item"><h3>Unit Price <small>{{ wapo.unit_price}}</small></h3></li>
       <li class="list-group-item"><h3>Download URL <small>{{ wapo.bitlyurl}}</small></h3></li>
     </ul>
     

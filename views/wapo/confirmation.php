@@ -33,6 +33,7 @@ namespace Wp {
           "delivery_method" => str_replace("-", " ", $wapo->delivery_method),
           "payment_method" => $wapo->payment_method,
           "quantity" => $wapo->quantity,
+          "unit_price" => $wapo->unit_price,
           "timestamp" => $wapo->timestamp,
           "tangocardrewards" => $wapo->tangocardrewards,
           "promotion" => $wapo->promotion,

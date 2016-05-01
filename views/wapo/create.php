@@ -64,8 +64,10 @@ namespace Wp {
         // Find only active tangocards.
         $wapo->tangocardrewards = \Wapo\TangoCardRewards::get_or_404(array("sku"=>$wpd->tangocards->sku, "status" => true), "Reward not found!");
         $wapo->sku = $wpd->tangocards->sku;
+        $wapo->unit_price = $wpd->unit_price / 100;
       } else if ($wpd->marketplace == "promotion") {
         $wapo->promotion = \Wapo\Promotion::get_or_404(array("id"=>$wpd->promotion->id), "Reward not found!");
+        $wapo->unit_price = $wapo->promotion->price;
       }
 
       $wapo->marketplace = $wpd->marketplace;
@@ -88,7 +90,7 @@ namespace Wp {
 
       $order_list = array();
       if ($wpd->marketplace == "tangocards") {
-        $order_list = create_tangocard_reward($wpd->tangocards->sku, $wpd->quantity);
+        $order_list = create_tangocard_reward($wpd->tangocards->sku, $wpd->quantity, $wpd->unit_price);
       }
       
       if($wpd->delivery == "free-for-all") {
@@ -292,13 +294,13 @@ namespace Wp {
    * - Purchase each individual reward and store the resource.
    * - Return the resources as a list to the calling function, and how many were not fulfilled.
    */
-  function create_tangocard_reward($sku, $quantity) {
+  function create_tangocard_reward($sku, $quantity, $unit_price) {
     $tc = new \BlinkTangoCard\TangoCardAPI();
     
     // Get the total cost of the product.
     $reward = \Wapo\TangoCardRewards::get_or_404(array("sku"=>$sku, "status" => true), "Reward not found.");
 //    $total_cost = ($reward->unit_price / 100) * $quantity;
-    $total_cost = $reward->unit_price * $quantity;
+    $total_cost = $unit_price * $quantity;
 
     // Make sure that we are requesting at least $100.
     
@@ -347,6 +349,11 @@ namespace Wp {
           "reward_subject" => "XYZ Survey, thank you...",
           "reward_from" => "Jon Survey Doe"
       );
+      
+      // If this is a range one, include the 'amount' == 'unit_price'.
+      if($reward->unit_price == -1) {
+        $info['amount'] = $unit_price;
+      }
 
       $order = $tc->place_order($info);
       

@@ -303,6 +303,7 @@ wapoApp.controller('TangoCardsCtrl', ['$rootScope', '$scope', '$location', '$htt
     $rootScope.next_path = '/delivery';
 
     $scope.tangocards;
+    $scope.unit_price;
     $scope.tangocards_group_list = [];
     $scope.brand_list = [];
 
@@ -321,7 +322,8 @@ wapoApp.controller('TangoCardsCtrl', ['$rootScope', '$scope', '$location', '$htt
       
       // Filter out anything that has 'unit_price' not equal to -1.
       var brand_list = _.filter($rootScope.tangocards_list, function (item) {
-        return item.unit_price != -1;
+        return true;
+//        return item.unit_price != -1;
       });
 
       // Get the unique brand descriptions.
@@ -339,9 +341,31 @@ wapoApp.controller('TangoCardsCtrl', ['$rootScope', '$scope', '$location', '$htt
 
     $scope.init = function () {
       $scope.tangocards = $rootScope.wapo.tangocards;
+      $scope.unit_price = $rootScope.wapo.unit_price;
       if (!$rootScope.tangocards_list.length) {
         $http.get('/wp/wapo/tangocards/').success(function (response) {
-          $rootScope.tangocards_list = response.tangocardrewards_list;
+          var tangocards_list = response.tangocardrewards_list;
+          
+          // And ranges.
+          var tc_list = [];
+          _.each(tangocards_list, function(item) {
+            if(item.unit_price == -1) {
+              for(var i = 0; i < 5; i++) {
+                var copy = angular.copy(item);
+                copy.unit_price = copy.min_price + (i * 100);
+                
+                // Skip if over max-price.
+                if(copy.unit_price < copy.max_price) {
+                  tc_list.push(copy);
+                }
+              }
+            } else {
+              tc_list.push(item);
+            }
+          });
+          
+          $rootScope.tangocards_list = tc_list;
+      
           $scope.initFilters();
         });
       } else {
@@ -363,6 +387,7 @@ wapoApp.controller('TangoCardsCtrl', ['$rootScope', '$scope', '$location', '$htt
     };
 
     $scope.selectTangoCards = function (tangocards) {
+      $scope.unit_price = tangocards.unit_price;
       $scope.tangocards = tangocards;
     };
 
@@ -372,7 +397,7 @@ wapoApp.controller('TangoCardsCtrl', ['$rootScope', '$scope', '$location', '$htt
         return;
       }
 
-      $http.post('/wp/wapo/set/tangocards/', {tangocards_id: $scope.tangocards.id}).success(function (response) {
+      $http.post('/wp/wapo/set/tangocards/', {tangocards_id: $scope.tangocards.id, unit_price: $scope.tangocards.unit_price}).success(function (response) {
         $rootScope.wapo = response.wapo;
         $location.path($rootScope.next_path);
       }).error(function (errorResponse) {
