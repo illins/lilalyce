@@ -142,7 +142,7 @@
             <div ng-if="wapo.delivery == 'email'">
               <span ng-repeat="email in wapo.email.email_list track by $index">
                 <span class="label label-light rounded">{{email}}</span>
-                <span ng-if="!$last">,</span>
+                <span ng-if="!$last && email">,</span>
               </span>
             </div>
             <div ng-if="wapo.delivery == 'email-list'">

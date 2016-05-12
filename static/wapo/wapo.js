@@ -44,7 +44,7 @@ var wapoApp = angular.module('wapoApp', ['ngRoute', 'ngResource', 'ngFileUpload'
     }];
 });
 
-wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', '$cookies', function ($rootScope, $scope, $location, $http, $routeParams, $cookies) {
+wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', '$cookies', '$interval', function ($rootScope, $scope, $location, $http, $routeParams, $cookies, $interval) {
     $scope.progress = 0;
 
     $rootScope.user = null;
@@ -117,6 +117,38 @@ wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$
     
     $rootScope.setTitle = function(title, sub_title) {
       $('#main-content-header').find('.title').html(title + '<small>' + sub_title + '</small>');
+    };
+    
+    $rootScope.resizeImages = function() {
+      var count = 0;
+      var total_height = 0;
+      _.each($('.marketplace-image'), function(item) {
+        var h = $(item).height();
+        if(h > 10) {
+          total_height += h;
+          count++;
+        }
+      });
+      
+      var avg_height = parseInt(total_height / count);
+        $('.marketplace-item-container').height(avg_height + 150);
+        $('.marketplace-image-container').height(avg_height);
+        $('.marketplace-image-container').css('overflow-y', 'hidden');
+    };
+    
+    $rootScope.initMarketplaceImages = function() {
+      $(window).unbind('resize');
+      
+      $rootScope.interval = $interval(function() {
+        if($('.marketplace-image-container').width()) {
+          $rootScope.resizeImages();
+          $interval.cancel($rootScope.interval);
+        }
+      }, 1000);
+      
+      $(window).resize(function() {
+        $rootScope.resizeImages();
+      });
     };
   }]);
 
@@ -404,6 +436,10 @@ wapoApp.controller('TangoCardsCtrl', ['$rootScope', '$scope', '$location', '$htt
         alert(errorResponse.message);
       });
     };
+    
+//    $rootScope.initMarketplaceImages();
+    
+    
   }]);
 
 wapoApp.controller('PromotionCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', 'filterFilter', function ($rootScope, $scope, $location, $http, $routeParams, filterFilter) {
@@ -491,6 +527,8 @@ wapoApp.controller('PromotionCtrl', ['$rootScope', '$scope', '$location', '$http
         alert(errorResponse.message);
       });
     };
+    
+//    $rootScope.initMarketplaceImages();
   }]);
 
 wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {

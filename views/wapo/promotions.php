@@ -13,7 +13,7 @@ namespace Wp {
     protected $class = "\Wapo\Promotion";
     
     protected function get_queryset() {
-      $q = parent::get_queryset();
+      $q = parent::get_queryset()->filter(["active"=>true]);
       
       if($this->request->get->is_set("promotioncategory")) {
         $q->filter(array("promotioncategory"=>$this->request->get->get("promotioncategory")));

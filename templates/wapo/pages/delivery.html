@@ -1,177 +1,179 @@
+<div class="row">
+  <div class="col-xs-12">
+    <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
+  </div>
 
+  <div class="col-sm-12 col-md-9">
 
-<div class="col-sm-12 col-md-offset-2 col-md-8">
-  
-  <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
-  
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title text-center">Select Delivery Method</h3>
-    </div>
-    <div class="panel-body">
-      <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-2">
-          <ul class="nav nav-pills nav-stacked">
-            <!--<li class="btn-contrast.btn-bordered" style="margin-bottom: 6%;" ng-class="{'active': active('free-for-all')}"><a ng-click="main_delivery = 'free-for-all'" style="cursor: pointer;">Free For All</a></li>-->
-            <li ng-class="{'active': active('email')}"><a ng-click="main_delivery = 'email'" style="cursor: pointer;">Email</a></li>
-            <li ng-class="{'active': active('text')}"><a ng-click="main_delivery = 'text'" style="cursor: pointer;">Text</a></li>
-            <!--<li class="btn-contrast.btn-bordered" style="margin-bottom: 6%;" ng-class="{'active': active('facebook')}"><a ng-click="main_delivery = 'facebook'" style="cursor: pointer;">Facebook</a></li>-->
-            <!--<li class="btn-contrast.btn-bordered" style="margin-bottom: 6%;" ng-class="{'active': active('twitter')}"><a ng-click="main_delivery = 'twitter'" style="cursor: pointer;">Twitter</a></li>-->
-            <!--<li class="btn-contrast.btn-bordered" style="margin-bottom: 6%;" ng-class="{'active': active('instagram')}"><a href="#instagram" style="cursor: pointer;">Instagram</a></li>-->
-          </ul>
-        </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title text-center">Select Delivery Method</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-2">
+            <ul class="nav nav-pills nav-stacked">
+              <!--<li class="btn-contrast.btn-bordered" style="margin-bottom: 6%;" ng-class="{'active': active('free-for-all')}"><a ng-click="main_delivery = 'free-for-all'" style="cursor: pointer;">Free For All</a></li>-->
+              <li ng-class="{'active': active('email')}"><a ng-click="main_delivery = 'email'" style="cursor: pointer;">Email</a></li>
+              <li ng-class="{'active': active('text')}"><a ng-click="main_delivery = 'text'" style="cursor: pointer;">Text</a></li>
+              <!--<li class="btn-contrast.btn-bordered" style="margin-bottom: 6%;" ng-class="{'active': active('facebook')}"><a ng-click="main_delivery = 'facebook'" style="cursor: pointer;">Facebook</a></li>-->
+              <!--<li class="btn-contrast.btn-bordered" style="margin-bottom: 6%;" ng-class="{'active': active('twitter')}"><a ng-click="main_delivery = 'twitter'" style="cursor: pointer;">Twitter</a></li>-->
+              <!--<li class="btn-contrast.btn-bordered" style="margin-bottom: 6%;" ng-class="{'active': active('instagram')}"><a href="#instagram" style="cursor: pointer;">Instagram</a></li>-->
+            </ul>
+          </div>
 
-        <div class="col-xs-12 col-sm-12 col-md-10">
-          <div class="tab-content">
-            <div class="tab-pane" id="free-for-all" ng-class="{'active': active('free-for-all')}">
-              <h5 style="padding: 0px 10px;">Free for all</h5>
-              <div class="list-group" style="padding: 0px 10px;">
-                <div class="list-group-item">
-                  <p class="list-group-item-text">Create a link that you can distribute in any medium you choose. Set a cap to limit how many Wapo(s) are sent.</p>
+          <div class="col-xs-12 col-sm-12 col-md-10">
+            <div class="tab-content">
+              <div class="tab-pane" id="free-for-all" ng-class="{'active': active('free-for-all')}">
+                <h5 style="padding: 0px 10px;">Free for all</h5>
+                <div class="list-group" style="padding: 0px 10px;">
+                  <div class="list-group-item">
+                    <p class="list-group-item-text">Create a link that you can distribute in any medium you choose. Set a cap to limit how many Wapo(s) are sent.</p>
 
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="free-for-all" ng-checked="checked('free-for-all')" ng-click="setDelivery('free-for-all')" /> <b>Select</b>
-                    </label>
+                    <div class="checkbox">
+                      <label>
+                        <input type="radio" name="delivery" value="free-for-all" ng-checked="checked('free-for-all')" ng-click="setDelivery('free-for-all')" /> <b>Select</b>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="tab-pane" id="email" ng-class="{'active': active('email')}">
-              <h5 style="padding: 0px 10px;">Email</h5>
-              <div class="list-group" style="padding: 0px 10px;">
-                <div class="list-group-item">
-                  <p class="list-group-item-text">Send a Wapo to an email or email list. Each user must authenticate through their email to confirm account.</p>
+              <div class="tab-pane" id="email" ng-class="{'active': active('email')}">
+                <h5 style="padding: 0px 10px;">Email</h5>
+                <div class="list-group" style="padding: 0px 10px;">
+                  <div class="list-group-item">
+                    <p class="list-group-item-text">Send a Wapo to an email or email list. Each user must authenticate through their email to confirm account.</p>
 
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="e" ng-checked="checked('email')" ng-click="setDelivery('email')" /> <b>Select</b>
-                    </label>
+                    <div class="checkbox">
+                      <label>
+                        <input type="radio" name="delivery" value="e" ng-checked="checked('email')" ng-click="setDelivery('email')" /> <b>Select</b>
+                      </label>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <h5 style="padding: 0px 10px;">Email List</h5>
-              <div class="list-group" style="padding: 0px 10px;">
-                <div class="list-group-item">
-                  <p class="list-group-item-text">Send a Wapo to a list of emails.</p>
+                <h5 style="padding: 0px 10px;">Email List</h5>
+                <div class="list-group" style="padding: 0px 10px;">
+                  <div class="list-group-item">
+                    <p class="list-group-item-text">Send a Wapo to a list of emails.</p>
 
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="el" ng-checked="checked('email-list')" ng-click="setDelivery('email-list')" /> <b>Select</b>
-                    </label>
+                    <div class="checkbox">
+                      <label>
+                        <input type="radio" name="delivery" value="el" ng-checked="checked('email-list')" ng-click="setDelivery('email-list')" /> <b>Select</b>
+                      </label>
+                    </div>
+
                   </div>
-
                 </div>
-              </div>
 
-              <!--              <h5 style="padding: 0px 10px;">MailChimp</h5>
-                            <div class="list-group" style="padding: 0px 10px;">
-                              <div class="list-group-item">
-                                <p class="list-group-item-text">Log in to your MailChimp account and send emails to your list.</p>
-                                
-                                <div class="checkbox">
-                                  <label>
-                                    <input type="radio" name="delivery" value="mailchimp" ng-checked="checked('mailchimp')" ng-click="setDelivery('mailchimp')" /> <b>Select</b>
-                                  </label>
+                <!--              <h5 style="padding: 0px 10px;">MailChimp</h5>
+                              <div class="list-group" style="padding: 0px 10px;">
+                                <div class="list-group-item">
+                                  <p class="list-group-item-text">Log in to your MailChimp account and send emails to your list.</p>
+                                  
+                                  <div class="checkbox">
+                                    <label>
+                                      <input type="radio" name="delivery" value="mailchimp" ng-checked="checked('mailchimp')" ng-click="setDelivery('mailchimp')" /> <b>Select</b>
+                                    </label>
+                                  </div>
+                                  
                                 </div>
-                                
-                              </div>
-                            </div>-->
-            </div>
-
-            <div class="tab-pane" id="text" ng-class="{'active': active('text')}">
-              <h5 style="padding: 0px 10px;">Text</h5>
-              <div class="list-group" style="padding: 0px 10px;">
-                <div class="list-group-item">
-                  <p class="list-group-item-text">Send a Wapo to Phone number(s).</p>
-
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" ng-checked="checked('text')" ng-click="setDelivery('text')" /> <b>Select</b>
-                    </label>
-                  </div>
-
-                </div>
+                              </div>-->
               </div>
-            </div>
 
-            <div class="tab-pane" id="facebook" ng-class="{'active': active('facebook')}">
-              <h5 style="padding: 0px 10px;">Facebook Friends</h5>
-              <div class="list-group" style="padding: 0px 10px;">
-                <div class="list-group-item">
-                  <p class="list-group-item-text">Login to Facebook to send a wapo to any of your Friends. Buy the maximum number of Wapos and any of your friends can download the wapos up to the maximum. Anyone who clicks on link must be validated (they must log in through Facebook) and validated as your friend.</p>
+              <div class="tab-pane" id="text" ng-class="{'active': active('text')}">
+                <h5 style="padding: 0px 10px;">Text</h5>
+                <div class="list-group" style="padding: 0px 10px;">
+                  <div class="list-group-item">
+                    <p class="list-group-item-text">Send a Wapo to Phone number(s).</p>
 
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="aff" ng-checked="checked('any-facebook-friends')" ng-click="setDelivery('any-facebook-friends')" /> <b>Select</b>
-                    </label>
+                    <div class="checkbox">
+                      <label>
+                        <input type="radio" name="delivery" ng-checked="checked('text')" ng-click="setDelivery('text')" /> <b>Select</b>
+                      </label>
+                    </div>
+
                   </div>
-
                 </div>
               </div>
 
-              <h5 style="padding: 0px 10px;">Facebook Pages</h5>
-              <div class="list-group" style="padding: 0px 10px;">
-                <div class="list-group-item">
-                  <p class="list-group-item-text">Login to Facebook to send a wapo to page followers. Buy a maximum number of Wapos you would like to send and anyone who has liked your page can download the wapo. Anyone who clicks on link must be validated (they must log in through Facebook) and validated to like your page.</p>
+              <div class="tab-pane" id="facebook" ng-class="{'active': active('facebook')}">
+                <h5 style="padding: 0px 10px;">Facebook Friends</h5>
+                <div class="list-group" style="padding: 0px 10px;">
+                  <div class="list-group-item">
+                    <p class="list-group-item-text">Login to Facebook to send a wapo to any of your Friends. Buy the maximum number of Wapos and any of your friends can download the wapos up to the maximum. Anyone who clicks on link must be validated (they must log in through Facebook) and validated as your friend.</p>
 
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="fp" ng-checked="checked('facebook-page')" ng-click="setDelivery('facebook-page')" /> <b>Select</b>
-                    </label>
+                    <div class="checkbox">
+                      <label>
+                        <input type="radio" name="delivery" value="aff" ng-checked="checked('any-facebook-friends')" ng-click="setDelivery('any-facebook-friends')" /> <b>Select</b>
+                      </label>
+                    </div>
+
                   </div>
+                </div>
 
+                <h5 style="padding: 0px 10px;">Facebook Pages</h5>
+                <div class="list-group" style="padding: 0px 10px;">
+                  <div class="list-group-item">
+                    <p class="list-group-item-text">Login to Facebook to send a wapo to page followers. Buy a maximum number of Wapos you would like to send and anyone who has liked your page can download the wapo. Anyone who clicks on link must be validated (they must log in through Facebook) and validated to like your page.</p>
+
+                    <div class="checkbox">
+                      <label>
+                        <input type="radio" name="delivery" value="fp" ng-checked="checked('facebook-page')" ng-click="setDelivery('facebook-page')" /> <b>Select</b>
+                      </label>
+                    </div>
+
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="tab-pane" id="twitter" ng-class="{'active': active('twitter')}">
-              <h5 style="padding: 0px 10px;">Twitter Followers</h5>
-              <div class="list-group" style="padding: 0px 10px;">
-                <div class="list-group-item">
-                  <p class="list-group-item-text">Login through Twitter and post a link for a Wapo. Buy the maximum number of Wapos for any of your followers to download. Only your followers (Authenticated and confirmed) can download the Wapo.</p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="atf" ng-checked="checked('any-twitter-followers')" ng-click="setDelivery('any-twitter-followers')" /> <b>Select</b>
-                    </label>
+              <div class="tab-pane" id="twitter" ng-class="{'active': active('twitter')}">
+                <h5 style="padding: 0px 10px;">Twitter Followers</h5>
+                <div class="list-group" style="padding: 0px 10px;">
+                  <div class="list-group-item">
+                    <p class="list-group-item-text">Login through Twitter and post a link for a Wapo. Buy the maximum number of Wapos for any of your followers to download. Only your followers (Authenticated and confirmed) can download the Wapo.</p>
+                    <div class="checkbox">
+                      <label>
+                        <input type="radio" name="delivery" value="atf" ng-checked="checked('any-twitter-followers')" ng-click="setDelivery('any-twitter-followers')" /> <b>Select</b>
+                      </label>
+                    </div>
+
                   </div>
+                </div>
 
+                <h5 style="padding: 0px 10px;">Selected Twitter Followers</h5>
+                <div class="list-group" style="padding: 0px 10px;">
+                  <div class="list-group-item">
+                    <p class="list-group-item-text">Login through Twitter and post a link for a Wapo. Only the selected followers (Authenticated and confirmed) can download the Wapo.</p>
+                    <div class="checkbox">
+                      <label>
+                        <input type="radio" name="delivery" value="stf" ng-checked="checked('select-twitter-followers')" ng-click="setDelivery('select-twitter-followers')" /> <b>Select</b>
+                      </label>
+                    </div>
+
+                  </div>
                 </div>
               </div>
-
-              <h5 style="padding: 0px 10px;">Selected Twitter Followers</h5>
-              <div class="list-group" style="padding: 0px 10px;">
-                <div class="list-group-item">
-                  <p class="list-group-item-text">Login through Twitter and post a link for a Wapo. Only the selected followers (Authenticated and confirmed) can download the Wapo.</p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="stf" ng-checked="checked('select-twitter-followers')" ng-click="setDelivery('select-twitter-followers')" /> <b>Select</b>
-                    </label>
+              <div class="tab-pane" id="instagram" ng-class="{'active': active('instagram')}">
+                <h4>Instagram</h4>
+                <div class="list-group" style="padding: 0px 10px;">
+                  <div class="list-group-item">
+                    <h5 class="list-group-item-heading">Any Followers</h5>
+                    <p class="list-group-item-text">Login through Instagram and post a link for a Wapo. Buy the maximum number of Wapos for any of your followers to download. Only your followers (Authenticated and confirmed) can download the Wapo.</p>
+                    <div class="checkbox">
+                      <label>
+                        <input type="radio" name="delivery" value="aif" ng-checked="!enabled('any-instagram-friends')" /> <b>Select</b>
+                      </label>
+                    </div>
                   </div>
-
-                </div>
-              </div>
-            </div>
-            <div class="tab-pane" id="instagram" ng-class="{'active': active('instagram')}">
-              <h4>Instagram</h4>
-              <div class="list-group" style="padding: 0px 10px;">
-                <div class="list-group-item">
-                  <h5 class="list-group-item-heading">Any Followers</h5>
-                  <p class="list-group-item-text">Login through Instagram and post a link for a Wapo. Buy the maximum number of Wapos for any of your followers to download. Only your followers (Authenticated and confirmed) can download the Wapo.</p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="aif" ng-checked="!enabled('any-instagram-friends')" /> <b>Select</b>
-                    </label>
-                  </div>
-                </div>
-                <div class="list-group-item">
-                  <h5 class="list-group-item-heading">Followers</h5>
-                  <p class="list-group-item-text">Login through Instagram and post a link for a Wapo. Only the selected followers (Authenticated and confirmed) can download the Wapo.</p>
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" name="delivery" value="sif" ng-checked="!enabled('instagram')" /> <b>Select</b>
-                    </label>
+                  <div class="list-group-item">
+                    <h5 class="list-group-item-heading">Followers</h5>
+                    <p class="list-group-item-text">Login through Instagram and post a link for a Wapo. Only the selected followers (Authenticated and confirmed) can download the Wapo.</p>
+                    <div class="checkbox">
+                      <label>
+                        <input type="radio" name="delivery" value="sif" ng-checked="!enabled('instagram')" /> <b>Select</b>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -181,4 +183,5 @@
       </div>
     </div>
   </div>
+  <div class="col-md-3 col-sm-12" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>
 </div>
