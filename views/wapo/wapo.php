@@ -538,7 +538,7 @@ namespace Wp {
     
     protected function get_context_data() {
       $c = parent::get_context_data();
-      $c['wepay'] = $this->wepay;
+      $c['client_id'] = \Blink\WePayConfig::CLIENT_ID;
       return $c;
     }
     
@@ -613,10 +613,26 @@ namespace Wp {
         return $this->form_invalid();
       }
       
+      return parent::form_valid();
+    }
+  }
+  
+  class WpCheckoutCreateFormView extends WpWapoFormView {
+    private $wepay;
+    
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      $c['wepay'] = $this->wepay;
+      return $c;
+    }
+    
+    protected function form_valid() {
+      $payment_method = "wepay";
+      $credit_card_id = $this->request->post->find("credit_card_id", null);
+      
       // Calculate the checkout stuff.
       $amount = 0;
       $short_description = "";
-      $redirect_uri = sprintf("%s/wp/wapo/", \Blink\SiteConfig::SITE);
       
       if($this->wapo->marketplace == "tangocards") {
         $short_description = $this->wapo->tangocards->sku;
@@ -630,19 +646,19 @@ namespace Wp {
         $payment_method = "free";
       }
       
-      if(!in_array($payment_method, $payment_methods)) {
-        $this->set_error("Invalid payment method!");
-        return $this->form_invalid();
-      }
-      
       // Create the checkout.
       if($payment_method == "wepay") {
+        if (!$credit_card_id) {
+          $this->set_error("Invalid card used!");
+          return $this->form_invalid();
+        }
+        
         try {
           $wepay = new \WePay\WepayAPI();
-          $this->wepay = $wepay->checkout_create($amount, $short_description, $redirect_uri);
+          $this->wepay = $wepay->checkout_create_tokenized($amount, $short_description, $credit_card_id);
           
           if(!$this->wepay->checkout_id) {
-            throw new Exception("Could not initialize payment method");
+            throw new Exception("Could not charge card!");
           }
           
           //      $this->request->session->set("checkoutid", 760173062);760173062

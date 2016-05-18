@@ -1,9 +1,9 @@
 <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
 
 <div class="panel panel-default">
-  <div class="panel-heading">
+<!--  <div class="panel-heading">
     &nbsp;
-  </div>
+  </div>-->
   <div class="panel-body" style="max-height: 100%; overflow: hidden;">
     <h5>Select Payment Method</h5>
     
@@ -39,7 +39,7 @@
     </div>-->
     
     <!--<div style="border-bottom: 1px #ccc solid; margin: 6px;"></div>-->
-    <div class="well well-sm hidden-xs"></div>
+    <div class="well well-sm hidden-xs">&nbsp;</div>
     
     <div class="row">
       <div class="col-sm-12 col-md-6">
@@ -52,202 +52,243 @@
     
     <div class="row">
       <div class="col-sm-12 col-md-6">
-        <h5>Account</h5>
-      </div>
-      <div class="col-sm-12 col-md-6">
-        <h5>Profile</h5>
-      </div>
-    </div>
-    
-    <h4>Account (s)</h4>
-
-    <div class="row">
-      <div class="col-xs-3 text-center">
-        Local
-      </div>
-      <div class="col-xs-3 text-center" ng-if="wapo.profile.new.name && !wapo.profile.profile">
-        New Wapo Profile
-      </div>
-      <div class="col-xs-3 text-center" ng-if="wapo.profile.profile">
-        Wapo Profile
-      </div>
-      <div class="col-xs-3 text-center" ng-if="wapo.delivery == 'facebook-page' || wapo.delivery == 'any-facebook-friends'">
-        Facebook
-      </div>
-      <div class="col-xs-3 text-center" ng-if="wapo.delivery == 'select-twitter-followers' || wapo.delivery == 'any-twitter-followers'">
-        Twitter
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-xs-3 text-center">
-        <div ng-if="user">
-          <div class="panel panel-default">
-            <div class="panel-body">
-              <div class="profile-blog blog-border">
-                <img class="rounded-x" ng-src="{{user.account_image.full_url}}" style="max-width: 50px;" alt="">
-                <div class="name-location">
+        <div class="panel panel-default">
+          <div class="panel-body" style="height: 150px; overflow: hidden;">
+            <div class="row" ng-if="user">
+                <div class="col-xs-4">
+                  <img class="img-responsive" ng-src="{{user.account_image.full_url}}" alt="">
+                </div>
+                <div class="col-xs-8">
                   <strong>{{user.first_name}} {{user.last_name}}</strong><br />
                   <span><i class="fa fa-envelope"></i> {{user.email}}</span>
                 </div>
               </div>
+            <div ng-if="!user">
+              Guest
             </div>
           </div>
         </div>
-        <div ng-if="!user">
-          Guest
-        </div>
-      </div>
 
-      <div class="col-xs-3 text-center" ng-if="wapo.profile.new.name && !wapo.profile.profile">
+      </div>
+      <div class="col-sm-12 col-md-6">
         <div class="panel panel-default">
-          <div class="panel-body">
-            <div class="profile-blog blog-border">
-              <img class="rounded-x" ng-src="/{{wapo.profile.new.image}}" style="max-width: 50px;" alt="">
-              <div class="name-location">
-                <strong>{{wapo.profile.new.name}}</strong><br />
-                <span><i class="fa fa-envelope"></i> {{wapo.profile.new.email}}</span>
+          <div class="panel-body" style="height: 150px; overflow: hidden;">
+            <div ng-if="wapo.profile.new.name">
+              <div class="row">
+                <div class="col-xs-4">
+                  <img class="img-responsive" ng-src="/{{wapo.profile.new.image}}" alt="" ng-if="wapo.profile.new.image">
+                  <img class="img-responsive" ng-src="{{ 'http://placehold.it/350x250?text=Placeholder' }}" alt="..." ng-if="!wapo.profile.new.image" />
+                </div>
+                <div class="col-xs-8">
+                  <strong>{{wapo.profile.new.name}}</strong><br />
+                  <span><i class="fa fa-envelope"></i> {{wapo.profile.new.email}}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-      </div>
-      <div class="col-xs-3 text-center" ng-if="wapo.profile.profile">
-        <div class="panel panel-default">
-          <div class="panel-body">
-            <div class="profile-blog blog-border">
-              <img class="rounded-x" ng-src="/media/wapo/profile/{{wapo.profile.profile.image}}" style="max-width: 50px;" alt="">
-              <div class="name-location">
-                <strong>{{wapo.profile.profile.name}}</strong><br />
-                <span><i class="fa fa-envelope"></i> {{user.email}}</span>
+            <div ng-if="wapo.profile.profile">
+              <div class="row">
+                <div class="col-xs-4">
+                  <img class="img-responsive" ng-src="/media/wapo/profile/{{wapo.profile.profile.image}}" alt="" ng-if="wapo.profile.profile.image">
+                  <img class="img-responsive" ng-src="{{ 'http://placehold.it/350x250?text=Placeholder' }}" alt="..." ng-if="!wapo.profile.profile.image" />
+                </div>
+                <div class="col-xs-8">
+                  <strong>{{wapo.profile.profile.name}}</strong><br />
+                  <span><i class="fa fa-envelope"></i> {{user.email}}</span>
+                </div>
               </div>
+              
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="col-xs-3 text-center" ng-if="wapo.delivery == 'facebook-page' || wapo.delivery == 'any-facebook-friends'">
+    <div class="well well-sm hidden-xs">&nbsp;</div>
+    
+    <div class="row">
+      <div class="col-sm-12 col-md-6">        
+        <h5 ng-if="wapo.delivery == 'free-for-all'">Free for all</h5>
+
+        <h5 ng-if="wapo.delivery == 'email'">Delivery Email(s):</h5>
+
+        <h5 ng-if="wapo.delivery == 'email-list'">Delivery Email(s):</h5>
+
+        <h5 ng-if="wapo.delivery == 'mailchimp'">Delivery Email(s):</h5>
+
+        <h5 ng-if="wapo.delivery == 'text'">Delivery Numbers(s):</h5>
+
+        <h5 ng-if="wapo.delivery == 'any-facebook-friends'">Any Facebook Friends</h5>
+
+        <h5 ng-if="wapo.delivery == 'facebook-page'">Facebook Page:</h5>
+
+        <h5 ng-if="wapo.delivery == 'any-twitter-followers'">Any Twitter Followers</h5>
+
+        <h5 ng-if="wapo.delivery == 'select-twitter-followers'">Select Twitter Followers(s):</h5>
+        
+      </div>
+      <div class="col-sm-12 col-md-6">
+        <h5>Delivery Message</h5>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-sm-12 col-md-6">
         <div class="panel panel-default">
-          <div class="panel-body" ng-include="'/apps/wp/templates/wapo/includes/facebook-profile.html'"></div>
+          <div class="panel-body" style="height: 50px; overflow: hidden;">
+            <div ng-if="wapo.delivery == 'free-for-all'">
+              <strong>Anyone</strong>
+            </div>
+            <div ng-if="wapo.delivery == 'email'">
+              <span ng-repeat="email in wapo.email.email_list track by $index">
+                <span class="label label-light rounded">{{email}}</span>
+                <span ng-if="!$last && email">,</span>
+              </span>
+            </div>
+            <div ng-if="wapo.delivery == 'email-list'">
+              <span ng-repeat="email in wapo.email_list.email_list track by $index" ng-if="$index < 3">
+                <span class="label label-light rounded">{{email}}</span>
+                <span ng-if="!$last && $index < 2">,</span>
+              </span>
+              <span ng-if="wapo.email_list.email_list.length > 3">...</span>
+            </div>
+            <div ng-if="wapo.delivery == 'mailchimp'">
+              <span ng-repeat="email in wapo.mailchimp.email_list track by $index" ng-if="$index < 3">
+                <span class="label label-light rounded">{{email}}</span>
+                <span ng-if="!$last && $index < 2">,</span>
+              </span>
+              <span ng-if="wapo.mailchimp.email_list.length > 3">...</span>
+            </div>
+
+            <div ng-if="wapo.delivery == 'text'">
+              <span ng-repeat="number in wapo.text.number_list track by $index" ng-if="$index < 3">
+                <span class="label label-light rounded">{{number}}</span>
+                <span ng-if="!$last && $index < 2">,</span>
+              </span>
+              <span ng-if="wapo.text.number_list.length > 3">...</span>
+            </div>
+
+            <div ng-if="wapo.delivery == 'any-facebook-friends'">
+              <strong>Any</strong>
+            </div>
+
+            <div ng-if="wapo.delivery == 'facebook-page'">
+              <span class="label label-light rounded">{{wapo.facebook.page_name}}</span>
+            </div>
+
+            <div ng-if="wapo.delivery == 'any-twitter-followers'">
+              <strong>Any</strong>
+            </div>
+
+            <div ng-if="wapo.delivery == 'select-twitter-followers'">
+              <span ng-repeat="follower in wapo.twitter.follower_list track by $index" ng-if="$index < 3">
+                <span class="label label-light rounded">{{follower}}</span>
+                <span ng-if="!$last && $index < 2">,</span>
+              </span>
+              <span ng-if="wapo.twitter.follower_list.length > 3">...</span>
+            </div>
+          </div>
         </div>
+
+      </div>
+      <div class="col-sm-12 col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-body" style="height: 50px; overflow: hidden;">
+            <small>{{wapo.delivery_message}}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="well well-sm hidden-xs">&nbsp;</div>
+    
+    <div class="row">
+      <div class="col-xs-3">        
+        <h5>Gift/Reward</h5>
+      </div>
+      <div class="col-xs-3">        
+        <h5>Price</h5>
+      </div>
+      <div class="col-xs-3">        
+        <h5>QTY</h5>
+      </div>
+      <div class="col-xs-3">        
+        <h5>Total</h5>
       </div>
       
-      <div class="col-xs-3 text-center" ng-if="wapo.delivery == 'select-twitter-followers' || wapo.delivery == 'any-twitter-followers'">
+    </div>
+    
+    <div class="row" ng-if="wapo.marketplace == 'tangocards'">
+      <div class="col-xs-3">
         <div class="panel panel-default">
-          <div class="panel-body" ng-include="'/apps/wp/templates/wapo/includes/twitter-profile.html'"></div>
+          <div class="panel-body" style="height: 200px; overflow: hidden;">
+            <img class="img-responsive" ng-src="{{wapo.tangocards.brand_image_url || 'http://placehold.it/350x250?text=Placeholder'}}" alt="">
+            <div>
+              <h6>{{wapo.tangocards.name}}</h6>
+              <small>{{wapo.tangocards.description}}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-3">
+        <div class="panel panel-default">
+          <div class="panel-body" style="height: 200px; overflow: hidden;">
+            {{wapo.unit_price / 100}}
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-3">
+        <div class="panel panel-default">
+          <div class="panel-body" style="height: 200px; overflow: hidden;">
+            {{wapo.quantity}}
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-3">
+        <div class="panel panel-default">
+          <div class="panel-body" style="height: 200px; overflow: hidden;">
+            $ {{ (wapo.unit_price / 100) * wapo.quantity}}
+          </div>
         </div>
       </div>
     </div>
-
-    <div style="border-bottom: 1px #ccc solid; margin: 6px;"></div>
-
-    <h4>Delivery</h4>
-    <div ng-if="wapo.delivery == 'free-for-all'">
-      <strong>Free for all</strong>
-    </div>
-    <div ng-if="wapo.delivery == 'email'">
-      <strong>Email(s):</strong>
-      <span ng-repeat="email in wapo.email.email_list track by $index">
-        <span class="label label-light rounded">{{email}}</span>
-        <span ng-if="!$last">,</span>
-      </span>
-    </div>
-    <div ng-if="wapo.delivery == 'email-list'">
-      <strong>Email(s):</strong>
-      <span ng-repeat="email in wapo.email_list.email_list track by $index" ng-if="$index < 3">
-        <span class="label label-light rounded">{{email}}</span>
-        <span ng-if="!$last && $index < 2">,</span>
-      </span>
-      <span ng-if="wapo.email_list.email_list.length > 3">...</span>
-    </div>
-    <div ng-if="wapo.delivery == 'mailchimp'">
-      <strong>Email(s):</strong>
-      <span ng-repeat="email in wapo.mailchimp.email_list track by $index" ng-if="$index < 3">
-        <span class="label label-light rounded">{{email}}</span>
-        <span ng-if="!$last && $index < 2">,</span>
-      </span>
-      <span ng-if="wapo.mailchimp.email_list.length > 3">...</span>
-    </div>
     
-    <div ng-if="wapo.delivery == 'text'">
-      <strong>Numbers(s):</strong>
-      <span ng-repeat="number in wapo.text.number_list track by $index" ng-if="$index < 3">
-        <span class="label label-light rounded">{{number}}</span>
-        <span ng-if="!$last && $index < 2">,</span>
-      </span>
-      <span ng-if="wapo.text.number_list.length > 3">...</span>
-    </div>
-
-    <div ng-if="wapo.delivery == 'any-facebook-friends'">
-      <strong>Facebook Friends</strong>
-    </div>
-
-    <div ng-if="wapo.delivery == 'facebook-page'">
-      <strong>Facebook Page:</strong>
-      <span class="label label-light rounded">{{wapo.facebook.page_name}}</span>
-    </div>
-
-    <div ng-if="wapo.delivery == 'any-twitter-followers'">
-      <strong>Any Followers</strong>
-    </div>
-
-    <div ng-if="wapo.delivery == 'select-twitter-followers'">
-      <strong>Select Followers(s):</strong>
-      <span ng-repeat="follower in wapo.twitter.follower_list track by $index" ng-if="$index < 3">
-        <span class="label label-light rounded">{{follower}}</span>
-        <span ng-if="!$last && $index < 2">,</span>
-      </span>
-      <span ng-if="wapo.twitter.follower_list.length > 3">...</span>
-    </div>
-    
-    <div style="border-bottom: 1px #ccc solid; margin: 6px;"></div>
-    
-    <h4>Delivery Message</h4>
-    <blockquote>{{wapo.delivery_message}}</blockquote>
-
-    <h4>Reward</h4>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Price</th>
-          <th>Qty</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-if="wapo.marketplace == 'tangocards'">
-          <td class="product-in-table">
-            <img class="img-responsive" ng-src="{{wapo.tangocards.brand_image_url}}" alt="">
-            <div class="product-it-in">
-              <h4>{{wapo.tangocards.name}}</h4>
-              <span>{{wapo.tangocards.description}}</span>
-            </div>    
-          </td>
-          <td>{{wapo.tangocards.unit_price / 100}}</td>
-          <td>
+    <div class="row" ng-if="wapo.marketplace == 'promotion'">
+      <div class="col-xs-3">
+        <div class="panel panel-default">
+          <div class="panel-body" style="height: 200px; overflow: hidden;">
+            <img class="img-responsive" ng-src="/media/wapo/promotion/image/{{wapo.promotion.icon}}" alt="" ng-if="wapo.promotion.icon">
+            <img class="img-responsive" ng-src="http://placehold.it/350x250?text=Placeholder" alt="" ng-if="!wapo.promotion.icon">
+            
+            <div>
+              <h6>{{wapo.promotion.name}}</h6>
+              <small>{{wapo.promotion.description}}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-3">
+        <div class="panel panel-default">
+          <div class="panel-body" style="height: 200px; overflow: hidden;">
+            {{wapo.promotion.price}}
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-3">
+        <div class="panel panel-default">
+          <div class="panel-body" style="height: 200px; overflow: hidden;">
             {{wapo.quantity}}
-          </td>
-          <td class="shop-red">$ {{ (wapo.tangocards.unit_price / 100) * wapo.quantity}}</td>
-        </tr>
-        
-        <tr ng-if="wapo.marketplace == 'promotion'">
-          <td class="product-in-table col-xs-4">
-            <img class="img-responsive" ng-src="/media/wapo/promotion/image/{{wapo.promotion.icon}}" alt="">
-            <div class="product-it-in">
-              <h4>{{wapo.promotion.name}}</h4>
-              <span>{{wapo.promotion.description}}</span>
-            </div>    
-          </td>
-          <td>{{wapo.promotion.price}}</td>
-          <td>
-            {{wapo.quantity}}
-          </td>
-          <td class="shop-red">$ {{ wapo.promotion.price * wapo.quantity}}</td>
-        </tr>
-        
-      </tbody>
-    </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-3">
+        <div class="panel panel-default">
+          <div class="panel-body" style="height: 200px; overflow: hidden;">
+            $ {{ wapo.promotion.price * wapo.quantity}}
+          </div>
+        </div>
+      </div>
+    </div>
+    
   </div>
 </div>

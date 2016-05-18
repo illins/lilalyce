@@ -1348,6 +1348,9 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
         $scope.payment_method = "wepay";
         $scope.payment_method_list.push('wepay');
       }
+      
+      WePay.set_endpoint("stage");
+      console.log(WePay);
     };
     $rootScope.mainInit(function () {
       $scope.init();
@@ -1362,19 +1365,53 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
       if($scope.isFree()) {
         $location.path($rootScope.next_path);
       } else {
-        if (!$scope.payment_method) {
-          alert('Please select a payment method!');
-          return;
-        }
+//        if (!$scope.payment_method) {
+//          alert('Please select a payment method!');
+//          return;
+//        }
 
-        $http.post('/wp/wapo/validate/', {payment_method: $scope.payment_method}).success(function (response) {
-          if ($scope.payment_method == "wepay") {
-            $rootScope.setPath('/payment', response.wepay.hosted_checkout.checkout_uri);
-          }
+        $http.post('/wp/wapo/validate/', {}).success(function (response) {
+          $scope.tokenize(response.client_id);
+          
+          
+//          if ($scope.payment_method == "wepay") {
+//            $rootScope.setPath('/payment', response.wepay.hosted_checkout.checkout_uri);
+//          }
         }).error(function (errorResponse) {
           alert(errorResponse.message);
         });
       }
+    };
+    
+    $scope.tokenize = function(client_id) {
+      console.log('here?');
+      var response = WePay.credit_card.create({
+            "client_id":        client_id,
+            "user_name":        $scope.checkout.name,
+            "email":            $scope.checkout.email,
+            "cc_number":        $scope.checkout.cc_number,
+            "cvv":              $scope.checkout.cc_cvv,
+            "expiration_month": $scope.checkout.cc_month,
+            "expiration_year":  $scope.checkout.cc_year,
+            "address": {
+                "zip": $scope.checkout.zip
+            }
+        }, function(data) {
+          console.log('data', data);
+            if (data.error) {
+                console.log(data);
+                // handle error response
+            } else {
+                $http.post('/wp/wapo/checkout/create/', {credit_card_id: data.credit_card_id}).success(function(response) {
+                  if(response.wepay.checkout_id) {
+                    $location.path('/payment');
+                  }
+                }).error(function(errorResponse) {
+                  alert(errorResponse.message);
+                });
+            }
+        });
+        
     };
   }]);
 
@@ -1393,6 +1430,7 @@ wapoApp.filter('filenameFilter', function () {
         $scope.create();
       }).error(function (errorResponse) {
         alert(errorResponse.message);
+        $location.path('/checkout');
       });
     };
     $rootScope.mainInit(function () {

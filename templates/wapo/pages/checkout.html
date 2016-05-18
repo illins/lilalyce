@@ -1,294 +1,76 @@
-<div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
-
-<div class="panel panel-default">
-<!--  <div class="panel-heading">
-    &nbsp;
-  </div>-->
-  <div class="panel-body" style="max-height: 100%; overflow: hidden;">
-    <h5>Select Payment Method</h5>
-    
-    <div class="row">
-      <div class="col-xs-6">
-        <div class = "btn-group" style="margin-bottom:2%;">
-          <button type = "button" class = "btn btn-default">{{payment_method}}</button>
-
-          <button type = "button" class = "btn btn-default dropdown-toggle" data-toggle = "dropdown">
-            <span class = "caret"></span>
-            <span class = "sr-only">Toggle Dropdown</span>
-          </button>
-
-          <ul class = "dropdown-menu" role = "menu">
-            <li ng-repeat="pm in payment_method_list"><a href="" ng-click="setPaymentMethod(pm)">{{pm}}</a></li>
-          </ul>
-        </div>
-        
-      </div>
-      <div class="col-xs-6 text-right">
-        <button type="button" class="btn btn-contrast">Preview</button>
-      </div>
-    </div>
-    
-<!--    <div class="row" ng-if="wapo.marketplace == 'tangocards' || (wapo.marketplace == 'promotion' && wapo.promotion.price != 0)">
-      <div class="col-xs-4">
-        <div class="service-block service-block-default" ng-class="{'service-block-aqua': payment_method == 'wepay'}" ng-click="setPaymentMethod('wepay')">
-          <i class="icon-custom icon-lg icon-color-dark icon-line icon-credit-card"></i>
-          <h4 class="heading-md">WePay</h4>
-          <p>Redirect to WePay site to for payment</p>
-        </div>
-      </div>
-    </div>-->
-    
-    <!--<div style="border-bottom: 1px #ccc solid; margin: 6px;"></div>-->
-    <div class="well well-sm hidden-xs">&nbsp;</div>
-    
-    <div class="row">
-      <div class="col-sm-12 col-md-6">
-        <h5>Account</h5>
-      </div>
-      <div class="col-sm-12 col-md-6">
-        <h5>Profile</h5>
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col-sm-12 col-md-6">
-        <div class="panel panel-default">
-          <div class="panel-body" style="height: 150px; overflow: hidden;">
-            <div class="row" ng-if="user">
-                <div class="col-xs-4">
-                  <img class="img-responsive" ng-src="{{user.account_image.full_url}}" alt="">
-                </div>
-                <div class="col-xs-8">
-                  <strong>{{user.first_name}} {{user.last_name}}</strong><br />
-                  <span><i class="fa fa-envelope"></i> {{user.email}}</span>
-                </div>
-              </div>
-            <div ng-if="!user">
-              Guest
-            </div>
-          </div>
-        </div>
-
-      </div>
-      <div class="col-sm-12 col-md-6">
-        <div class="panel panel-default">
-          <div class="panel-body" style="height: 150px; overflow: hidden;">
-            <div ng-if="wapo.profile.new.name">
-              <div class="row">
-                <div class="col-xs-4">
-                  <img class="img-responsive" ng-src="/{{wapo.profile.new.image}}" alt="" ng-if="wapo.profile.new.image">
-                  <img class="img-responsive" ng-src="{{ 'http://placehold.it/350x250?text=Placeholder' }}" alt="..." ng-if="!wapo.profile.new.image" />
-                </div>
-                <div class="col-xs-8">
-                  <strong>{{wapo.profile.new.name}}</strong><br />
-                  <span><i class="fa fa-envelope"></i> {{wapo.profile.new.email}}</span>
-                </div>
-              </div>
-            </div>
-
-            <div ng-if="wapo.profile.profile">
-              <div class="row">
-                <div class="col-xs-4">
-                  <img class="img-responsive" ng-src="/media/wapo/profile/{{wapo.profile.profile.image}}" alt="" ng-if="wapo.profile.profile.image">
-                  <img class="img-responsive" ng-src="{{ 'http://placehold.it/350x250?text=Placeholder' }}" alt="..." ng-if="!wapo.profile.profile.image" />
-                </div>
-                <div class="col-xs-8">
-                  <strong>{{wapo.profile.profile.name}}</strong><br />
-                  <span><i class="fa fa-envelope"></i> {{user.email}}</span>
-                </div>
-              </div>
-              
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="well well-sm hidden-xs">&nbsp;</div>
-    
-    <div class="row">
-      <div class="col-sm-12 col-md-6">        
-        <h5 ng-if="wapo.delivery == 'free-for-all'">Free for all</h5>
-
-        <h5 ng-if="wapo.delivery == 'email'">Delivery Email(s):</h5>
-
-        <h5 ng-if="wapo.delivery == 'email-list'">Delivery Email(s):</h5>
-
-        <h5 ng-if="wapo.delivery == 'mailchimp'">Delivery Email(s):</h5>
-
-        <h5 ng-if="wapo.delivery == 'text'">Delivery Numbers(s):</h5>
-
-        <h5 ng-if="wapo.delivery == 'any-facebook-friends'">Any Facebook Friends</h5>
-
-        <h5 ng-if="wapo.delivery == 'facebook-page'">Facebook Page:</h5>
-
-        <h5 ng-if="wapo.delivery == 'any-twitter-followers'">Any Twitter Followers</h5>
-
-        <h5 ng-if="wapo.delivery == 'select-twitter-followers'">Select Twitter Followers(s):</h5>
-        
-      </div>
-      <div class="col-sm-12 col-md-6">
-        <h5>Delivery Message</h5>
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col-sm-12 col-md-6">
-        <div class="panel panel-default">
-          <div class="panel-body" style="height: 50px; overflow: hidden;">
-            <div ng-if="wapo.delivery == 'free-for-all'">
-              <strong>Anyone</strong>
-            </div>
-            <div ng-if="wapo.delivery == 'email'">
-              <span ng-repeat="email in wapo.email.email_list track by $index">
-                <span class="label label-light rounded">{{email}}</span>
-                <span ng-if="!$last && email">,</span>
-              </span>
-            </div>
-            <div ng-if="wapo.delivery == 'email-list'">
-              <span ng-repeat="email in wapo.email_list.email_list track by $index" ng-if="$index < 3">
-                <span class="label label-light rounded">{{email}}</span>
-                <span ng-if="!$last && $index < 2">,</span>
-              </span>
-              <span ng-if="wapo.email_list.email_list.length > 3">...</span>
-            </div>
-            <div ng-if="wapo.delivery == 'mailchimp'">
-              <span ng-repeat="email in wapo.mailchimp.email_list track by $index" ng-if="$index < 3">
-                <span class="label label-light rounded">{{email}}</span>
-                <span ng-if="!$last && $index < 2">,</span>
-              </span>
-              <span ng-if="wapo.mailchimp.email_list.length > 3">...</span>
-            </div>
-
-            <div ng-if="wapo.delivery == 'text'">
-              <span ng-repeat="number in wapo.text.number_list track by $index" ng-if="$index < 3">
-                <span class="label label-light rounded">{{number}}</span>
-                <span ng-if="!$last && $index < 2">,</span>
-              </span>
-              <span ng-if="wapo.text.number_list.length > 3">...</span>
-            </div>
-
-            <div ng-if="wapo.delivery == 'any-facebook-friends'">
-              <strong>Any</strong>
-            </div>
-
-            <div ng-if="wapo.delivery == 'facebook-page'">
-              <span class="label label-light rounded">{{wapo.facebook.page_name}}</span>
-            </div>
-
-            <div ng-if="wapo.delivery == 'any-twitter-followers'">
-              <strong>Any</strong>
-            </div>
-
-            <div ng-if="wapo.delivery == 'select-twitter-followers'">
-              <span ng-repeat="follower in wapo.twitter.follower_list track by $index" ng-if="$index < 3">
-                <span class="label label-light rounded">{{follower}}</span>
-                <span ng-if="!$last && $index < 2">,</span>
-              </span>
-              <span ng-if="wapo.twitter.follower_list.length > 3">...</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-      <div class="col-sm-12 col-md-6">
-        <div class="panel panel-default">
-          <div class="panel-body" style="height: 50px; overflow: hidden;">
-            <small>{{wapo.delivery_message}}</small>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="well well-sm hidden-xs">&nbsp;</div>
-    
-    <div class="row">
-      <div class="col-xs-3">        
-        <h5>Gift/Reward</h5>
-      </div>
-      <div class="col-xs-3">        
-        <h5>Price</h5>
-      </div>
-      <div class="col-xs-3">        
-        <h5>QTY</h5>
-      </div>
-      <div class="col-xs-3">        
-        <h5>Total</h5>
-      </div>
-      
-    </div>
-    
-    <div class="row" ng-if="wapo.marketplace == 'tangocards'">
-      <div class="col-xs-3">
-        <div class="panel panel-default">
-          <div class="panel-body" style="height: 200px; overflow: hidden;">
-            <img class="img-responsive" ng-src="{{wapo.tangocards.brand_image_url || 'http://placehold.it/350x250?text=Placeholder'}}" alt="">
-            <div>
-              <h6>{{wapo.tangocards.name}}</h6>
-              <small>{{wapo.tangocards.description}}</small>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-3">
-        <div class="panel panel-default">
-          <div class="panel-body" style="height: 200px; overflow: hidden;">
-            {{wapo.unit_price / 100}}
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-3">
-        <div class="panel panel-default">
-          <div class="panel-body" style="height: 200px; overflow: hidden;">
-            {{wapo.quantity}}
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-3">
-        <div class="panel panel-default">
-          <div class="panel-body" style="height: 200px; overflow: hidden;">
-            $ {{ (wapo.unit_price / 100) * wapo.quantity}}
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="row" ng-if="wapo.marketplace == 'promotion'">
-      <div class="col-xs-3">
-        <div class="panel panel-default">
-          <div class="panel-body" style="height: 200px; overflow: hidden;">
-            <img class="img-responsive" ng-src="/media/wapo/promotion/image/{{wapo.promotion.icon}}" alt="" ng-if="wapo.promotion.icon">
-            <img class="img-responsive" ng-src="http://placehold.it/350x250?text=Placeholder" alt="" ng-if="!wapo.promotion.icon">
-            
-            <div>
-              <h6>{{wapo.promotion.name}}</h6>
-              <small>{{wapo.promotion.description}}</small>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-3">
-        <div class="panel panel-default">
-          <div class="panel-body" style="height: 200px; overflow: hidden;">
-            {{wapo.promotion.price}}
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-3">
-        <div class="panel panel-default">
-          <div class="panel-body" style="height: 200px; overflow: hidden;">
-            {{wapo.quantity}}
-          </div>
-        </div>
-      </div>
-      <div class="col-xs-3">
-        <div class="panel panel-default">
-          <div class="panel-body" style="height: 200px; overflow: hidden;">
-            $ {{ wapo.promotion.price * wapo.quantity}}
-          </div>
-        </div>
-      </div>
-    </div>
-    
+<div class="row">
+  <div class="col-xs-12">
+    <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
   </div>
+
+  <div class="col-sm-12 col-md-9">
+    <div class="panel panel-default">
+      <div style="margin: 5px;">
+
+        <div class="row">
+          <div class="col-xs-6">
+            <div class="form-group">
+              <input type="text" class="form-control" id="name" ng-model="checkout.name" placeholder="Name on card">
+            </div>
+          </div>
+          <div class="col-xs-6">
+            <div class="form-group">
+              <input type="email" class="form-control" id="email" ng-model="checkout.email" placeholder="Email">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-6">
+            <div class="form-group">
+              <input type="text" class="form-control" id="cc-number" ng-model="checkout.cc_number" placeholder="Card number">
+            </div>
+          </div>
+          <div class="col-xs-6">
+            <div class="form-group">
+              <input type="text" class="form-control" id="cc-cvv" ng-model="checkout.cc_cvv" placeholder="CVV2">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <select name="cc-month" id="cc-month" class="form-control" ng-model="checkout.cc_month">
+                <option value="">Month</option>
+                <option value="1">January</option>
+                <option value="1">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <input type="text" class="form-control" name="cc-year" id="cc-year" ng-model="checkout.cc_year" placeholder="Year">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12 col-md-4">
+            <div class="form-group">
+              <input type="text" class="form-control" id="zip" name="zip" ng-model="checkout.zip" placeholder="Zip">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>  
+  </div>
+
+  <div class="col-md-3 col-sm-12" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>
 </div>

@@ -79,6 +79,9 @@ namespace Wp {
 
   // Validate.
   WpValidateFormView::register_url(array("pattern" => "/wp/wapo/validate/"));
+  
+  // Create a checkout.
+  WpCheckoutCreateFormView::register_url(array("pattern" => "/wp/wapo/checkout/create/"));
 
   // Post checkout routes.
   WpFreeFormView::register_url(array("pattern"=>"/wp/wapo/free/"));

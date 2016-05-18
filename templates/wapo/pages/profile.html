@@ -1,48 +1,48 @@
 <div class="row">
-  <div class="col-xs-12">
-    <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
-  </div>
-  
-  <div class="col-sm-12 col-md-9">
-    
-    <div class="tab-v1">
-      <ul id = "myTab" class = "nav nav-tabs">
-        <li class="active">
-          <a href = "#/profile" data-toggle = "tab">
-            Select A Profile
-          </a>
-        </li>
-
-        <li><a href = "#/profile-new" data-toggle = "tab" >Create Profile</a></li>
-      </ul>
-      <br />
-
-      <div class="panel panel-default">
-        <div class="panel-body profile" ng-if="user && profile_list.length">
-          <div class="row" ng-repeat="profile_chunk in profile_chunk_list">
-            <div class="col-sm-4" ng-repeat="pf in profile_chunk" ng-click="selectProfile(pf)" style="cursor: pointer;">
-              <div class="easy-block-v1">
-                <img class="img-responsive" ng-src="{{pf.image.full_url|| 'http://placehold.it/350x250?text=Placeholder'}}" alt="">
-                <div class="easy-block-v1-badge rgba-red" ng-if="pf.id == profile.id">Selected</div>
-              </div>
-              <div class="projects">
-                <h2><span class="color-dark">{{pf.name}}</span></h2>
-                <p>{{pf.description}}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel-body" ng-if="!user">
-          <div class="row">
-            <div class="col-xs-offset-4 col-xs-4">
-              <a class="btn btn-info btn-block" href="/user/login/?return=/wp/wapo/#/profile">Log in to get your profiles!</a>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="col-xs-12">
+        <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
     </div>
-  </div>
-  
-  <div class="col-md-3 col-sm-12" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>
+
+    <div class="col-sm-12 col-md-9">
+
+        <div class="tab-v1">
+            <ul id="myTab" class="nav nav-tabs">
+                <li class="active">
+                    <a href="#/profile" data-toggle="tab">
+                        Select A Profile
+                    </a>
+                </li>
+
+                <li><a href="/#/profile-new" data-toggle="tab" >Create Profile</a></li>
+            </ul>
+            <br />
+
+            <div class="panel panel-default">
+                <div class="panel-body profile" ng-if="user && profile_list.length">
+                    <div class="row" ng-repeat="profile_chunk in profile_chunk_list">
+                        <div class="col-sm-4" ng-repeat="pf in profile_chunk" ng-click="selectProfile(pf)" style="cursor: pointer;">
+                            <div class="easy-block-v1">
+                                <img class="img-responsive" ng-src="{{pf.image.full_url|| 'http://placehold.it/350x250?text=Placeholder'}}" alt="">
+                                <div class="easy-block-v1-badge rgba-red" ng-if="pf.id == profile.id">Selected</div>
+                            </div>
+                            <div class="projects">
+                                <h2><span class="color-dark">{{pf.name}}</span></h2>
+                                <p>{{pf.description}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-body" ng-if="!user">
+                    <div class="row">
+                        <div class="col-xs-offset-4 col-xs-4">
+                            <a class="btn btn-info btn-block" href="/user/login/?return=/wp/wapo/#/profile">Log in to get your profiles!</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-12" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>
 </div>
