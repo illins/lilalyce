@@ -1,48 +1,149 @@
 <div class="row">
-    <div class="col-xs-12">
-        <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
-    </div>
+  <div class="col-xs-12">
+    <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
+  </div>
 
-    <div class="col-sm-12 col-md-9">
+  <div class="col-sm-12 col-md-9">
 
-        <div class="tab-v1">
-            <ul id="myTab" class="nav nav-tabs">
-                <li class="active">
-                    <a href="#/profile" data-toggle="tab">
-                        Select A Profile
-                    </a>
-                </li>
+    <div class="tab-v1">
+      <ul id="myTab" class="nav nav-tabs">
+        <li class="active">
+          <a href="#/profile">
+            Select A Profile
+          </a>
+        </li>
 
-                <li><a href="/#/profile-new" data-toggle="tab" >Create Profile</a></li>
-            </ul>
-            <br />
+        <li><a href="#/profile-new">Create Profile</a></li>
+      </ul>
+      <br />
 
-            <div class="panel panel-default">
-                <div class="panel-body profile" ng-if="user && profile_list.length">
-                    <div class="row" ng-repeat="profile_chunk in profile_chunk_list">
-                        <div class="col-sm-4" ng-repeat="pf in profile_chunk" ng-click="selectProfile(pf)" style="cursor: pointer;">
-                            <div class="easy-block-v1">
-                                <img class="img-responsive" ng-src="{{pf.image.full_url|| 'http://placehold.it/350x250?text=Placeholder'}}" alt="">
-                                <div class="easy-block-v1-badge rgba-red" ng-if="pf.id == profile.id">Selected</div>
-                            </div>
-                            <div class="projects">
-                                <h2><span class="color-dark">{{pf.name}}</span></h2>
-                                <p>{{pf.description}}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel-body" ng-if="!user">
-                    <div class="row">
-                        <div class="col-xs-offset-4 col-xs-4">
-                            <a class="btn btn-info btn-block" href="/user/login/?return=/wp/wapo/#/profile">Log in to get your profiles!</a>
-                        </div>
-                    </div>
-                </div>
+      <div class="panel panel-default">
+        <div ng-include="'/apps/wp/templates/wapo/includes/loading.html'"></div>
+        
+        <div class="panel-body profile" ng-show="user && profile_list.length && ready">
+          <div class="row" ng-repeat="profile_chunk in profile_chunk_list">
+            <div class="col-sm-4" ng-repeat="pf in profile_chunk" ng-click="selectProfile(pf)" style="cursor: pointer;">
+              <div class="easy-block-v1">
+                <img class="img-responsive" ng-src="{{pf.image.full_url|| 'http://placehold.it/350x250?text=Placeholder'}}" alt="">
+                <div class="easy-block-v1-badge rgba-red" ng-if="pf.id == profile.id">Selected</div>
+              </div>
+              <div class="projects">
+                <h2><span class="color-dark">{{pf.name}}</span></h2>
+                <p>{{pf.description}}</p>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
+        
+        
+        <div class="panel-body" ng-if="user && !profile_list.length && ready">
+          <div class="row">
+            <div class="col-xs-offset-2 col-xs-8 col-sm-offset-4 col-sm-4 text-center">
+              <p class="text-danger">You have no profiles.</p>
+              <a class="btn btn-info btn-block" href="#/profile-new">Create a new profile!</a>
+            </div>
+          </div>
+        </div>
 
-    <div class="col-md-3 col-sm-12" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>
+        <div class="panel-body" ng-show="!user && ready">
+
+          <div class="row">
+            <div class="col-md-6 col-sm-12">
+              <div class="form-block-header">
+                <h2 class="margin-bottom-15">Sign In</h2>
+              </div>
+
+              <div class="input-group margin-bottom-20">
+                <span class="input-group-addon rounded-left"><i class="icon-user color-white"></i></span>
+                <input type="text" class="form-control rounded-right" placeholder="Username" ng-model="data.identifier">
+              </div>
+
+              <div class="input-group margin-bottom-20">
+                <span class="input-group-addon rounded-left"><i class="icon-lock color-white"></i></span>
+                <input type="password" class="form-control rounded-right" placeholder="Password" ng-model="data.password">
+              </div>
+
+              <div class="row margin-bottom-30">
+                <div class="col-md-12">
+                  <button class="btn-u btn-block rounded" ng-click="webSignIn()">Sign In</button>
+                </div>
+              </div>
+              
+              <div class="social-login">
+                <p class="text-center">Or</p><br />
+                
+                <ul class="list-unstyled">
+                  <li>
+                    <button class="btn rounded btn-block btn-lg btn-facebook-inversed margin-bottom-20" disabled>
+                      <i class="fa fa-facebook"></i> Sign in with Facebook
+                    </button>
+                  </li>
+                  <li>
+                    <button class="btn rounded btn-block btn-lg btn-twitter-inversed" disabled>
+                      <i class="fa fa-twitter"></i> Sign in with Twitter
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            <hr class="visible-xs" />
+
+            <div class="col-md-6 col-sm-12">
+              <div class="form-block-header">
+                <h2 class="margin-bottom-10">Sign Up</h2>
+                <!--<p class="margin-bottom-20">Lorem ipsum dolor sit amet, conur sicing elit, seddoet dolore magna. aliqua.</p>-->
+              </div>
+
+              <div class="input-group margin-bottom-20">
+                <span class="input-group-addon rounded-left"><i class="icon-pencil"></i></span>
+                <input type="text" class="form-control rounded-right" placeholder="Your first name" ng-model="data.first_name">
+              </div>
+              
+              <div class="input-group margin-bottom-20">
+                <span class="input-group-addon rounded-left"><i class="icon-pencil"></i></span>
+                <input type="text" class="form-control rounded-right" placeholder="Your last name" ng-model="data.last_name">
+              </div>
+
+              <div class="input-group margin-bottom-20">
+                <span class="input-group-addon rounded-left"><i class="icon-user"></i></span>
+                <input type="text" class="form-control rounded-right" placeholder="Username" ng-model="data.username">
+              </div>
+
+              <div class="input-group margin-bottom-20">
+                <span class="input-group-addon rounded-left"><i class="icon-envelope"></i></span>
+                <input type="email" class="form-control rounded-right" placeholder="Your email" ng-model="data.email">
+              </div>
+
+              <div class="input-group margin-bottom-20">
+                <span class="input-group-addon rounded-left"><i class="icon-lock"></i></span>
+                <input type="password" class="form-control rounded-right" placeholder="Password" ng-model="data.rpassword">
+              </div>
+
+<!--              <div class="checkbox margin-bottom-15">
+                <label>
+                  <input type="checkbox">
+                  <p>I agree to terms &amp; conditions</p>
+                </label>
+
+                <label>
+                  <input type="checkbox">
+                  <p>Subscribe to our newsletter</p>
+                </label>
+              </div>-->
+
+              <div class="row">
+                <div class="col-md-12">
+                  <button class="btn-u btn-block rounded" ng-click="webSignUp()">Sign Up</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3 col-sm-12" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>
 </div>

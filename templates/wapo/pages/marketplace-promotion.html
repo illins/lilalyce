@@ -10,13 +10,11 @@
         <div class="row">
           <div class="col-xs-6 col-sm-4">
             <div class="btn-group">
-              <button type="button" class="btn btn-default">Goods</button>
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true">
-                <span class="caret"></span>
-                <span class="sr-only">Toggle Dropdown</span>
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                ebooks <span class="caret"></span>
               </button>
               <ul class="dropdown-menu">
-                <li><a href="#/marketplace/promotion">Goods</a></li>
+                <li><a href="#/marketplace/promotion">ebooks</a></li>
                 <li><a href="#/marketplace/tangocards">Gift Cards</a></li>
               </ul>
             </div>
@@ -37,8 +35,8 @@
                 <div class="easy-block-v1-badge rgba-red" ng-if="prom.id == promotion.id">Selected</div>
               </div>
               <div class="projects">
-                <h2><span class="color-dark">{{prom.name}}</span></h2>
-                <h6>$ {{prom.price}}</h6>
+                <h2><span class="color-dark">{{prom.name}} ${{prom.price}}</span></h2>
+<!--                <h6>${{prom.price}}</h6>-->
                 <small>{{prom.description}}</small>
               </div>
             </div>

@@ -2,73 +2,76 @@
   <div class="col-xs-12">
     <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
   </div>
-  
+
   <div class="col-sm-12 col-md-9">
-    
+
     <div class="tab-v1">
       <ul id="myTab" class="nav nav-tabs">
         <li>
-          <a href="#/profile" data-toggle="tab">
+          <a href="#/profile">
             Select A Profile
           </a>
         </li>
 
-        <li class="active"><a href="/#/profile-new" data-toggle="tab" >Create Profile</a></li>
+        <li class="active"><a href="#/profile-new" >Create Profile</a></li>
       </ul>
       <br />
 
       <div class="panel panel-default" style="padding: 7px;">
         <!--<form>-->
 
-            
-            <div class="row">
-              <div class="col-xs-12">
-                <div class="form-group">
-                  <label for="name">Name / Company Name</label>
-                  <input type="text" class="form-control" id="name" ng-model="profile.name" placeholder="Name / Company Name">
-                </div>
-                <div class="form-group">
-                  <label for="email">Email address</label>
-                  <input type="email" class="form-control" id="email" ng-model="profile.email" placeholder="Email">
-                </div>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="form-group">
+              <label for="name">Name / Company Name</label>
+              <input type="text" class="form-control" id="name" ng-model="profile.name" placeholder="Name / Company Name">
+            </div>
+            <div class="form-group">
+              <label for="email">Email address</label>
+              <input type="email" class="form-control" id="email" ng-model="profile.email" placeholder="Email">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="row" ng-show="file || (!file && !wapo.profile.new.image)">
+              <div class="col-xs-12 text-center">
+                <p><small ng-show="(!file && !wapo.profile.new.image)">Temporary image</small></p>
+                <img class="img-responsive" ng-if="file" ngf-thumbnail="file" ngf-size="{quality: 0.9}" style="max-width: 100%;"/>
+                <img class="img-responsive" ng-if="!file" ng-src="/apps/wp/static/images/placeholder/placehold.png"/>
               </div>
             </div>
 
-            <div class="row">
-              <div class="col-xs-6">
-                <br /><br />
-                <div class="row">
-                  <div class="col-xs-6" ng-class="{'col-xs-offset-3': !file && !wapo.profile.new.image}">
-                    <div class="button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-max-size="2MB" ngf-min-height="100" ngf-resize="{width: 1000, height: 1000}" ngf-resize-if="$width > 1000 || $height > 1000">
-                      <span class="btn btn-primary btn-block">Choose Image</span>
-                    </div>
-                  </div>
-                  <div class="col-xs-6" ng-if="file">
-                    <button class="btn btn-warning btn-block" ng-click="clear_image()">Delete</button>
-                  </div>
-                  <div class="col-xs-6" ng-if="!file && wapo.profile.new.image">
-                    <input type="checkbox" id="delete_image" ng-model="delete_image" value="1" /> Delete
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-xs-6">
-                <div class="row" ng-show="file || (!file && !wapo.profile.new.image)">
-                  <div class="col-xs-12 text-center">
-                    <p><small ng-show="file || (!file && !wapo.profile.new.image)">Temporary image</small></p>
-                    <img class="img-responsive" ng-if="file" ngf-thumbnail="file" ngf-size="{quality: 0.9}" style="max-width: 100%;"/>
-                    <img class="img-responsive" ng-if="!file" ng-src="/apps/wp/static/images/placeholder/placehold.png"/>
-                  </div>
-                </div>
-
-                <div class="row" ng-show="wapo.profile.new.image && !file">
-                  <div class="col-xs-12 text-center">
-                    <img src="/{{wapo.profile.new.image}}" alt="..." class="img-responsive" />
-                  </div>
-                </div>
+            <div class="row" ng-show="wapo.profile.new.image && !file">
+              <div class="col-xs-12 text-center">
+                <img ng-src="/{{wapo.profile.new.image}}" alt="..." class="img-responsive" />
               </div>
             </div>
-            
+          </div>
+        </div>
+
+        <br />
+
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="row">
+              <div class="col-xs-6" ng-class="{'col-xs-offset-3': !file && !wapo.profile.new.image}">
+                <div class="button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-max-size="2MB" ngf-min-height="100" ngf-resize="{width: 1000, height: 1000}" ngf-resize-if="$width > 1000 || $height > 1000">
+                  <span class="btn btn-primary btn-block">Choose Image</span>
+                </div>
+              </div>
+              <div class="col-xs-6" ng-if="file">
+                <button class="btn btn-warning btn-block" ng-click="clear_image()">Delete</button>
+              </div>
+              <div class="col-xs-6" ng-if="!file && wapo.profile.new.image">
+                <input type="checkbox" id="delete_image" ng-model="delete_image" value="1" /> Delete
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <!--</form>-->
 
@@ -78,5 +81,5 @@
     </div>
   </div>
   <div class="col-md-3 col-sm-12" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>
-  
+
 </div>

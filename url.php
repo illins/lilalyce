@@ -52,6 +52,7 @@ namespace Wp {
   WpWapoFormView::register_url(array("pattern" => "/wp/wapo/data/"));
   WpSetModuleFormView::register_url(array("pattern" => "/wp/wapo/set/module/"));
   WpSetProfileFormView::register_url(array("pattern" => "/wp/wapo/set/profile/"));
+  WpClearProfileFormView::register_url(array("pattern" => "/wp/wapo/clear/profile/"));
   WpSetNewProfileFormView::register_url(array("pattern" => "/wp/wapo/set/profile/new/"));
   WpSetTangoCardsFormView::register_url(array("pattern" => "/wp/wapo/set/tangocards/"));
   WpSetPromotionFormView::register_url(array("pattern" => "/wp/wapo/set/promotion/"));

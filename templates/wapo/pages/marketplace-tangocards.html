@@ -12,13 +12,11 @@
         <div class="row">
           <div class="col-xs-6 col-sm-4">
             <div class="btn-group">
-              <button type="button" class="btn btn-default">Gift Cards</button>
               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="caret"></span>
-                <span class="sr-only">Toggle Dropdown</span>
+                Gift Cards <span class="caret"></span>
               </button>
               <ul class="dropdown-menu">
-                <li><a href="#/marketplace/promotion">Goods</a></li>
+                <li><a href="#/marketplace/promotion">ebooks</a></li>
                 <li><a href="#/marketplace/tangocards">Gift Cards</a></li>
               </ul>
             </div>
@@ -43,8 +41,13 @@
 
               <div class="projects">
                 <h2><span class="color-dark">{{tcards.name}}</span></h2>
-                <h4><span class="color-dark">{{tcards.description}}</span></h4>
-                <h4><span class="color-dark">$ {{tcards.unit_price / 100}}</span></h4>
+                <h4>
+                  <strong class="color-dark">
+                    {{tcards.description}}
+                    <span ng-show="tcards.min_price != 0">${{tcards.unit_price / 100}}</span>
+                  </strong>
+                </h4>
+                <!--<h4><span class="color-dark">$ {{tcards.unit_price / 100}}</span></h4>-->
               </div>
             </div>
 

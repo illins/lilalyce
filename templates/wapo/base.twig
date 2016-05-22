@@ -28,6 +28,10 @@
 {% block extracss %}
   {#  <link href="/apps/wp/static/stepwizard/css/stepwizard.css" rel="stylesheet" media="screen">#}
   <link href="/apps/wp/static/stepwizard/css/stepwizard.css" rel="stylesheet" media="screen">
+  
+  <!-- CSS Page Style -->
+	<link rel="stylesheet" href="/themes/theme-unify/assets/css/pages/page_log_reg_v3.css">
+  
 {#  <link href="/themes/theme-blink/static/angular-material/angular-material.min.css" rel="stylesheet" media="screen">#}
   <style>
     #main-content {
@@ -37,6 +41,13 @@
     blockquote {padding: 1px;}
 
     .stepwizard-step {width: {{ 100 / 5 }}%;}
+    
+    .wapo-sidebar {
+      margin-left: 0px;
+      margin-right: 0px;
+      padding-left: 0px;
+      padding-right: 0px;
+    }
   </style>
 {% endblock extracss %}
 

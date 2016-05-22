@@ -7,6 +7,10 @@ namespace Wp {
   class WpPromotionCategoryListView extends \Blink\CRUDListView {
     
     protected $class = "\Wapo\PromotionCategory";
+    
+    protected function get_queryset() {
+      return parent::get_queryset()->filter(["active"=>true]);
+    }
   }
   
   class WpPromotionListView extends \Blink\CRUDListView {
@@ -16,7 +20,7 @@ namespace Wp {
       $q = parent::get_queryset()->filter(["active"=>true]);
       
       if($this->request->get->is_set("promotioncategory")) {
-        $q->filter(array("promotioncategory"=>$this->request->get->get("promotioncategory")));
+        $q->filter(array("promotioncategory"=>$this->request->get->get("promotioncategory"), "wapo_promotioncategory.active"=>true));
       }
       
       return $q;

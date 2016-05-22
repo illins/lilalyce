@@ -46,6 +46,8 @@ var wapoApp = angular.module('wapoApp', ['ngRoute', 'ngResource', 'ngFileUpload'
 
 wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', '$cookies', '$interval', function ($rootScope, $scope, $location, $http, $routeParams, $cookies, $interval) {
     $scope.progress = 0;
+    
+    $rootScope.ready = false;
 
     $rootScope.user = null;
     $rootScope.wapo = null;
@@ -150,11 +152,34 @@ wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$
         $rootScope.resizeImages();
       });
     };
+    
+    
+    $rootScope.subTotal = function(quantity) {
+      if($rootScope.wapo.promotion) {
+        return $rootScope.wapo.promotion.price * quantity;
+      } else if($rootScope.wapo.tangocards) {
+        return $rootScope.wapo.unit_price * quantity / 100;
+      }
+    };
+    
+    $rootScope.webSignOut = function() {
+      $http.post('/user/api/web-sign-out/', {}).success(function(response) {
+        $rootScope.user = null;
+        
+        // Clear profile if any.
+        $http.post('/wp/wapo/clear/profile/', {}).success(function(response) {
+          $rootScope.wapo = response.wapo;
+//          window.location.reload();
+        });
+      }).error(function(errorResponse) {
+        
+      });
+    };
   }]);
 
 wapoApp.controller('ModuleCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
     $rootScope.previous_path = null;
-    $rootScope.next_path = '/profile';
+    $rootScope.next_path = '/profile-new';
     
     $rootScope.setTitle('Module', 'Select module');
     $rootScope.setTitle('', '');
@@ -182,6 +207,10 @@ wapoApp.controller('ModuleCtrl', ['$rootScope', '$scope', '$location', '$http', 
         });
       } else {
         $scope.md_group_list = _.chunk($rootScope.module_list, 3);
+      }
+      
+      if($rootScope.user) {
+        $rootScope.next_path = '/profile';
       }
     };
     $rootScope.mainInit(function () {
@@ -211,6 +240,7 @@ wapoApp.controller('ProfileCtrl', ['$rootScope', '$scope', '$location', '$http',
 
     $scope.profile = null;
     $scope.profile_chunk_list = [];
+    $scope.data = {};
 
     $scope.init = function () {
       $scope.profile = $rootScope.wapo.profile.profile;
@@ -219,11 +249,12 @@ wapoApp.controller('ProfileCtrl', ['$rootScope', '$scope', '$location', '$http',
         $http.get('/wp/wapo/profile/').success(function (response) {
           $rootScope.profile_list = response.profile_list;
           $scope.profile_chunk_list = _.chunk($rootScope.profile_list, 3);
+          $rootScope.ready = true;
 
-          // If no profile, show new profile form.
-          if ($rootScope.user && !$rootScope.profile_list.length) {
-            $location.path('/profile-new');
-          }
+//          // If no profile, show new profile form.
+//          if ($rootScope.user && !$rootScope.profile_list.length) {
+//            $location.path('/profile-new');
+//          }
         });
       } else {
         $scope.profile_chunk_list = _.chunk($rootScope.profile_list, 3);
@@ -246,6 +277,59 @@ wapoApp.controller('ProfileCtrl', ['$rootScope', '$scope', '$location', '$http',
       $http.post('/wp/wapo/set/profile/', {profile_id: $scope.profile.id}).success(function (response) {
         $rootScope.wapo = response.wapo;
         $location.path($rootScope.next_path);
+      });
+    };
+    
+    $scope.webSignIn = function() {
+      if(!$scope.data.identifier || !$scope.data.password) {
+        toastr.error('Missing username/password');
+        return;
+      }
+      
+      $http.post('/user/api/web-sign-in/', $scope.data).success(function(response) {
+        $rootScope.user = response.user;
+        $scope.init();
+      }).error(function(errorResponse) {
+        toastr.error(errorResponse.message);
+      });
+    };
+    
+    $scope.webSignUp = function() {
+      if(!$scope.data.email) {
+        toastr.error('Missing email!');
+        return;
+      }
+      
+      if(!$scope.data.rpassword) {
+        toastr.error('Missing password!');
+        return;
+      }
+      
+      if($scope.data.rpassword.length < 8) {
+        toastr.error('Password must be at least 8 characters long!');
+        return;
+      }
+      
+      var send = {
+        'first_name': $scope.data.first_name,
+        'last_name': $scope.data.last_name,
+        'email': $scope.data.email,
+        'username': $scope.data.username,
+        'password': $scope.data.rpassword,
+        'confirm_password': $scope.data.rpassword
+      };
+      
+      $http.post('/wapo/sign-up/', send).success(function(response) {
+        $scope.data.identifier = $scope.data.email;
+//        $scope.webSignIn();
+        $http.post('/user/api/web-sign-in/', {identifier: $scope.data.email, password: $scope.data.rpassword}).success(function(response) {
+          $rootScope.user = response;
+          $scope.init();
+        }).error(function(errorResponse) {
+          toastr.error(errorResponse.message);
+        });
+      }).error(function(errorResponse) {
+        toastr.error(errorResponse.message);
       });
     };
   }]);
@@ -384,7 +468,7 @@ wapoApp.controller('TangoCardsCtrl', ['$rootScope', '$scope', '$location', '$htt
             if(item.unit_price == -1) {
               for(var i = 0; i < 5; i++) {
                 var copy = angular.copy(item);
-                copy.unit_price = copy.min_price + (i * 100);
+                copy.unit_price = copy.min_price + (i * 100 * 5);
                 
                 // Skip if over max-price.
                 if(copy.unit_price < copy.max_price) {
@@ -469,15 +553,18 @@ wapoApp.controller('PromotionCtrl', ['$rootScope', '$scope', '$location', '$http
         url += $scope.promotioncategory.id;
       } else {
         if($scope.promotion) {
-          $scope.promotioncategory = $scope.promotion.promotioncategory;
-          url += $scope.promotion.promotioncategory.id;
+          $scope.promotioncategory = _.find($scope.promotioncategory_list, function(item) {
+            return (item.id == $scope.promotion.promotioncategory || item.id == $scope.promotion.promotioncategory.id);
+          });
+//          $scope.promotioncategory = $scope.promotion.promotioncategory;
+          url += $scope.promotioncategory.id;
         } else {
           $scope.promotioncategory = $rootScope.promotioncategory_list[0];
-          url += $rootScope.promotioncategory_list[0].id;
+          url += $scope.promotioncategory.id;
         }
       }
       
-      url = '/wp/wapo/promotions/';
+//      url = '/wp/wapo/promotions/';
       $http.get(url).success(function(response) {
         $scope.promotion_list = response;
         $scope.chunked_promotion_list = _.chunk($scope.promotion_list, 3);
@@ -489,10 +576,18 @@ wapoApp.controller('PromotionCtrl', ['$rootScope', '$scope', '$location', '$http
       $scope.promotion = $rootScope.wapo.promotion;
       
       if($rootScope.promotioncategory_list.length) {
+//        $scope.promotioncategory = _.find($scope.promotioncategory_list, function(item) {
+//          return (item.id == $scope.promotion.promotioncategory || item.id == $scope.promotion.promotioncategory.id);
+//        });
+        
         $scope.getPromotions();
       } else {
         $http.get('/wp/wapo/promotioncategories/').success(function(response) {
           $rootScope.promotioncategory_list = response;
+          
+//          $scope.promotioncategory = _.find($scope.promotioncategory_list, function(item) {
+//            return (item.id == $scope.promotion.promotioncategory || item.id == $scope.promotion.promotioncategory.id);
+//          });
           
           if($rootScope.promotioncategory_list.length) {
             $scope.getPromotions();
@@ -1322,6 +1417,8 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
     
     $scope.payment_method_list = [];
     
+    $scope.free = false;
+    
     // Check if wapo is free!
     $scope.isFree = function() {
       if($scope.wapo.marketplace == 'promotion') {
@@ -1343,10 +1440,12 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
         $rootScope.next_path = '/free';
         $scope.payment_method = "free";
         $scope.payment_method_list.push('free');
+        $scope.free = true;
       } else {
         $rootScope.next_path = '/payment';
         $scope.payment_method = "wepay";
         $scope.payment_method_list.push('wepay');
+        $scope.free = false;
       }
       
       WePay.set_endpoint("stage");

@@ -217,6 +217,14 @@ namespace Wp {
     }
   }
   
+  // Clear the profile if the user logs out.
+  class WpClearProfileFormView extends WpWapoFormView {
+    protected function form_valid() {
+      $this->wapo->profile->profile = null;
+      return parent::form_valid();
+    }
+  }
+  
   class WpSetNewProfileFormView extends WpWapoFormView {
     protected function form_valid() {
       $name = $this->request->post->find("name", "");
