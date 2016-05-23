@@ -1,17 +1,17 @@
 <div class="panel panel-default">
   <div class="panel-heading">
-    &nbsp;
+    Summary
   </div>
   <div class="panel-body">
     
     <div ng-show="user">
       <h4>ACCOUNT <small>[<a ng-click="webSignOut()" style="cursor: pointer;">Sign Out</a>]</small></h4>
       
-      <div class="row" ng-show="user">
+<!--      <div class="row" ng-show="user">
         <div class="col-xs-12">
           <img class="img-responsive" ng-src="{{user.account_image.full_url}}" alt="" ng-if="user.account_image.full_url">
         </div>
-      </div>
+      </div>-->
       
       <div class="row" ng-show="user">
         <div class="col-xs-12">
@@ -26,7 +26,7 @@
       <div ng-show="!user"><i class="fa fa-user"></i> Guest</div>
     </div>
     
-    <hr />
+    <hr style="margin-top: 5px;" />
     
     <div ng-if="wapo.profile.new.name">
       <h4>NEW PROFILE<small>[<a href="#/profile-new">Edit</a>]</small></h4>
@@ -46,7 +46,7 @@
       </div>
     </div>
     
-    <hr ng-if="wapo.profile.new.name" />
+    <hr style="margin-top: 5px;" ng-if="wapo.profile.new.name" />
     
     <div ng-if="wapo.profile.profile">
       <h4>PROFILE <small>[<a href="#/profile">Edit</a>]</small></h4>
@@ -66,7 +66,7 @@
 
     </div>
     
-    <hr class="divider divider-dotted" ng-if="wapo.profile.profile" />
+    <hr style="margin-top: 5px;" ng-if="wapo.profile.profile" />
     
     <div ng-if="wapo.marketplace == 'tangocards'">
       <h4>GIFT CARD <small>[<a href="#/marketplace/{{wapo.marketplace}}">Edit</a>]</small></h4>
@@ -91,7 +91,7 @@
       </div>
     </div>
     
-    <hr ng-if="wapo.marketplace" />
+    <hr style="margin-top: 5px;" ng-if="wapo.marketplace" />
     
     
 
@@ -155,12 +155,12 @@
       <span ng-if="wapo.twitter.follower_list.length > 3">...</span>
     </div>
     
-    <hr ng-if="wapo.delivery" />
+    <hr style="margin-top: 5px;" ng-if="wapo.delivery" />
     
     <div ng-show="wapo.delivery_message">
       <h4>DELIVERY MESSAGE<small>[<a href="#/delivery/{{wapo.delivery}}">Edit</a>]</small></h4>
       <p>{{wapo.delivery_message}}</p>
-      <hr />
+      <hr style="margin-top: 5px;" />
     </div>
     
     

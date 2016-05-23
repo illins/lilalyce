@@ -2,14 +2,17 @@
   <div class="col-xs-12">
     <div ng-include="'/apps/wp/templates/wapo/includes/navigation.html'"></div>
   </div>
+</div>
 
-  <div class="col-sm-12 col-md-9">
+<div class="row">
+  <div class="col-xs-12">
 
     <div class="tab-v1">
       <ul id="myTab" class="nav nav-tabs">
         <li class="active">
           <a href="#/profile">
-            Select A Profile
+            <span ng-show="user">Select A Profile</span>
+            <span ng-show="!user">Sign-In</span>
           </a>
         </li>
 
@@ -24,7 +27,9 @@
           <div class="row" ng-repeat="profile_chunk in profile_chunk_list">
             <div class="col-sm-4" ng-repeat="pf in profile_chunk" ng-click="selectProfile(pf)" style="cursor: pointer;">
               <div class="easy-block-v1">
-                <img class="img-responsive" ng-src="{{pf.image.full_url|| 'http://placehold.it/350x250?text=Placeholder'}}" alt="">
+                <!--<img class="img-responsive" ng-src="{{pf.image.full_url|| 'http://placehold.it/350x250?text=Placeholder'}}" alt="">-->
+                <br ng-if="!pf.image.full_url" /><br ng-if="!pf.image.full_url" />
+                <img class="img-responsive" ng-src="{{pf.image.full_url}}" alt="">
                 <div class="easy-block-v1-badge rgba-red" ng-if="pf.id == profile.id">Selected</div>
               </div>
               <div class="projects">
@@ -145,5 +150,5 @@
     </div>
   </div>
 
-  <div class="col-md-3 col-sm-12" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>
+  <!--<div class="col-md-3 col-sm-12" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>-->
 </div>
