@@ -124,6 +124,10 @@ wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$
     };
     
     $rootScope.resizeImages = function() {
+      var col = new jColumn();
+      col.jcolumn('marketplace-item-container');
+      
+      return;
       var count = 0;
       var total_height = 0;
       _.each($('.marketplace-image'), function(item) {

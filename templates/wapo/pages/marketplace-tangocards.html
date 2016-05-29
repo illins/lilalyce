@@ -27,7 +27,7 @@
         <div class="row" ng-repeat="tangocards_group in tangocards_group_list">
           <div class="col-sm-12 col-md-4" ng-repeat="tcards in tangocards_group" ng-click="selectTangoCards(tcards)" style="cursor: pointer;">
 
-            <div class="panel panel-default marketplace-item-container" style="height: 300px; padding: 5px; overflow: hidden;">
+            <div class="panel panel-default marketplace-item-container" style="padding: 5px;">
               <div class="easy-block-v1 marketplace-image-container">
                 <img class="img-responsive marketplace-image" ng-src="{{tcards.brand_image_url}}" alt="">
                 <div class="easy-block-v1-badge rgba-red" ng-if="(tcards.min_price != 0 && tcards.id == tangocards.id && unit_price == tcards.unit_price) || (tcards.min_price == 0 && tcards.id == tangocards.id)">Selected</div>

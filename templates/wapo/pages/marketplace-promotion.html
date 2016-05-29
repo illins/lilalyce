@@ -23,7 +23,8 @@
         <div class="row" ng-repeat="chunked_promotion in chunked_promotion_list">
           <div class="col-sm-12 col-md-4" ng-repeat="prom in chunked_promotion" ng-click="selectPromotion(prom)" style="cursor: pointer;">
 
-            <div class="panel panel-default marketplace-item-container" style="height: 400px; padding: 5px; overflow: hidden;">
+            <!--<div class="panel panel-default marketplace-item-container" style="height: 400px; padding: 5px; overflow: hidden;">-->
+            <div class="panel panel-default marketplace-item-container" style="padding: 5px;">
               <div class="easy-block-v1 marketplace-image-container">
                 <img class="img-responsive marketplace-image" ng-src="{{prom.icon.full_url}}" alt="">
                 <div class="easy-block-v1-badge rgba-red" ng-if="prom.id == promotion.id">Selected</div>
