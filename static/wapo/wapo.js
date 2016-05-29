@@ -612,8 +612,12 @@ wapoApp.controller('PromotionCtrl', ['$rootScope', '$scope', '$location', '$http
         $scope.promotion_list = response;
         
         $scope.promotiontype_list = [];
+        var added_id_list = [];
         _.each($scope.promotion_list, function(item) {
-          $scope.promotiontype_list.push(item.promotiontype);
+          if(!_.contains(added_id_list, item.id)) {
+            $scope.promotiontype_list.push(item.promotiontype);
+            added_id_list.push(item.id);
+          }
         });
         if(!$scope.promotiontype) {
           $scope.promotiontype = $scope.promotiontype_list[0];
