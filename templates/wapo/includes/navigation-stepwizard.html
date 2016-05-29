@@ -1,64 +1,59 @@
 <div class="row hidden-xs">
-  <div class="col-md-2 hidden-xs"></div>
-  <div class="col-xs-12">
+  <div class="col-xs-12 col-sm-12 col-md-offset-3 col-md-6">
     <div class="stepwizard">
       <div class="stepwizard-row">
 
-<!--          <div class="stepwizard-step">
-          <button type="button" class="btn {% if main_step == "modules" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">
-                  <i class="fa fa-list"></i>
-               </button>
-               <p style="font-size: xx-small;" class="hidden-xs">Modules</p>
-          </div>-->
+        <!--          <div class="stepwizard-step">
+                  <button type="button" class="btn {% if main_step == "modules" %}btn-primary{% else %}btn-default{% endif %} btn-circle" >
+                          <i class="fa fa-list"></i>
+                       </button>
+                       <p style="font-size: xx-small;" class="hidden-xs">Modules</p>
+                  </div>-->
 
-          <div class="stepwizard-step">
-            <button type="button" class="btn btn-circle" ng-class="{'btn-primary': progress > 0}" disabled="disabled">
-              <i class="fa fa-user"></i>
-            </button>
-            <p style="font-size: xx-small;" class="hidden-xs">Profile</p>
-          </div>
-
-<!--          <div class="stepwizard-step">
-            <button type="button" class="btn {% if main_step == "announcement" %}btn-primary{% else %}btn-default{% endif %} btn-circle" disabled="disabled">
-                    <i class="fa fa-bullhorn"></i>
-                 </button>
-                 <p style="font-size: xx-small;">Announcement</p>
-            </div>-->
-
-            <div class="stepwizard-step">
-              <button type="button" class="btn btn-circle" ng-class="{'btn-primary': progress > 1}" disabled="disabled">
-                <i class="fa fa-shopping-cart"></i>
-              </button>
-              <p style="font-size: xx-small;" class="hidden-xs">Marketplace</p>
-            </div>
-
-            <div class="stepwizard-step">
-              <button type="button" class="btn btn-circle" ng-class="{'btn-primary': progress > 2}" disabled="disabled">
-                <i class="fa fa-envelope" ng-if="wapo.delivery == 'email' || wapo.delivery == 'email-list' || wapo.delivery == 'mailchimp'"></i>
-                <i class="fa fa-twitter" ng-if="wapo.delivery == 'any-twitter-followers' || wapo.delivery == 'select-twitter-followers'"></i>
-                <i class="fa fa-facebook" ng-if="wapo.delivery == 'any-facebook-friends' || wapo.delivery == 'facebook-page'"></i>
-                <i class="fa fa-mobile" ng-if="wapo.delivery == 'text'"></i>
-                <i class="fa fa-gift" ng-if="!wapo.delivery"></i>
-              </button>
-              <p style="font-size: xx-small;" class="hidden-xs">Share</p>
-            </div>
-
-            <div class="stepwizard-step">
-              <button type="button" class="btn btn-circle" ng-class="{'btn-primary': progress > 3}" disabled="disabled">
-                <i class="fa fa-credit-card"></i>
-              </button>
-              <p style="font-size: xx-small;" class="hidden-xs">Checkout</p>
-            </div>
-
-            <div class="stepwizard-step">
-              <button type="button" class="btn btn-circle" ng-class="{'btn-primary': progress > 4}" disabled="disabled">
-                <i class="fa fa-check"></i>
-              </button>
-              <p style="font-size: xx-small;" class="hidden-xs">Confirmation</p>
-            </div>
-
-          </div>
+        <div class="stepwizard-step">
+          <button type="button" class="btn btn-circle" ng-class="{'btn-primary': progress > 0}" ng-click="goto('/')">
+            <i class="fa fa-user"></i>
+          </button>
+          <p style="font-size: xx-small;" class="hidden-xs">Profile</p>
         </div>
+
+        <!--          <div class="stepwizard-step">
+                    <button type="button" class="btn {% if main_step == "announcement" %}btn-primary{% else %}btn-default{% endif %} btn-circle" >
+                            <i class="fa fa-bullhorn"></i>
+                         </button>
+                         <p style="font-size: xx-small;">Announcement</p>
+                    </div>-->
+
+        <div class="stepwizard-step">
+          <button type="button" class="btn btn-circle" ng-class="{'btn-primary': progress > 1}" ng-click="goto('/marketplace')">
+            <i class="fa fa-shopping-cart"></i>
+          </button>
+          <p style="font-size: xx-small;" class="hidden-xs">Marketplace</p>
+        </div>
+
+        <div class="stepwizard-step">
+          <button type="button" class="btn btn-circle" ng-class="{'btn-primary': progress > 2}" ng-click="goto('/delivery')">
+            <i class="fa" ng-class="{'fa-envelope': (wapo.delivery == 'email' || wapo.delivery == 'email-list' || wapo.delivery == 'mailchimp'), 'fa-twitter': (wapo.delivery == 'any-twitter-followers' || wapo.delivery == 'select-twitter-followers'), 'fa-facebook': (wapo.delivery == 'any-facebook-friends' || wapo.delivery == 'facebook-page'), 'fa-mobile': wapo.delivery == 'text', 'fa-gift': !wapo.delivery}"></i>
+          </button>
+          <p style="font-size: xx-small;" class="hidden-xs">Share</p>
+        </div>
+
+        <div class="stepwizard-step">
+          <button type="button" class="btn btn-circle" ng-class="{'btn-primary': progress > 3}" ng-click="goto('/checkout')">
+            <i class="fa fa-credit-card"></i>
+          </button>
+          <p style="font-size: xx-small;" class="hidden-xs">Checkout</p>
+        </div>
+
+        <div class="stepwizard-step">
+          <button type="button" class="btn btn-circle" ng-class="{'btn-primary': progress > 4}" disabled="disabled">
+            <i class="fa fa-check"></i>
+          </button>
+          <p style="font-size: xx-small;" class="hidden-xs">Confirmation</p>
+        </div>
+
       </div>
-      <div class="col-md-2 hidden-xs"></div>
     </div>
+  </div>
+  <!--<div class="col-md-2 hidden-xs"></div>-->
+</div>

@@ -1,0 +1,17 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+
+    <div class="form-group">
+      <label>Email addresses</label>
+      <textarea id="emails" class="form-control" rows="5" ng-model="emails" ng-keyup="keyUpEmailList($event)"></textarea>
+    </div>
+    <div class="well well-sm">
+      {{count}} of {{wapo.email_list.max}}
+    </div>
+
+    <div class="form-group">
+      <label>Delivery Message</label>
+      <textarea class="form-control" rows="5" ng-model="delivery_message"></textarea>
+    </div>
+  </div>
+</div>

@@ -224,7 +224,7 @@ namespace Wp {
         }
         
         $response = new \Blink\Response();
-        $promotion = \Wapo\Promotion::get_or_null(array("id"=>$wr->wapo->promotion));
+        $promotion = \Wapo\Promotion::queryset()->clear()->filter(array("id"=>$wr->wapo->promotion))->get();
         $response->file = $promotion->download;
         
         return $response;

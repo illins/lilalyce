@@ -3,167 +3,169 @@
     Summary
   </div>
   <div class="panel-body">
-    
-    <div ng-show="user">
-      <h4>ACCOUNT <small>[<a ng-click="webSignOut()" style="cursor: pointer;">Sign Out</a>]</small></h4>
-      
-<!--      <div class="row" ng-show="user">
-        <div class="col-xs-12">
-          <img class="img-responsive" ng-src="{{user.account_image.full_url}}" alt="" ng-if="user.account_image.full_url">
-        </div>
-      </div>-->
-      
-      <div class="row" ng-show="user">
-        <div class="col-xs-12">
-          <strong><i class="fa fa-user"></i> {{user.first_name}} {{user.last_name}}</strong>
+
+    <div>
+      <div ng-show="user">
+        <h4>ACCOUNT <small>[<a ng-click="webSignOut()" style="cursor: pointer;">Sign Out</a>]</small></h4>
+
+        <!--      <div class="row" ng-show="user">
+                <div class="col-xs-12">
+                  <img class="img-responsive" ng-src="{{user.account_image.full_url}}" alt="" ng-if="user.account_image.full_url">
+                </div>
+              </div>-->
+
+        <div class="row" ng-show="user">
+          <div class="col-xs-12">
+            <strong><i class="fa fa-user"></i> {{user.first_name}} {{user.last_name}}</strong>
+          </div>
         </div>
       </div>
+
+      <div ng-if="!user">
+        <h4>ACCOUNT <small>[<a href="#/profile">Sign in</a>]</small></h4>
+
+        <div ng-show="!user"><i class="fa fa-user"></i> Guest</div>
+      </div>
     </div>
-    
-    <div ng-if="!user">
-      <h4>ACCOUNT <small>[<a href="#/profile">Sign in</a>]</small></h4>
-      
-      <div ng-show="!user"><i class="fa fa-user"></i> Guest</div>
-    </div>
-    
+
     <hr style="margin-top: 5px;" />
-    
-    <div ng-if="wapo.profile.new.name">
-      <h4>NEW PROFILE<small>[<a href="#/profile-new">Edit</a>]</small></h4>
-      
-      <div class="row">
-        <div class="col-xs-12">
-          <img class="img-responsive" ng-src="/{{wapo.profile.new.image}}" alt="" ng-if="wapo.profile.new.image">
-          <img class="img-responsive" ng-src="{{ 'http://placehold.it/350x250?text=Placeholder' }}" alt="..." ng-if="!wapo.profile.new.image" />
+
+    <div ng-show="progress > 1">
+      <div ng-if="wapo.profile.new.name">
+        <h4>NEW PROFILE<small>[<a href="#/profile-new">Edit</a>]</small></h4>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <img class="img-responsive" ng-src="/{{wapo.profile.new.image}}" alt="" ng-if="wapo.profile.new.image">
+            <!--<img class="img-responsive" ng-src="{{ 'http://placehold.it/350x250?text=Placeholder' }}" alt="..." ng-if="!wapo.profile.new.image" />-->
+          </div>
         </div>
-      </div>
-      
-      <div class="row">
-        <div class="col-xs-12">
-          <strong><i class="fa fa-building"></i> {{wapo.profile.new.name}}</strong><br />
-          <span><i class="fa fa-envelope"></i> {{wapo.profile.new.email}}</span>
-        </div>
-      </div>
-    </div>
-    
-    <hr style="margin-top: 5px;" ng-if="wapo.profile.new.name" />
-    
-    <div ng-if="wapo.profile.profile">
-      <h4>PROFILE <small>[<a href="#/profile">Edit</a>]</small></h4>
-      
-      <div class="row">
-        <div class="col-xs-12">
-          <img class="img-responsive" ng-src="/media/wapo/profile/{{wapo.profile.profile.image}}" alt="" ng-if="wapo.profile.profile.image">
-          <img class="img-responsive" ng-src="{{ '//placehold.it/350x250?text=Placeholder' }}" alt="..." ng-if="!wapo.profile.profile.image" />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xs-12">
-          <strong><i class="fa fa-building"></i> {{wapo.profile.profile.name}}</strong><br />
-          <span><i class="fa fa-envelope"></i> {{user.email}}</span>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <strong><i class="fa fa-building"></i> {{wapo.profile.new.name}}</strong><br />
+            <span><i class="fa fa-envelope"></i> {{wapo.profile.new.email}}</span>
+          </div>
         </div>
       </div>
 
-    </div>
-    
-    <hr style="margin-top: 5px;" ng-if="wapo.profile.profile" />
-    
-    <div ng-if="wapo.marketplace == 'tangocards'">
-      <h4>GIFT CARD <small>[<a href="#/marketplace/{{wapo.marketplace}}">Edit</a>]</small></h4>
-      <img class="img-responsive" ng-src="{{wapo.tangocards.brand_image_url || '//placehold.it/350x250?text=Placeholder'}}" alt="">
-      <div>
-        <strong>
-          {{wapo.tangocards.description}}
-          <span ng-show="wapo.tangocards.unit_price == -1">${{wapo.unit_price / 100}}</span>
-        </strong>
-        
+      <hr style="margin-top: 5px;" ng-if="wapo.profile.new.name" />
+
+      <div ng-if="wapo.profile.profile">
+        <h4>PROFILE <small>[<a href="#/profile">Edit</a>]</small></h4>
+
+        <div class="row">
+          <div class="col-xs-12">
+            <img class="img-responsive" ng-src="/media/wapo/profile/{{wapo.profile.profile.image}}" alt="" ng-if="wapo.profile.profile.image">
+            <!--<img class="img-responsive" ng-src="{{ '//placehold.it/350x250?text=Placeholder' }}" alt="..." ng-if="!wapo.profile.profile.image" />-->
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <strong><i class="fa fa-building"></i> {{wapo.profile.profile.name}}</strong><br />
+            <span><i class="fa fa-envelope"></i> {{user.email}}</span>
+          </div>
+        </div>
+
       </div>
+
+      <hr style="margin-top: 5px;" ng-if="wapo.profile.profile" />
     </div>
 
-    <div ng-if="wapo.marketplace == 'promotion'">
-      <h4>EBOOK <small>[<a href="#/marketplace/{{wapo.marketplace}}">Edit</a>]</small></h4>
-      <img class="img-responsive" ng-src="/media/wapo/promotion/image/{{wapo.promotion.icon}}" alt="" ng-if="wapo.promotion.icon">
-      <img class="img-responsive" ng-src="//placehold.it/350x250?text=Placeholder" alt="" ng-if="!wapo.promotion.icon">
+    <div ng-show="progress > 2">
+      <div ng-if="wapo.marketplace == 'tangocards'">
+        <h4>GIFT CARD <small>[<a href="#/marketplace/{{wapo.marketplace}}">Edit</a>]</small></h4>
+        <img class="img-responsive" ng-src="{{wapo.tangocards.brand_image_url}}" alt="">
+        <!--<img class="img-responsive" ng-src="{{wapo.tangocards.brand_image_url || '//placehold.it/350x250?text=Placeholder'}}" alt="">-->
+        <div>
+          <strong>
+            {{wapo.tangocards.description}}
+            <span ng-show="wapo.tangocards.unit_price == -1">${{wapo.unit_price / 100}}</span>
+          </strong>
 
-      <div>
-        <h6>{{wapo.promotion.name}} ${{wapo.promotion.price}}</h6>
-        <!--<small>{{wapo.promotion.description}}</small>-->
+        </div>
       </div>
+
+      <div ng-if="wapo.marketplace == 'promotion'">
+        <h4>Gift <small>[<a href="#/marketplace/{{wapo.marketplace}}">Edit</a>]</small></h4>
+        <img class="img-responsive" ng-src="/media/wapo/promotion/image/{{wapo.promotion.icon}}" alt="" ng-if="wapo.promotion.icon">
+        <img class="img-responsive" ng-src="//placehold.it/350x250?text=Placeholder" alt="" ng-if="!wapo.promotion.icon">
+
+        <div>
+          <h6>{{wapo.promotion.name}} ${{wapo.promotion.price}}</h6>
+          <!--<small>{{wapo.promotion.description}}</small>-->
+        </div>
+      </div>
+
+      <hr style="margin-top: 5px;" ng-if="wapo.marketplace" />
     </div>
     
-    <hr style="margin-top: 5px;" ng-if="wapo.marketplace" />
-    
-    
-
-
-
-
     <!--Delivery--> 
-    <div ng-if="wapo.delivery == 'free-for-all'">
-      <strong>Anyone</strong>
-    </div>
-    
-    <div ng-if="wapo.delivery == 'email'">
-      <h4>DELIVERY <small>[<a href="#/delivery/email">Edit</a>]</small></h4>
-      <strong>{{wapo.email.email_list.length}}</strong> email(s)
-      <div ng-show="wapo.tangocards || wapo.promotion">
-        <strong>Subtotal ($):</strong> {{subTotal(wapo.email.email_list.length)}}
+    <div ng-show="progress > 3">
+      <div ng-if="wapo.delivery == 'free-for-all'">
+        <strong>Anyone</strong>
+      </div>
+
+      <div ng-if="wapo.delivery == 'email'">
+        <h4>DELIVERY <small>[<a href="#/delivery">Edit</a>]</small></h4>
+        <strong>{{wapo.email.email_list.length}}</strong> email(s)
+        <div ng-show="wapo.tangocards || wapo.promotion">
+          <strong>Subtotal ($):</strong> {{subTotal(wapo.email.email_list.length)}}
+        </div>
+      </div>
+
+      <div ng-if="wapo.delivery == 'email-list'">
+        <h4>DELIVERY <small>[<a href="#/delivery">Edit</a>]</small></h4>
+        <strong>{{wapo.email_list.email_list.length}}</strong> email(s)
+        <div ng-show="wapo.tangocards || wapo.promotion">
+          <strong>Subtotal:</strong> ${{subTotal(wapo.email_list.email_list.length)}}
+        </div>
+      </div>
+
+      <div ng-if="wapo.delivery == 'mailchimp'">
+        <span ng-repeat="email in wapo.mailchimp.email_list track by $index" ng-if="$index < 3">
+          <span class="label label-light rounded">{{email}}</span>
+          <span ng-if="!$last && $index < 2">,</span>
+        </span>
+        <span ng-if="wapo.mailchimp.email_list.length > 3">...</span>
+      </div>
+
+      <div ng-if="wapo.delivery == 'text'">
+        <h4>DELIVERY <small>[<a href="#/delivery">Edit</a>]</small></h4>
+        <strong>{{wapo.text.number_list.length}}</strong> numbers(s)
+        <div ng-show="wapo.tangocards || wapo.promotion">
+          <strong>Subtotal:</strong> ${{subTotal(wapo.text.number_list.length)}}
+        </div>
+      </div>
+
+      <div ng-if="wapo.delivery == 'any-facebook-friends'">
+        <strong>Any</strong>
+      </div>
+
+      <div ng-if="wapo.delivery == 'facebook-page'">
+        <span class="label label-light rounded">{{wapo.facebook.page_name}}</span>
+      </div>
+
+      <div ng-if="wapo.delivery == 'any-twitter-followers'">
+        <strong>Any</strong>
+      </div>
+
+      <div ng-if="wapo.delivery == 'select-twitter-followers'">
+        <span ng-repeat="follower in wapo.twitter.follower_list track by $index" ng-if="$index < 3">
+          <span class="label label-light rounded">{{follower}}</span>
+          <span ng-if="!$last && $index < 2">,</span>
+        </span>
+        <span ng-if="wapo.twitter.follower_list.length > 3">...</span>
+      </div>
+
+      <hr style="margin-top: 5px;" ng-if="wapo.delivery" />
+
+      <div ng-show="wapo.delivery_message">
+        <h4>DELIVERY MESSAGE<small>[<a href="#/delivery">Edit</a>]</small></h4>
+        <p>{{wapo.delivery_message}}</p>
+        <hr style="margin-top: 5px;" />
       </div>
     </div>
-    
-    <div ng-if="wapo.delivery == 'email-list'">
-      <h4>DELIVERY <small>[<a href="#/delivery/email-list">Edit</a>]</small></h4>
-      <strong>{{wapo.email_list.email_list.length}}</strong> email(s)
-      <div ng-show="wapo.tangocards || wapo.promotion">
-        <strong>Subtotal:</strong> ${{subTotal(wapo.email_list.email_list.length)}}
-      </div>
-    </div>
-    
-    <div ng-if="wapo.delivery == 'mailchimp'">
-      <span ng-repeat="email in wapo.mailchimp.email_list track by $index" ng-if="$index < 3">
-        <span class="label label-light rounded">{{email}}</span>
-        <span ng-if="!$last && $index < 2">,</span>
-      </span>
-      <span ng-if="wapo.mailchimp.email_list.length > 3">...</span>
-    </div>
-
-    <div ng-if="wapo.delivery == 'text'">
-      <h4>DELIVERY <small>[<a href="#/delivery/text">Edit</a>]</small></h4>
-      <strong>{{wapo.text.number_list.length}}</strong> numbers(s)
-      <div ng-show="wapo.tangocards || wapo.promotion">
-        <strong>Subtotal:</strong> ${{subTotal(wapo.text.number_list.length)}}
-      </div>
-    </div>
-
-    <div ng-if="wapo.delivery == 'any-facebook-friends'">
-      <strong>Any</strong>
-    </div>
-
-    <div ng-if="wapo.delivery == 'facebook-page'">
-      <span class="label label-light rounded">{{wapo.facebook.page_name}}</span>
-    </div>
-
-    <div ng-if="wapo.delivery == 'any-twitter-followers'">
-      <strong>Any</strong>
-    </div>
-
-    <div ng-if="wapo.delivery == 'select-twitter-followers'">
-      <span ng-repeat="follower in wapo.twitter.follower_list track by $index" ng-if="$index < 3">
-        <span class="label label-light rounded">{{follower}}</span>
-        <span ng-if="!$last && $index < 2">,</span>
-      </span>
-      <span ng-if="wapo.twitter.follower_list.length > 3">...</span>
-    </div>
-    
-    <hr style="margin-top: 5px;" ng-if="wapo.delivery" />
-    
-    <div ng-show="wapo.delivery_message">
-      <h4>DELIVERY MESSAGE<small>[<a href="#/delivery/{{wapo.delivery}}">Edit</a>]</small></h4>
-      <p>{{wapo.delivery_message}}</p>
-      <hr style="margin-top: 5px;" />
-    </div>
-    
-    
     
   </div>
 </div>

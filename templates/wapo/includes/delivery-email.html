@@ -1,0 +1,13 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div class="form-group" ng-repeat="email in email_list track by $index" ng-if="$index < max_count">
+      <label for="email-{{$index}}">Email address</label>
+      <input type="email" class="form-control" id="email-{{$index}}" ng-model="email_list[$index]" placeholder="Email {{$index + 1}}">
+    </div>
+
+    <div class="form-group">
+      <label>Delivery Message</label>
+      <textarea class="form-control" rows="5" ng-model="delivery_message"></textarea>
+    </div>
+  </div>
+</div>

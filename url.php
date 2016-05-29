@@ -75,7 +75,7 @@ namespace Wp {
 
   // Tangocards view.
   WpTangoCardRewardsListView::register_url(array("pattern" => "/wp/wapo/tangocards/"));
-  WpPromotionCategoryListView::register_url(array("pattern" => "/wp/wapo/promotioncategories/"));
+  WpPromotionCategoryListView::register_url(array("pattern" => "/wp/wapo/promotioncategory/"));
   WpPromotionListView::register_url(array("pattern" => "/wp/wapo/promotions/"));
 
   // Validate.

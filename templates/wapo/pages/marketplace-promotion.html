@@ -11,23 +11,15 @@
       <div class="panel-heading">
         <div class="row">
           <div class="col-xs-6 col-sm-4">
-            <div class="btn-group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                ebooks <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#/marketplace/promotion">ebooks</a></li>
-                <li><a href="#/marketplace/tangocards">Gift Cards</a></li>
-              </ul>
-            </div>
+            <div ng-include="'/apps/wp/templates/wapo/includes/marketplace-categories.html'"></div>
           </div>
           <div class="col-xs-6 col-sm-8">
-            <select class="form-control" ng-options="item as item.name for item in promotioncategory_list track by item.id" ng-model="promotioncategory" ng-change="changePromotionCategory()"></select>
+            <select class="form-control" ng-options="item as item.name for item in promotiontype_list track by item.id" ng-model="promotiontype" ng-change="changePromotionType()"></select>
           </div>
         </div>
       </div>
 
-      <div class="panel-body">
+      <div class="panel-body" style="height: 400px; overflow-y: auto;">
         <div class="row" ng-repeat="chunked_promotion in chunked_promotion_list">
           <div class="col-sm-12 col-md-4" ng-repeat="prom in chunked_promotion" ng-click="selectPromotion(prom)" style="cursor: pointer;">
 

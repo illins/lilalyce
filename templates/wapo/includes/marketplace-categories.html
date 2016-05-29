@@ -1,0 +1,9 @@
+<div class="btn-group">
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    {{promotioncategory.name || 'Gift Cards'}} <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#/marketplace/promotion/{{pc.id}}" ng-repeat="pc in promotioncategory_list">{{pc.name}}</a></li>
+    <li><a href="#/marketplace/tangocards">Gift Cards</a></li>
+  </ul>
+</div>

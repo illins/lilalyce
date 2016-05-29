@@ -13,15 +13,7 @@
 
         <div class="row">
           <div class="col-xs-6 col-sm-4">
-            <div class="btn-group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Gift Cards <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu">
-                <li><a href="#/marketplace/promotion">ebooks</a></li>
-                <li><a href="#/marketplace/tangocards">Gift Cards</a></li>
-              </ul>
-            </div>
+            <div ng-include="'/apps/wp/templates/wapo/includes/marketplace-categories.html'"></div>
           </div>
           <div class="col-xs-6 col-sm-8">
             <select ng-model="selected_brand_description" class="form-control">
@@ -31,7 +23,7 @@
         </div>
       </div>
 
-      <div class="panel-body profile">
+      <div class="panel-body profile" style="height: 400px; overflow-y: auto;">
         <div class="row" ng-repeat="tangocards_group in tangocards_group_list">
           <div class="col-sm-12 col-md-4" ng-repeat="tcards in tangocards_group" ng-click="selectTangoCards(tcards)" style="cursor: pointer;">
 
@@ -60,6 +52,6 @@
 
   </div>
   
-  <div class="col-md-3 col-sm-12" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>
+  <div class="col-md-3 col-sm-12 no-padding" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>
 </div>
 <span ng-init="initMarketplaceImages()"></span>
