@@ -23,7 +23,7 @@
       <div class="panel panel-default">
         <div ng-include="'/apps/wp/templates/wapo/includes/loading.html'"></div>
         
-        <div class="panel-body profile" ng-show="user && profile_list.length && ready">
+        <div class="panel-body profile wapo-wp-scroll" ng-show="user && profile_list.length && ready">
           <div class="row" ng-repeat="profile_chunk in profile_chunk_list">
             <div class="col-sm-4" ng-repeat="pf in profile_chunk" ng-click="selectProfile(pf)" style="cursor: pointer;">
               <div class="easy-block-v1">
