@@ -4,174 +4,69 @@
   </div>
 </div>
 
-<div>
+<div class="row">
   <div class="col-sm-12 col-md-9">
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title text-center">Select Delivery Method</h3>
-      </div>
-      <div class="panel-body">
-        <div class="row">
-          <div class="col-xs-12 col-sm-12 col-md-2">
-            <ul class="nav nav-pills nav-stacked">
-              <!--<li class="btn-contrast.btn-bordered" style="margin-bottom: 6%;" ng-class="{'active': active('free-for-all')}"><a ng-click="main_delivery = 'free-for-all'" style="cursor: pointer;">Free For All</a></li>-->
-              <li ng-class="{'active': active('email')}"><a ng-click="main_delivery = 'email'" style="cursor: pointer;">Email</a></li>
-              <li ng-class="{'active': active('text')}"><a ng-click="main_delivery = 'text'" style="cursor: pointer;">Text</a></li>
-              <!--<li class="btn-contrast.btn-bordered" style="margin-bottom: 6%;" ng-class="{'active': active('facebook')}"><a ng-click="main_delivery = 'facebook'" style="cursor: pointer;">Facebook</a></li>-->
-              <!--<li class="btn-contrast.btn-bordered" style="margin-bottom: 6%;" ng-class="{'active': active('twitter')}"><a ng-click="main_delivery = 'twitter'" style="cursor: pointer;">Twitter</a></li>-->
-              <!--<li class="btn-contrast.btn-bordered" style="margin-bottom: 6%;" ng-class="{'active': active('instagram')}"><a href="#instagram" style="cursor: pointer;">Instagram</a></li>-->
-            </ul>
+
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="email-heading">
+          <h4 class="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#accordion" ng-click="setDelivery('email')" aria-expanded="true" aria-controls="email">
+              Email
+            </a>
+          </h4>
+        </div>
+        <div id="email" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="emailHeading">
+          <div class="panel-body">
+            
+            <p>Send a Wapo to up to 4 emails.</p>
+
+            <div ng-include="'/apps/wp/templates/wapo/includes/delivery-email.html'" ng-show="delivery == 'email'"></div>
+            
           </div>
+        </div>
+      </div>
+      
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="email-list-heading">
+          <h4 class="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#accordion" ng-click="setDelivery('email-list')" aria-expanded="true" aria-controls="email-list">
+              Email List
+            </a>
+          </h4>
+        </div>
+        <div id="email-list" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="emailListHeading">
+          <div class="panel-body">
+            
+            <p>Send a Wapo to a list of comma separated emails.</p>
 
-          <div class="col-xs-12 col-sm-12 col-md-10">
-            <div class="tab-content wapo-wp-scroll">
-<!--              <div class="tab-pane" id="free-for-all" ng-class="{'active': active('free-for-all')}">
-                <h5 style="padding: 0px 10px;">
-                  <label>
-                    <input type="radio" value="free-for-all" ng-checked="checked('free-for-all')" ng-click="setDelivery('free-for-all')" /> Free for all
-                  </label>
-                </h5>
-                
-                <div class="list-group" style="padding: 0px 10px;">
-                  <div class="list-group-item">
-                    <p class="list-group-item-text">Create a link that you can distribute in any medium you choose. Set a cap to limit how many Wapo(s) are sent.</p>
+            <div ng-include="'/apps/wp/templates/wapo/includes/delivery-email-list.html'" ng-show="delivery == 'email-list'"></div>
+            
+          </div>
+        </div>
+      </div>
 
-                    <div class="checkbox">
-                      <label>
-                        <input type="radio" value="free-for-all" ng-checked="checked('free-for-all')" ng-click="setDelivery('free-for-all')" /> <b>Select</b>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>-->
-              
-              <div class="tab-pane" id="email" ng-class="{'active': active('email')}">
-                
-                <div class="well well-sm">
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" value="email" ng-checked="delivery == 'email'" ng-click="setDelivery('email')" /> <b>Email</b>
-                    </label>
-                  </div>
-                </div>
-                <p>Send a Wapo to up to 4 emails.</p>
-                
-                <div ng-include="'/apps/wp/templates/wapo/includes/delivery-email.html'" ng-show="delivery == 'email'"></div>
-                
-                <hr />
-                
-                <div class="well well-sm">
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" value="email-list" ng-checked="delivery == 'email-list'" ng-click="setDelivery('email-list')" /> <b>Email List</b>
-                    </label>
-                  </div>
-                </div>
-                <p>Send a Wapo to a list of comma separated emails.</p>
-                
-                <div ng-include="'/apps/wp/templates/wapo/includes/delivery-email-list.html'" ng-show="delivery == 'email-list'"></div>
-              </div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="textHeading">
+          <h4 class="panel-title">
+            <a role="button" data-toggle="collapse" data-parent="#accordion" ng-click="setDelivery('text')" aria-expanded="true" aria-controls="text">
+              Text
+            </a>
+          </h4>
+        </div>
+        <div id="text" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+          <div class="panel-body">
 
-              <div class="tab-pane" id="text" ng-class="{'active': active('text')}">
-                <div class="well well-sm">
-                  <div class="checkbox">
-                    <label>
-                      <input type="radio" value="text" ng-checked="delivery == 'text'" ng-click="setDelivery('text')" /> <b>Text</b>
-                    </label>
-                  </div>
-                </div>
-                
-                <p>Send a Wapo to Phone number(s).</p>
-                
-                <div ng-include="'/apps/wp/templates/wapo/includes/delivery-text.html'" ng-show="delivery == 'text'"></div>
-              </div>
+            <p>Send a Wapo to Phone number(s).</p>
 
-              <div class="tab-pane" id="facebook" ng-class="{'active': active('facebook')}">
-                <h5 style="padding: 0px 10px;">Facebook Friends</h5>
-                <div class="list-group" style="padding: 0px 10px;">
-                  <div class="list-group-item">
-                    <p class="list-group-item-text">Login to Facebook to send a wapo to any of your Friends. Buy the maximum number of Wapos and any of your friends can download the wapos up to the maximum. Anyone who clicks on link must be validated (they must log in through Facebook) and validated as your friend.</p>
-
-                    <div class="checkbox">
-                      <label>
-                        <input type="radio" value="aff" ng-checked="checked('any-facebook-friends')" ng-click="setDelivery('any-facebook-friends')" /> <b>Select</b>
-                      </label>
-                    </div>
-
-                  </div>
-                </div>
-
-                <h5 style="padding: 0px 10px;">Facebook Pages</h5>
-                <div class="list-group" style="padding: 0px 10px;">
-                  <div class="list-group-item">
-                    <p class="list-group-item-text">Login to Facebook to send a wapo to page followers. Buy a maximum number of Wapos you would like to send and anyone who has liked your page can download the wapo. Anyone who clicks on link must be validated (they must log in through Facebook) and validated to like your page.</p>
-
-                    <div class="checkbox">
-                      <label>
-                        <input type="radio" value="fp" ng-checked="checked('facebook-page')" ng-click="setDelivery('facebook-page')" /> <b>Select</b>
-                      </label>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-
-              <div class="tab-pane" id="twitter" ng-class="{'active': active('twitter')}">
-                <h5 style="padding: 0px 10px;">Twitter Followers</h5>
-                <div class="list-group" style="padding: 0px 10px;">
-                  <div class="list-group-item">
-                    <p class="list-group-item-text">Login through Twitter and post a link for a Wapo. Buy the maximum number of Wapos for any of your followers to download. Only your followers (Authenticated and confirmed) can download the Wapo.</p>
-                    <div class="checkbox">
-                      <label>
-                        <input type="radio" value="atf" ng-checked="checked('any-twitter-followers')" ng-click="setDelivery('any-twitter-followers')" /> <b>Select</b>
-                      </label>
-                    </div>
-
-                  </div>
-                </div>
-
-                <h5 style="padding: 0px 10px;">Selected Twitter Followers</h5>
-                <div class="list-group" style="padding: 0px 10px;">
-                  <div class="list-group-item">
-                    <p class="list-group-item-text">Login through Twitter and post a link for a Wapo. Only the selected followers (Authenticated and confirmed) can download the Wapo.</p>
-                    <div class="checkbox">
-                      <label>
-                        <input type="radio" value="stf" ng-checked="checked('select-twitter-followers')" ng-click="setDelivery('select-twitter-followers')" /> <b>Select</b>
-                      </label>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-              <div class="tab-pane" id="instagram" ng-class="{'active': active('instagram')}">
-                <h4>Instagram</h4>
-                <div class="list-group" style="padding: 0px 10px;">
-                  <div class="list-group-item">
-                    <h5 class="list-group-item-heading">Any Followers</h5>
-                    <p class="list-group-item-text">Login through Instagram and post a link for a Wapo. Buy the maximum number of Wapos for any of your followers to download. Only your followers (Authenticated and confirmed) can download the Wapo.</p>
-                    <div class="checkbox">
-                      <label>
-                        <input type="radio" value="aif" ng-checked="!enabled('any-instagram-friends')" /> <b>Select</b>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="list-group-item">
-                    <h5 class="list-group-item-heading">Followers</h5>
-                    <p class="list-group-item-text">Login through Instagram and post a link for a Wapo. Only the selected followers (Authenticated and confirmed) can download the Wapo.</p>
-                    <div class="checkbox">
-                      <label>
-                        <input type="radio" value="sif" ng-checked="!enabled('instagram')" /> <b>Select</b>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div ng-include="'/apps/wp/templates/wapo/includes/delivery-text.html'" ng-show="delivery == 'text'"></div>
           </div>
         </div>
       </div>
     </div>
+    
+    <div ng-init="initAccordion()"></div>
   </div>
-  <div class="col-md-3 col-sm-12" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>
+  <div class="col-md-3 col-sm-12 wapo-sidebar" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>
 </div>

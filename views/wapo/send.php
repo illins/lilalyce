@@ -105,7 +105,6 @@ namespace Wp {
                   $recipient->sent = true;
                 }
                 
-
 //                $recipient->sent = @mail($recipient->contact, "You have been sent a Wapo.", $message);
               }
             }
@@ -115,8 +114,19 @@ namespace Wp {
             } else {
               $message = sprintf("You have been sent a Wapo. Click here '%s' to download your Wapo. ", $bitly_url);
             }
+            
+            $struct['text'] = $message;
+            $struct['to'][0]['email'] = $recipient->contact;
 
-            $recipient->sent = @mail($recipient->contact, "You have been sent a Wapo.", $message);
+            $async = false;
+            $ip_pool = 'Main Pool';
+            
+            $result = $mandrill->messages->send($struct, $async, $ip_pool);
+            if (in_array($result[0]['status'], array("sent", "queued", "scheduled"))) {
+              $recipient->sent = true;
+            }
+
+//            $recipient->sent = @mail($recipient->contact, "You have been sent a Wapo.", $message);
           }
 
           $recipient->save(false);

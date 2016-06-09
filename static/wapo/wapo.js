@@ -72,12 +72,12 @@ wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$
     $rootScope.mainInit = function (callback) {
       var callback = callback || null;
       
-      var path = $cookies.get('path');
-      if (path) {
-        $cookies.remove('path');
-        $location.path(path);
-        return;
-      }
+//      var path = $cookies.get('path');
+//      if (path) {
+//        $cookies.remove('path');
+//        $location.path(path);
+//        return;
+//      }
 
       if (!$rootScope.wapo) {
         $http.get('/wp/wapo/data/').success(function (response) {
@@ -157,6 +157,8 @@ wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$
       $(window).resize(function() {
         $rootScope.resizeImages();
       });
+      
+      console.log(location.hash);
     };
     
     
@@ -537,6 +539,7 @@ wapoApp.controller('TangoCardsCtrl', ['$rootScope', '$scope', '$location', '$htt
     $scope.applyFilter = function () {
       var filtered_tangocards_list = filterFilter($rootScope.tangocards_list, $scope.selected_brand_description);
       $scope.tangocards_group_list = _.chunk(filtered_tangocards_list, 3);
+      $rootScope.initMarketplaceImages();
     };
 
     $scope.selectTangoCards = function (tangocards) {
@@ -707,10 +710,24 @@ wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http'
     $rootScope.previous_path = '/marketplace';
     
     $scope.count = 0;
-
+    
+    var delivery_list = ['email', 'email-list', 'text'];
+    
+    $scope.initAccordion = function() {
+      $('#email').collapse('hide');
+      $('#email-list').collapse('hide');
+      $('#text').collapse('hide');
+    };
+    
     $scope.setDelivery = function (delivery) {
-      console.log('delivery', $scope.delivery);
       $scope.delivery = delivery;
+      var id;
+      
+      // Hide everything.
+      _.each(delivery_list, function(item) {
+        id = '#' + item;
+        $(id).collapse('hide');
+      });
       
       if($scope.delivery == "email") {
         $scope.initSingleEmail();
@@ -720,17 +737,11 @@ wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http'
         $scope.initText();
       }
       
-      console.log('delivery', $scope.delivery);
+      id = '#' + delivery;
+      $(id).collapse('show');
+      console.log('set-delivery', id);
     };
 
-    $scope.checked = function (delivery) {
-      return ($scope.delivery == delivery);
-    };
-
-    $scope.active = function (delivery) {
-      return ($scope.main_delivery == delivery);
-    };
-    
     // SINGLE EMAIL LIST
     
     $scope.initSingleEmail = function() {
@@ -759,7 +770,7 @@ wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http'
         return;
       }
 
-      $http.post('/wp/wapo/set/delivery/email/', {emails: email_list.join(','), delivery_message: $scope.delivery_message}).success(function (response) {
+      $http.post('/wp/wapo/set/delivery/email/', {emails: email_list.join(','), delivery_message: $('#email-delivery-message').val()}).success(function (response) {
         $rootScope.wapo = response.wapo;
         $location.path($rootScope.next_path);
       });
@@ -820,7 +831,7 @@ wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http'
       }
 
       $scope.emails = email_list.join(',');
-      $http.post('/wp/wapo/set/delivery/email-list/', {emails: email_list.join(','), delivery_message: $scope.delivery_message}).success(function (response) {
+      $http.post('/wp/wapo/set/delivery/email-list/', {emails: email_list.join(','), delivery_message: $('#emails-delivery-message').val()}).success(function (response) {
         $rootScope.wapo = response.wapo;
         $location.path($scope.next_path);
       });
@@ -892,7 +903,7 @@ wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http'
       }
 
       $scope.numbers = number_list.join(',');
-      $http.post('/wp/wapo/set/delivery/text/', {numbers: number_list.join(','), delivery_message: $scope.delivery_message}).success(function (response) {
+      $http.post('/wp/wapo/set/delivery/text/', {numbers: number_list.join(','), delivery_message: $('#text-delivery-message').val()}).success(function (response) {
         $rootScope.wapo = response.wapo;
         $location.path($scope.next_path);
       }).error(function (errorResponse) {
@@ -902,23 +913,6 @@ wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http'
     
     $scope.init = function () {
       var delivery = $rootScope.wapo.delivery;
-      if (delivery) {
-        if (delivery.search(/free/) != -1) {
-          $scope.main_delivery = 'free-for-all';
-        } else if (delivery.search(/mail/) != -1) {
-          $scope.main_delivery = 'email';
-        } else if (delivery.search(/text/) != -1) {
-          $scope.main_delivery = 'text';
-        } else if (delivery.search(/facebook/) != -1) {
-          $scope.main_delivery = 'facebook';
-        } else if (delivery.search(/twitter/) != -1) {
-          $scope.main_delivery = 'twitter';
-        } else {
-          $scope.main_delivery = 'email';
-        }
-      } else {
-        $scope.main_delivery = 'email';
-      }
       
       if(delivery) {
         $scope.setDelivery(delivery);
