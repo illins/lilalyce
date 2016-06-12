@@ -78,20 +78,19 @@ namespace Wp {
               if ($order->success) {
                 $message = sprintf("You have been sent a giftcard from %s\n\n", $tc->brand_description);
                 
+                // Set the delivery message.
                 if($wapo->delivery_message) {
                   $message .= $wapo->delivery_message . "\n\n";
                 }
                 
-                $message .= sprintf("Your number is: %s\n", $order->order->reward->number);
-                
-                if (isset($order->order->reward->pin)) {
-                  $message .= sprintf("Your pin number is: %s\n\n", $order->order->reward->pin);
-                } else if (isset($order->order->reward->token)) {
-                  $message .= sprintf("Your token is: %s\n\n", $order->order->reward->token);
-                } else {
+                // Add the redemption url if any!
+                if(isset($order->order->reward->redemption_url)) {
                   $message .= sprintf("Redemption url is: %s\n\n", $order->order->reward->redemption_url);
+                  $message .= sprintf("Secret code: %s\n\n", $order->order->reward->number);
+                } else if(isset($order->order->reward->pin)) {
+                  $message .= sprintf("Your number is: %s\n", $order->order->reward->number);
+                  $message .= sprintf("Your pin number is: %s\n\n", $order->order->reward->pin);
                 }
-
                 $message .= "Enjoy your gift.\nWapo Team.";
                 
 //                $struct['html'] = $message;
@@ -104,8 +103,6 @@ namespace Wp {
                 if (in_array($result[0]['status'], array("sent", "queued", "scheduled"))) {
                   $recipient->sent = true;
                 }
-                
-//                $recipient->sent = @mail($recipient->contact, "You have been sent a Wapo.", $message);
               }
             }
           } else if ($wapo->marketplace == "promotion") {

@@ -1,28 +1,34 @@
 <div class="panel panel-default">
-  <div class="panel-heading">
-    &nbsp;
-  </div>
   <div class="panel-body">
 
+    <div ng-include="'/apps/wp/templates/wapo-download/includes/profile.html'" ng-if="profile"></div>
+
     <div class="row">
-      <div class="col-xs-offset-4 col-xs-4 text-center">
+      <div class="col-xs-12 text-center">
         <!--<md-progress-linear md-mode="indeterminate" ng-show="progress"></md-progress-linear>-->
         <i class="fa fa-spinner fa-spin" ng-show="progress"></i>
         <em>{{message}}</em>
 
         <br />
-        <div class="form-group" ng-show="!progress">
-          <!--<label for="code">Code</label>-->
-          <input type="email" class="form-control" ng-model="email" placeholder="Email">
+        
+        <div class="row" ng-show="!progress">
+          <div class="col-xs-6 col-md-offset-2 col-md-4 text-right">
+            <div class="form-group">
+              <!--<label for="code">Code</label>-->
+              <input type="email" class="form-control" ng-model="email" placeholder="Email">
+            </div>
+          </div>
+          <div class="col-xs-6 text-left">
+            <button class="btn btn-primary" ng-click="checkEmail()">
+              Send Confirmation Code
+            </button>
+          </div>
         </div>
-        
-        <br />
-        <button class="btn btn-primary" ng-click="checkEmail()" ng-show="!progress">
-          Send Confirmation Code
-        </button>
-        
+
       </div>
     </div>
+
+    <div ng-include="'/apps/wp/templates/wapo-download/includes/related-products.html'" ng-if="related_product_list.length"></div>
 
   </div>
 </div>

@@ -27,16 +27,16 @@ namespace Wp {
    * @return string
    */
   function validate_module($request, & $wapo) {
-    // Check that the module is set.
-    if (!$wapo->module) {
-      return "Module not set!";
-    }
-
-    // Check that the module is valid.
-    $module = \Wapo\Module::get_or_null(array("id" => $wapo->module->id));
-    if (!$module) {
-      return "Module not found!";
-    }
+//    // Check that the module is set.
+//    if (!$wapo->module) {
+//      return "Module not set!";
+//    }
+//
+//    // Check that the module is valid.
+//    $module = \Wapo\Module::get_or_null(array("id" => $wapo->module->id));
+//    if (!$module) {
+//      return "Module not found!";
+//    }
     
     return null;
   }

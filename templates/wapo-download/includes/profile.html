@@ -1,0 +1,18 @@
+<div class="row">
+  <div class="col-xs-6">
+    <img ng-src="{{profile.image.full_url}}" alt="No Image" class="img-responsive" />
+  </div>
+  <div class="col-xs-6">
+    <h2 style="padding-left: 10%;"><strong>Sender Info</strong></h2>
+    
+    <div class="row">
+      <div class="col-xs-10 col-xs-offset-2 text-left">
+        <div>{{profile.name}}</div>
+        <div>{{profile.url}}</div>
+        <div ng-repeat="social_link in social_link_list">{{social_link.link}}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr />

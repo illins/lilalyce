@@ -24,7 +24,29 @@ namespace Wp {
       $wr->confirm = dechex(rand(1, 16777215));
       $wr->save(false);
       
-      if(@mail($wr->contact, "Wapo confirmation code: ", $wr->confirm)) {
+      $mandrill = new \Mandrill(\Blink\MandrillConfig::API_KEY);
+
+      $struct = array(
+          'html' => '',
+          'text' => '',
+          'subject' => "Confirmation Code",
+          'from_email' => \Blink\MandrillConfig::FROM_EMAIL,
+          'to' => array(
+              array(
+                  'email' => '',
+                  'type' => 'to'
+              )
+          ),
+          'headers' => array('Reply-To' => \Blink\MandrillConfig::FROM_EMAIL),
+      );
+      
+      $struct['text'] = "Wapo confirmation code: " . $wr->confirm;
+      $struct['to'][0]['email'] = $wr->contact;
+
+      $async = false;
+      $ip_pool = 'Main Pool';
+      $result = $mandrill->messages->send($struct, $async, $ip_pool);
+      if (in_array($result[0]['status'], array("sent", "queued", "scheduled"))) {
         $this->sent = true;
       }
       

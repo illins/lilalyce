@@ -551,6 +551,10 @@ namespace Wp {
     }
     
     protected function form_valid() {
+      // Clear these session keys for future use.
+      $this->request->session->delete("wapo_id");
+      $this->request->session->prefix("wepay-")->delete("checkout_id");
+      
       $delivery_methods = array("email", "email-list", "text");
       $payment_methods = array("wepay", "free");
       $payment_method = $this->request->post->find("payment_method", "free");
@@ -672,7 +676,6 @@ namespace Wp {
           //      $this->request->session->set("checkoutid", 760173062);760173062
           $this->request->session->prefix("wepay-")->set("checkout_id", $this->wepay->checkout_id);
         } catch (\Exception $ex) {
-          exit($ex->getMessage());
           $this->set_error("Could not initialize payment method!");
           return $this->form_invalid();
         }
@@ -773,6 +776,12 @@ namespace Wp {
     }
     
     protected function form_valid() {
+      // If we have created a wapo already, return it. Don't let it be created again.
+      $this->wapo_id = $this->request->session->find("wapo_id", null);
+      if($this->wapo_id) {
+        return parent::form_valid();
+      }
+      
       list($wapo, $error) = create_wapo($this->request, $this->wapo);
       
       if($error) {
@@ -803,10 +812,10 @@ namespace Wp {
       }
       
       // Check that the wapo can be sent.
-//      if($wapo->status != "paid") {
-//        $this->set_error("Wapo cannot be sent at this time!");
-//        return $this->form_invalid();
-//      }
+      if($wapo->status != \Wapo\Wapo::PAID) {
+        $this->set_error("Wapo cannot be sent at this time!");
+        return $this->form_invalid();
+      }
       
       // Send the wapo.
       $result = send_wapo($this->request, $wapo);

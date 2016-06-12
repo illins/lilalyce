@@ -720,13 +720,19 @@ wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http'
     };
     
     $scope.setDelivery = function (delivery) {
+      if(delivery === $scope.delivery) {
+        return;
+      }
+      
       $scope.delivery = delivery;
       var id;
       
       // Hide everything.
       _.each(delivery_list, function(item) {
-        id = '#' + item;
-        $(id).collapse('hide');
+        if(delivery !== item) {
+          id = '#' + item;
+          $(id).collapse('hide');
+        }
       });
       
       if($scope.delivery == "email") {

@@ -47,18 +47,36 @@ var wapoDownloadApp = angular.module('wapoDownloadApp', ['ngRoute', 'ngResource'
 wapoDownloadApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', '$cookies', function ($rootScope, $scope, $location, $http, $routeParams, $mdDialog, $cookies) {
     $rootScope.user = null;
     $rootScope.wapo = null;
+    $rootScope.profile = null;
+    $rootScope.related_product_list = [];
+    $rootScope.social_link_list = [];
 
     $rootScope.setPath = function (path, href) {
       $cookies.put('path', path);
       window.location.href = href;
     };
 
-    $rootScope.mainInit = function (callback) {
-      var path = $cookies.get('path');
-      if (path) {
-        $cookies.remove('path');
-        $location.path(path);
-        return;
+    $rootScope.mainInit = function (wapo_id, callback) {
+      if (!$rootScope.wapo) {
+        $http.get('/wp/wapo/download/wapo/' + wapo_id + '/').success(function (response) {
+          $rootScope.wapo = response;
+
+          $http.get('/wp/wapo/download/profile/' + response.profile.id + '/').success(function (res1) {
+            $rootScope.profile = res1;
+          });
+
+          $http.get('/wp/wapo/download/profile/' + response.profile.id + '/related-product/').success(function (res2) {
+            $rootScope.related_product_list = res2;
+          });
+          
+          $http.get('/wp/wapo/download/profile/' + response.profile.id + '/social-link/').success(function (res3) {
+            $rootScope.social_link_list = res3;
+          });
+        });
+      }
+
+      if(callback) {
+        callback();
       }
     };
 
@@ -81,7 +99,6 @@ wapoDownloadApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$h
     $rootScope.showProgress = function() {
       return ($rootScope.message);
     };
-    
   }]);
 
 wapoDownloadApp.controller('WapoCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
@@ -147,6 +164,8 @@ wapoDownloadApp.controller('EmailCtrl', ['$rootScope', '$scope', '$location', '$
         $scope.message = errorResponse.message;
       });
     };
+    
+    $rootScope.mainInit($routeParams.wapo_id);
   }]);
 
 wapoDownloadApp.controller('TextCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
@@ -168,6 +187,8 @@ wapoDownloadApp.controller('TextCtrl', ['$rootScope', '$scope', '$location', '$h
         $scope.message = errorResponse.message;
       });
     };
+    
+    $rootScope.mainInit(null);
   }]);
 
 wapoDownloadApp.controller('ConfirmCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
@@ -190,7 +211,7 @@ wapoDownloadApp.controller('ConfirmCtrl', ['$rootScope', '$scope', '$location', 
       });
     };
     
-    
+    $rootScope.mainInit($routeParams.wapo_id);
   }]);
 
 wapoDownloadApp.controller('DownloadCtrl', ['$rootScope', '$scope', '$location', '$http', '$routeParams', function ($rootScope, $scope, $location, $http, $routeParams) {
@@ -241,6 +262,9 @@ wapoDownloadApp.controller('DownloadCtrl', ['$rootScope', '$scope', '$location',
         });
       };
     };
+    
+    $rootScope.mainInit($routeParams.wapo_id, $scope.init);
+    
   }]);
 
 wapoDownloadApp.config(function ($routeProvider) {
@@ -251,6 +275,9 @@ wapoDownloadApp.config(function ($routeProvider) {
     templateUrl: '/apps/wp/templates/wapo-download/pages/profile.html',
     controller: 'ProfileCtrl'
   }).when('/email/:wapo_id', {
+    templateUrl: '/apps/wp/templates/wapo-download/pages/email.html',
+    controller: 'EmailCtrl'
+  }).when('/email-list/:wapo_id', {
     templateUrl: '/apps/wp/templates/wapo-download/pages/email.html',
     controller: 'EmailCtrl'
   }).when('/text/:wapo_id', {

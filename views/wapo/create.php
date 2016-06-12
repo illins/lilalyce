@@ -12,7 +12,8 @@ namespace Wp {
       $wapo = new \Wapo\Wapo();
 
       // Set the module.
-      $wapo->module = $wpd->module->id;
+//      $wapo->module = $wpd->module->id;
+      $wapo->module = \Wapo\Module::get_or_null(["tag"=>"gift"]);
 
       // Set the profile.
       if ($wpd->profile->profile) {
@@ -82,7 +83,7 @@ namespace Wp {
       $wapo->delivery_method = $wpd->delivery;
       $wapo->delivery_message = $wpd->delivery_message;
       $wapo->quantity = $wpd->quantity;
-      $wapo->status = "paid";
+      $wapo->status = \Wapo\Wapo::PAID;
       
       $wapo->save(false);
       $wapo->profile->wapo_count += 1;
@@ -299,35 +300,18 @@ namespace Wp {
     
     // Get the total cost of the product.
     $reward = \Wapo\TangoCardRewards::get_or_404(array("sku"=>$sku, "status" => true), "Reward not found.");
-//    $total_cost = ($reward->unit_price / 100) * $quantity;
     $total_cost = $unit_price * $quantity;
-
-    // Make sure that we are requesting at least $100.
     
     // Create information to fund account.
     $cc_fund = array(
-          "customer" => \Blink\TangoCardConfig::CUSTOMER,
-          "account_identifier" => \Blink\TangoCardConfig::IDENTIFIER,
-          "amount" => $total_cost,
-          "client_ip" => "55.44.33.22",// ????
-          "security_code" => \Blink\TangoCardConfig::SECURITY_CODE,
-          "cc_token" => \Blink\TangoCardConfig::CC_TOKEN
-      );
-    
-    // Create a request to check for funds.
-//    $request = "accounts/" . \Blink\TangoCardConfig::CUSTOMER . "/" . \Blink\TangoCardConfig::IDENTIFIER;
-//    $account = $tc->request($request);
-    
-    // If funds < 100, add new funds.
-//    if($account->account->available_balance < 100) {
-//      $fund = $tc->request("cc_fund", $cc_fund);
-//      
-//      // Check success.
-//      if(!$fund->success) {
-//        \Blink\raise500("Order could not be completed.");
-//      }
-//    }
-    
+        "customer" => \Blink\TangoCardConfig::CUSTOMER,
+        "account_identifier" => \Blink\TangoCardConfig::IDENTIFIER,
+        "amount" => $total_cost,
+        "client_ip" => "55.44.33.22", // ????
+        "security_code" => \Blink\TangoCardConfig::SECURITY_CODE,
+        "cc_token" => \Blink\TangoCardConfig::CC_TOKEN
+    );
+
     $fund = $tc->request("cc_fund", $cc_fund);
     // Check success.
     if (!$fund->success) {
@@ -352,7 +336,7 @@ namespace Wp {
       
       // If this is a range one, include the 'amount' == 'unit_price'.
       if($reward->unit_price == -1) {
-        $info['amount'] = $unit_price;
+        $info['amount'] = (int) $unit_price;
       }
 
       $order = $tc->place_order($info);

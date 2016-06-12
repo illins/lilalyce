@@ -6,6 +6,11 @@ namespace Wp {
   require_once 'apps/wp/views/wapo-download/email.php';
   require_once 'apps/wp/views/wapo-download/text.php';
   
+  WpDownloadWapoDetailView::register_url("/wp/wapo/download/wapo/(?P<pk>\d+)/");
+  WpDownloadProfileView::register_url("/wp/wapo/download/profile/(?P<pk>\d+)/");
+  WpDownloadRelatedProductListView::register_url("/wp/wapo/download/profile/(?P<profile_id>\d+)/related-product/");
+  WpDownloadSocialLinkListView::register_url("/wp/wapo/download/profile/(?P<profile_id>\d+)/social-link/");
+  
   // Base download template.
   WpDownloadBaseView::register_url(array("pattern"=>"/wp/wapo/download/"));
   

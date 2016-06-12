@@ -1,8 +1,7 @@
-<div class="panel panel-default" ng-init="init()">
-  <div class="panel-heading">
-    &nbsp;
-  </div>
+<div class="panel panel-default">
   <div class="panel-body">
+    
+    <div ng-include="'/apps/wp/templates/wapo-download/includes/profile.html'" ng-if="profile"></div>
 
     <div class="row">
       <div class="col-xs-offset-4 col-xs-4 text-center">
@@ -10,12 +9,24 @@
         <i class="fa fa-spinner fa-spin" ng-show="progress"></i>
         <em>{{message}}</em>
         
-        <div ng-if="wapo.marketplace == 'promotion' && url">
+        <div ng-if="wapo.marketplace === 'promotion' && url">
           <br />
           <a class="btn btn-default" href="{{url}}" target="_blank">Download Promotion</a>
         </div>
         
-        <div ng-if="wapo.marketplace == 'tangocards' && reward.number">
+        <div ng-if="wapo.marketplace === 'tangocards' && reward.url">
+          <br />
+          <div ng-if="reward.url">
+            <strong>Redemption url </strong> <a href="{{reward.url}}" target="_blank">{{reward.url}}</a>
+          </div>
+          
+          <div>
+            <strong>Secret Code: </strong> {{reward.number}}
+          </div>          
+          
+        </div>
+        
+        <div ng-if="wapo.marketplace === 'tangocards' && !reward.url">
           <br />
           <div>
             <strong>Number: </strong> {{reward.number}}
@@ -25,12 +36,11 @@
             <strong>Pin: </strong> {{reward.pin}}
           </div>
           
-          <div ng-if="reward.url">
-            <strong>Redemption url </strong> {{reward.url}}
-          </div>
         </div>
       </div>
     </div>
+
+    <div ng-include="'/apps/wp/templates/wapo-download/includes/related-products.html'" ng-if="related_product_list.length"></div>
 
   </div>
 </div>

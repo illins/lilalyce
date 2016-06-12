@@ -6,6 +6,56 @@ namespace Wp {
   require_once 'apps/wp/helper.php';
   
   /**
+   * Detail view for the wapo.
+   */
+  class WpDownloadWapoDetailView extends \Blink\CRUDDetailView {
+    protected $class = "\Wapo\Wapo";
+    
+    protected function get_context_data() {
+      $c = parent::get_context_data();
+      
+      return [
+          "id" => $this->object->id,
+          "profile" => $this->object->profile,
+          "marketplace" => $this->object->marketplace,
+          "promotion" => $this->object->promotion,
+          "tangocardrewards" => $this->object->tangocardrewards,
+      ];
+    }
+  }
+  
+  /**
+   * Profile
+   */
+  class WpDownloadProfileView extends \Blink\CRUDDetailView {
+    protected $class = "\Wapo\Profile";
+  }
+  
+  /**
+   * Related products.
+   */
+  class WpDownloadRelatedProductListView extends \Blink\CRUDListView {
+    protected $class = "\Wapo\RelatedProduct";
+    
+    protected function get_queryset() {
+      return parent::get_queryset()->filter(["profile"=>$this->request->param->param['profile_id'], "url__neq"=>""]);
+    }
+  }
+  
+  /**
+   * Social Links.
+   */
+  class WpDownloadSocialLinkListView extends \Blink\CRUDListView {
+    protected $class = "\Wapo\SocialLinks";
+    
+    protected function get_queryset() {
+      return parent::get_queryset()->filter(["profile"=>$this->request->param->param['profile_id'], "link__neq"=>""]);
+    }
+  }
+  
+  /*--------------------------------------------------------------------------*/
+  
+  /**
    * Base form for download section.
    */
   class WpDownloadBaseFormView extends \Blink\JSONFormView {
@@ -226,7 +276,7 @@ namespace Wp {
         $response = new \Blink\Response();
         $promotion = \Wapo\Promotion::queryset()->clear()->filter(array("id"=>$wr->wapo->promotion))->get();
         $response->file = $promotion->download;
-        
+                
         return $response;
       } else {
         return \Blink\HttpResponse("Download not found!", "text/plain", \Blink\Response::NOT_FOUND);
