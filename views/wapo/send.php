@@ -93,7 +93,12 @@ namespace Wp {
                 }
                 $message .= "Enjoy your gift.\nWapo Team.";
                 
-//                $struct['html'] = $message;
+                $context = [
+                    "wapo" => $wapo,
+                    "site_url" => \Blink\SiteConfig::SITE,
+                    "reward" => $order->order->reward
+                ];
+                $struct['html'] = \Blink\render_get($context, WpTemplateConfig::Template("wapo-email/tangocardrewards.twig"));
                 $struct['text'] = $message;
                 $struct['to'][0]['email'] = $recipient->contact;
                 
@@ -112,6 +117,11 @@ namespace Wp {
               $message = sprintf("You have been sent a Wapo. Click here '%s' to download your Wapo. ", $bitly_url);
             }
             
+            $context = [
+                "wapo" => $wapo,
+                "site_url" => \Blink\SiteConfig::SITE
+            ];
+            $struct['html'] = \Blink\render_get($context, WpTemplateConfig::Template("wapo-email/promotion.twig"));
             $struct['text'] = $message;
             $struct['to'][0]['email'] = $recipient->contact;
 

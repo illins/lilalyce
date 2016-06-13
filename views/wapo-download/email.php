@@ -40,6 +40,10 @@ namespace Wp {
           'headers' => array('Reply-To' => \Blink\MandrillConfig::FROM_EMAIL),
       );
       
+      $context = [
+          "wr" => $wr,
+      ];
+      $struct['html'] = \Blink\render_get($context, WpTemplateConfig::Template("wapo-email/confirmation.twig"));
       $struct['text'] = "Wapo confirmation code: " . $wr->confirm;
       $struct['to'][0]['email'] = $wr->contact;
 
