@@ -210,7 +210,7 @@ namespace Wp {
         foreach ($recipient_list as $recipient) {
           // Send message and check for results.
           $cleaned = trim(str_replace(array(" ", ")", "(", "-"), "", $recipient->contact));
-          $result = $bulksms->send_seven_bit_sms($message, "+1".$cleaned);
+          $result = $bulksms->send_to_us_number($message, $cleaned);
 
           // Check results and update the ricipient object.
           if ($result[0]) {
