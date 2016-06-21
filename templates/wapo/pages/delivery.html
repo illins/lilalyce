@@ -6,7 +6,7 @@
 
 <div class="row">
   <div class="col-sm-12 col-md-9">
-    
+
     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
       <div class="panel panel-default">
         <div class="panel-heading" role="tab" id="email-heading" ng-click="setDelivery('email')" style="cursor: pointer;">
@@ -25,25 +25,23 @@
         </div>
         <div id="email" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="emailHeading">
           <div class="panel-body">
-            
-            <p>Send a Wapo to up to 4 emails.</p>
 
             <div ng-include="'/apps/wp/templates/wapo/includes/delivery-email.html'" ng-show="delivery == 'email'"></div>
-            
+
           </div>
         </div>
       </div>
-      
+
       <div class="panel panel-default">
         <div class="panel-heading" role="tab" id="email-list-heading" ng-click="setDelivery('email-list')" style="cursor: pointer;">
-          
+
           <div class="row">
             <div class="col-xs-11">
               <h4 class="panel-title">
-            <a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="email-list">
-              Email List
-            </a>
-          </h4>
+                <a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="email-list">
+                  Email List
+                </a>
+              </h4>
             </div>
             <div class="col-xs-1 text-right">
               <i class="fa" ng-class="{'fa-angle-down': delivery == 'email-list', 'fa-angle-right': delivery != 'email-list'}"></i>
@@ -52,11 +50,9 @@
         </div>
         <div id="email-list" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="emailListHeading">
           <div class="panel-body">
-            
-            <p>Send a Wapo to a list of comma separated emails.</p>
 
             <div ng-include="'/apps/wp/templates/wapo/includes/delivery-email-list.html'" ng-show="delivery == 'email-list'"></div>
-            
+
           </div>
         </div>
       </div>
@@ -66,10 +62,10 @@
           <div class="row">
             <div class="col-xs-11">
               <h4 class="panel-title">
-            <a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="text">
-              Text
-            </a>
-          </h4>
+                <a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="text">
+                  Text
+                </a>
+              </h4>
             </div>
             <div class="col-xs-1 text-right">
               <i class="fa" ng-class="{'fa-angle-down': delivery == 'text', 'fa-angle-right': delivery != 'text'}"></i>
@@ -78,15 +74,12 @@
         </div>
         <div id="text" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
           <div class="panel-body">
-
-            <p>Send a Wapo to Phone number(s).</p>
-
             <div ng-include="'/apps/wp/templates/wapo/includes/delivery-text.html'" ng-show="delivery == 'text'"></div>
           </div>
         </div>
       </div>
     </div>
-    
+
     <!--<div ng-init="initAccordion()"></div>-->
   </div>
   <div class="col-md-3 col-sm-12 wapo-sidebar" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>

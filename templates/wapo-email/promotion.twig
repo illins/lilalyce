@@ -102,8 +102,10 @@
                       <p>{{wapo.promotion.description}}</p>
                     </td>
                   </tr>
-                  <tr>
-                    <td style=" padding: 0 0 20px 0;">
+                  {#<tr>
+                    <td class="center" style="padding: 20px 0px 10px 0px">
+                      <a style="color: #fff; font-size: 12px; font-weight: bold; text-decoration: none; font-family: Arial, sans-serif; text-align: center;" href="{{wapo.bitlyurl}}">DOWNLOAD</a>
+                      
                       <table  align="center">
                         <tr>
                           <td  valign="top" style="padding: 7px 15px; text-align: center; background-color: #e67e22;">
@@ -112,13 +114,20 @@
                         </tr>
                       </table>
                     </td>
+                  </tr>#}
+                          
+                  <tr>
+                    <td class="center" style="padding: 20px 0px 10px 0px; text-align: center;">
+                      <a style="color: #e67e22; font-size: 12px; font-weight: bold; text-decoration: none; font-family: Arial, sans-serif;" href="{{wapo.bitlyurl}}">DOWNLOAD</a>
+                    </td>
                   </tr>
+                      
                 </table><!--End Left box-->
                 <!-- Right box  -->
                 <table width="30%"  border="0" cellpadding="0" cellspacing="0" align="center" class="deviceWidth">
                   <tr>
                     <td valign="top" style="padding: 20px;" class="center">
-                      <a href="#"><img class="deviceWidth"  width="100%;" src="{{wapo.promotion.icon.full_url}}"></a>
+                      <a href="#"><img class="deviceWidth" style="max-width: 250px; max-height: 250px;" src="{{wapo.promotion.icon.full_url}}"></a>
                     </td>
                   </tr>
                 </table> <!--End Right box-->
@@ -142,8 +151,9 @@
                       Send gifts to anyone using the simple Wapo platform.
                     </td>
                   </tr>
-                  <tr>
-                    <td style=" padding: 0 0 20px 20px;">
+                  {#<tr>
+                    <td class="center" style="padding: 0 0 20px 20px;">
+                      <a style="color: #fff; font-size: 12px; font-weight: bold; text-decoration: none; font-family: Arial, sans-serif; text-align: center;" href="{{site_url}}/wp/wapo/">LEARN MORE</a>
                       <table  align="center">
                         <tr>
                           <td  valign="top" style="padding: 7px 15px; text-align: center; background-color: #e67e22;">
@@ -151,6 +161,11 @@
                           </td>
                         </tr>
                       </table>
+                    </td>
+                  </tr>#}
+                  <tr>
+                    <td class="center" style="padding: 0 0 20px 20px; text-align: center;">
+                      <a style="color: #e67e22; font-size: 12px; font-weight: bold; text-decoration: none; font-family: Arial, sans-serif;" href="{{site_url}}/wp/wapo/">LEARN MORE</a>
                     </td>
                   </tr>
                 </table>

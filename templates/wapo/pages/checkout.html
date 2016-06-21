@@ -14,70 +14,98 @@
       </div>
 
       <div class="panel-body wapo-wp-scroll">
-
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-group">
-              <input type="text" class="form-control" id="name" ng-model="checkout.name" placeholder="Name on card">
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <input type="email" class="form-control" id="email" ng-model="checkout.email" placeholder="Email">
-            </div>
+        <div class="row" ng-show="processing">
+          <div class="col-xs-offset-4 col-xs-4 text-center" ng-if="!confirmed">
+            <!--<md-progress-linear md-mode="indeterminate"></md-progress-linear>-->
+            <i class="fa fa-spinner fa-spin"></i>
+            <em>Processing payment! Please do not click back!</em>
+            <br />
           </div>
         </div>
+        
+        <div ng-show="!processing">
+          * All fields required!
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <input type="text" class="form-control" id="name" ng-model="checkout.name" placeholder="Name on card">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <input type="email" class="form-control" id="email" ng-model="checkout.email" placeholder="Email">
+              </div>
+            </div>
+          </div>
 
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-group">
-              <input type="text" class="form-control" id="cc-number" ng-model="checkout.cc_number" placeholder="Card number">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <input type="text" class="form-control" id="cc-number" ng-model="checkout.cc_number" placeholder="Card number">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <input type="text" class="form-control" id="cc-cvv" ng-model="checkout.cc_cvv" placeholder="CVV2">
+              </div>
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <input type="text" class="form-control" id="cc-cvv" ng-model="checkout.cc_cvv" placeholder="CVV2">
-            </div>
-          </div>
-        </div>
 
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-group">
-              <select name="cc-month" id="cc-month" class="form-control" ng-model="checkout.cc_month">
-                <option value="">Month</option>
-                <option value="1">January</option>
-                <option value="1">February</option>
-                <option value="3">March</option>
-                <option value="4">April</option>
-                <option value="5">May</option>
-                <option value="6">June</option>
-                <option value="7">July</option>
-                <option value="8">August</option>
-                <option value="9">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-              </select>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <select name="cc-month" id="cc-month" class="form-control" ng-model="checkout.cc_month">
+                  <option value="">Month</option>
+                  <option value="1">January</option>
+                  <option value="1">February</option>
+                  <option value="3">March</option>
+                  <option value="4">April</option>
+                  <option value="5">May</option>
+                  <option value="6">June</option>
+                  <option value="7">July</option>
+                  <option value="8">August</option>
+                  <option value="9">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <input type="text" class="form-control" name="cc-year" id="cc-year" ng-model="checkout.cc_year" placeholder="Year">
+              </div>
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <input type="text" class="form-control" name="cc-year" id="cc-year" ng-model="checkout.cc_year" placeholder="Year">
-            </div>
-          </div>
-        </div>
 
-        <div class="row">
-          <div class="col-xs-12 col-md-4">
-            <div class="form-group">
-              <input type="text" class="form-control" id="zip" name="zip" ng-model="checkout.zip" placeholder="Zip">
+          <div class="row">
+            <div class="col-xs-12 col-md-4">
+              <div class="form-group">
+                <input type="text" class="form-control" id="zip" name="zip" ng-model="checkout.zip" placeholder="Zip">
+              </div>
             </div>
           </div>
         </div>
 
       </div>
     </div>
+
+    <div class="panel panel-default" ng-show="free">
+      <div class="panel-body text-center">
+        <div class="row" ng-show="processing">
+          <div class="col-xs-offset-4 col-xs-4 text-center" ng-if="!confirmed">
+            <!--<md-progress-linear md-mode="indeterminate"></md-progress-linear>-->
+            <i class="fa fa-spinner fa-spin"></i>
+            <em>Processing payment! Please do not click back!</em>
+            <br />
+          </div>
+        </div>
+
+        Free item! Click continue to process!
+      </div>
+    </div>
+
   </div>
 
   <div class="col-sm-12 col-md-3 wapo-sidebar" ng-include="'/apps/wp/templates/wapo/includes/sidebar.html'"></div>

@@ -1,13 +1,11 @@
-<div class="panel panel-default">
-  <div class="panel-body">
-    <div class="form-group" ng-repeat="email in email_list track by $index" ng-if="$index < max_count">
-      <label for="email-{{$index}}">Email address</label>
-      <input type="email" class="form-control" id="email-{{$index}}" ng-model="email_list[$index]" placeholder="Email {{$index + 1}}">
-    </div>
+<h3>Send a Wapo to up to 4 emails.</h3>
 
-    <div class="form-group">
-      <label>Delivery Message</label>
-      <textarea class="form-control" rows="5" ng-model="delivery_message" id="email-delivery-message"></textarea>
-    </div>
-  </div>
+<div class="form-group" ng-repeat="email in email_list track by $index" ng-if="$index < max_count">
+  <label for="email-{{$index}}">Email address</label>
+  <input type="email" class="form-control" id="email-{{$index}}" ng-model="email_list[$index]" placeholder="Email {{$index + 1}}">
+</div>
+
+<div class="form-group">
+  <label>Delivery Message</label>
+  <textarea class="form-control" rows="5" ng-model="delivery_message" id="email-delivery-message"></textarea>
 </div>

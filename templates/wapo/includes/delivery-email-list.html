@@ -1,17 +1,14 @@
-<div class="panel panel-default">
-  <div class="panel-body">
+<h3>Send a Wapo to a list of comma separated emails.</h3>
 
-    <div class="form-group">
-      <label>Email addresses</label>
-      <textarea id="emails" class="form-control" rows="5" ng-model="emails" ng-keyup="keyUpEmailList($event)"></textarea>
-    </div>
-    <div class="well well-sm">
-      {{count}} of {{wapo.email_list.max}}
-    </div>
+<div class="form-group">
+  <label>Email addresses</label>
+  <textarea id="emails" class="form-control" rows="5" ng-model="emails" ng-keyup="keyUpEmailList($event)"></textarea>
+</div>
+<div class="well well-sm">
+  {{count}} of {{wapo.email_list.max}}
+</div>
 
-    <div class="form-group">
-      <label>Delivery Message</label>
-      <textarea class="form-control" rows="5" ng-model="delivery_message" id="emails-delivery-message"></textarea>
-    </div>
-  </div>
+<div class="form-group">
+  <label>Delivery Message</label>
+  <textarea class="form-control" rows="5" ng-model="delivery_message" id="emails-delivery-message"></textarea>
 </div>

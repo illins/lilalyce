@@ -126,22 +126,6 @@ wapoApp.controller('MainCtrl', ['$rootScope', '$scope', '$location', '$http', '$
     $rootScope.resizeImages = function() {
       var col = new jColumn();
       col.jcolumn('marketplace-item-container');
-      
-      return;
-      var count = 0;
-      var total_height = 0;
-      _.each($('.marketplace-image'), function(item) {
-        var h = $(item).height();
-        if(h > 10) {
-          total_height += h;
-          count++;
-        }
-      });
-      
-      var avg_height = parseInt(total_height / count);
-        $('.marketplace-item-container').height(avg_height + 150);
-        $('.marketplace-image-container').height(avg_height);
-        $('.marketplace-image-container').css('overflow-y', 'hidden');
     };
     
     $rootScope.initMarketplaceImages = function() {
@@ -218,6 +202,7 @@ wapoApp.controller('ModuleCtrl', ['$rootScope', '$scope', '$location', '$http', 
 
     $scope.init = function () {
       if ($rootScope.wapo.module) {
+        console.log($rootScope.next_path);
         $location.path($rootScope.next_path);
       } else if (!$rootScope.module_list.length) {
         $http.get('/wp/wapo/module/').success(function (response) {
@@ -250,6 +235,7 @@ wapoApp.controller('ModuleCtrl', ['$rootScope', '$scope', '$location', '$http', 
     $scope.setModule = function (module) {
       $http.post('/wp/wapo/set/module/', {module_id: module.id}).success(function (response) {
         $rootScope.wapo = response.wapo;
+        console.log($rootScope.next_path);
         $location.path($rootScope.next_path);
       }).error(function (errorResponse) {
         alert(errorResponse.message);
@@ -280,11 +266,6 @@ wapoApp.controller('ProfileCtrl', ['$rootScope', '$scope', '$location', '$http',
           $rootScope.profile_list = response.profile_list;
           $scope.profile_chunk_list = _.chunk($rootScope.profile_list, 3);
           $rootScope.ready = true;
-
-//          // If no profile, show new profile form.
-//          if ($rootScope.user && !$rootScope.profile_list.length) {
-//            $location.path('/profile-new');
-//          }
         });
       } else {
         $scope.profile_chunk_list = _.chunk($rootScope.profile_list, 3);
@@ -861,8 +842,9 @@ wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http'
       var input_number_list = $('#numbers').val().split(',');
 //      var input_number_list = $scope.numbers.split(',');
       _.map(input_number_list, function (number) {
-        var cleaned = number.trim().replace(')', '').replace('(', '').replace('-', '').replace(' ', '');
-        if(cleaned.length != 10) {
+//        var regexe = new RegExe('(\(|\)|\-|\s)', 'g')
+        var cleaned = number.trim().replace(')', '').replace('(', '').replace('-', '').replace('-', '').replace(' ', '');
+        if(cleaned.length !== 10) {
           $scope.error_number = number;
         }
         
@@ -882,7 +864,6 @@ wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http'
     };
 
     $scope.initText = function () {
-      console.log($rootScope.wapo.text.number_list.length);
       $scope.count = $rootScope.wapo.text.number_list.length;
       $scope.numbers = $rootScope.wapo.text.number_list.join(',');
       $scope.delivery_message = $rootScope.wapo.delivery_message;
@@ -919,9 +900,12 @@ wapoApp.controller('DeliveryCtrl', ['$rootScope', '$scope', '$location', '$http'
     
     $scope.init = function () {
       var delivery = $rootScope.wapo.delivery;
+      console.log(delivery);
       
       if(delivery) {
         $scope.setDelivery(delivery);
+      } else {
+        $scope.setDelivery('email');
       }
     };
     $rootScope.mainInit(function () {
@@ -1681,6 +1665,7 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
     $scope.payment_method_list = [];
     
     $scope.free = false;
+    $scope.processing = false;
     
     // Check if wapo is free!
     $scope.isFree = function() {
@@ -1723,6 +1708,10 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
     };
 
     $scope.next = function () {
+      $rootScope.previous_path = null;
+      $rootScope.next_path = null;
+      $scope.processing = true;
+      
       if($scope.isFree()) {
         $location.path($rootScope.next_path);
       } else {
@@ -1739,13 +1728,21 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
 //            $rootScope.setPath('/payment', response.wepay.hosted_checkout.checkout_uri);
 //          }
         }).error(function (errorResponse) {
+          $scope.uprocess();
+          
           alert(errorResponse.message);
         });
       }
     };
     
     $scope.tokenize = function(client_id) {
-      console.log('here?');
+      console.log('tokenize?');
+      if(!$scope.checkout) {
+        alert('Please fill out payment information!');
+        $scope.uprocess();
+        return;
+      }
+      
       var response = WePay.credit_card.create({
             "client_id":        client_id,
             "user_name":        $scope.checkout.name,
@@ -1758,8 +1755,11 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
                 "zip": $scope.checkout.zip
             }
         }, function(data) {
-          console.log('data', data);
+          console.log('tokenize.data', data);
             if (data.error) {
+              alert('There seems to be an error processing your credit card!');
+              $scope.uprocess();
+              
                 console.log(data);
                 // handle error response
             } else {
@@ -1772,8 +1772,18 @@ wapoApp.controller('CheckoutCtrl', ['$rootScope', '$scope', '$location', '$http'
                 });
             }
         });
-        
     };
+    
+    $scope.uprocess = function() {
+      $rootScope.previous_path = '/delivery';
+      if ($scope.isFree()) {
+        $rootScope.next_path = '/free';
+      } else {
+        $rootScope.next_path = '/payment';
+      }
+      $scope.processing = false;
+    };
+    
   }]);
 
 wapoApp.filter('filenameFilter', function () {

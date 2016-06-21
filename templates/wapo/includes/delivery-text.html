@@ -1,19 +1,15 @@
-<div class="panel panel-default">
-  <div class="panel-body">
+<h3>Send a Wapo to Phone number(s).</h3>
 
-    <div class="form-group">
-      <label>Numbers</label>
-      <textarea id="numbers" class="form-control" rows="5" ng-model="numbers" ng-keyup="keyUpText($event)"></textarea>
-      <p class="help-block">Enter 10 digit phone numbers. Area code + number. Allowed formats: (xxx) xxx-xxxx, xxx-xxx-xxxx, xxxxxxxxxx</p>
-    </div>
-    <div class="well well-sm">
-      {{count}} of {{wapo.text.max}}
-    </div>
+<div class="form-group">
+  <label>Numbers</label>
+  <textarea id="numbers" class="form-control" rows="5" ng-model="numbers" ng-keyup="keyUpText($event)"></textarea>
+  <p class="help-block">Enter 10 digit phone numbers. Area code + number. Allowed formats: (xxx) xxx-xxxx, xxx-xxx-xxxx, xxxxxxxxxx</p>
+</div>
+<div class="well well-sm">
+  {{count}} of {{wapo.text.max}}
+</div>
 
-    <div class="form-group">
-      <label>Delivery Message</label>
-      <textarea class="form-control" rows="5" ng-model="delivery_message" id="text-delivery-message"></textarea>
-    </div>
-
-  </div>
+<div class="form-group">
+  <label>Delivery Message</label>
+  <textarea class="form-control" rows="5" ng-model="delivery_message" id="text-delivery-message"></textarea>
 </div>
