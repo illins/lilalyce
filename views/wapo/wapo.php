@@ -710,7 +710,7 @@ namespace Wp {
       
       $checkout = (new \WePay\WepayAPI())->checkout($checkout_id);
       
-      if($checkout->state == "captured") {
+      if($checkout->state == "captured" || $checkout->state == "authorized") {
         $this->verified = true;
       } else {
         $this->set_error("Could not verify payment or payment did not complete!");
